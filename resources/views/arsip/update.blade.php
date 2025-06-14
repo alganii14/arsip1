@@ -414,6 +414,276 @@
                                                     <option value="RT.05.03" {{ old('kategori', $arsip->kategori) == 'RT.05.03' ? 'selected' : '' }}>05.03 - Telekomunikasi</option>
                                                 </optgroup>
 
+                                                <!-- Keuangan - KU -->
+                                                <optgroup label="Keuangan (KU)">
+                                                    <!-- 01 - Rencana Anggaran Pendapatan dan Belanja Daerah -->
+                                                    <option value="KU.01" {{ old('kategori', $arsip->kategori) == 'KU.01' ? 'selected' : '' }}>01 - Rencana Anggaran Pendapatan dan Belanja Daerah, dan Anggaran Pendapatan dan Belanja Daerah Perubahan</option>
+
+                                                    <!-- 01.01 - Penyusunan Prioritas Plafon Anggaran -->
+                                                    <option value="KU.01.01" {{ old('kategori', $arsip->kategori) == 'KU.01.01' ? 'selected' : '' }}>01.01 - Penyusunan Prioritas Plafon Anggaran</option>
+                                                    <option value="KU.01.01.01" {{ old('kategori', $arsip->kategori) == 'KU.01.01.01' ? 'selected' : '' }}>01.01.01 - Kebijakan Umum, Strategi, Prioritas dan Renstra</option>
+                                                    <option value="KU.01.01.02" {{ old('kategori', $arsip->kategori) == 'KU.01.01.02' ? 'selected' : '' }}>01.01.02 - Dokumen Rancangan kebijakan Umum Anggaran (KUA) yang telah dibahas bersama antara DPRD dan Pemerintah Daerah</option>
+                                                    <option value="KU.01.01.03" {{ old('kategori', $arsip->kategori) == 'KU.01.01.03' ? 'selected' : '' }}>01.01.03 - KUA beserta Nota Kesepakatan</option>
+                                                    <option value="KU.01.01.04" {{ old('kategori', $arsip->kategori) == 'KU.01.01.04' ? 'selected' : '' }}>01.01.04 - Dokumen Rancangan Prioritas Plafon Anggaran Sementara (PPAS)</option>
+                                                    <option value="KU.01.01.05" {{ old('kategori', $arsip->kategori) == 'KU.01.01.05' ? 'selected' : '' }}>01.01.05 - Nota Kesepakatan PPA</option>
+                                                    <option value="KU.01.01.06" {{ old('kategori', $arsip->kategori) == 'KU.01.01.06' ? 'selected' : '' }}>01.01.06 - Prioritas Plafon Anggaran</option>
+
+                                                    <!-- 01.02 - Penyusunan RKA-SKPD -->
+                                                    <option value="KU.01.02" {{ old('kategori', $arsip->kategori) == 'KU.01.02' ? 'selected' : '' }}>01.02 - Penyusunan Rencana Kerja Anggaran Satuan Kerja Perangkat Daerah (RKA-SKPD)</option>
+                                                    <option value="KU.01.02.01" {{ old('kategori', $arsip->kategori) == 'KU.01.02.01' ? 'selected' : '' }}>01.02.01 - Dokumen Pedoman Penyusunan RKA-SKPD yang telah disetujui Sekretaris Daerah</option>
+                                                    <option value="KU.01.02.02" {{ old('kategori', $arsip->kategori) == 'KU.01.02.02' ? 'selected' : '' }}>01.02.02 - Dokumen RKA-SKPD</option>
+
+                                                    <!-- 01.03 - Penyampaian RAPBD -->
+                                                    <option value="KU.01.03" {{ old('kategori', $arsip->kategori) == 'KU.01.03' ? 'selected' : '' }}>01.03 - Penyampaian Rancangan Anggaran Pendapatan dan Belanja Daerah kepada Dewan Perwakilan Rakyat Daerah</option>
+                                                    <option value="KU.01.03.01" {{ old('kategori', $arsip->kategori) == 'KU.01.03.01' ? 'selected' : '' }}>01.03.01 - Pengantar Nota Keuangan Pemerintah dan Rancangan Peraturan Daerah APBD</option>
+                                                    <option value="KU.01.03.02" {{ old('kategori', $arsip->kategori) == 'KU.01.03.02' ? 'selected' : '' }}>01.03.02 - Hasil Pembahasan Rancangan Anggaran Pendapatan dan Belanja Daerah (RAPBD) oleh Dewan Perwakilan Rakyat Daerah (DPRD) dan Pemerintah Daerah</option>
+                                                    <option value="KU.01.03.03" {{ old('kategori', $arsip->kategori) == 'KU.01.03.03' ? 'selected' : '' }}>01.03.03 - Dokumen Persetujuan Evaluasi kepada Gubernur tentang Rancangan Peraturan Daerah APBD Perubahan</option>
+                                                    <option value="KU.01.03.04" {{ old('kategori', $arsip->kategori) == 'KU.01.03.04' ? 'selected' : '' }}>01.03.04 - Dokumen Rancangan Penjabaran APBD beserta Lampirannya</option>
+                                                    <option value="KU.01.03.05" {{ old('kategori', $arsip->kategori) == 'KU.01.03.05' ? 'selected' : '' }}>01.03.05 - Penyampaian Permohonan Evaluasi kepada Gubernur tentang RAPBD beserta penjabarannya</option>
+                                                    <option value="KU.01.03.06" {{ old('kategori', $arsip->kategori) == 'KU.01.03.06' ? 'selected' : '' }}>01.03.06 - Hasil Evaluasi Gubernur tentang RAPBD</option>
+                                                    <option value="KU.01.03.07" {{ old('kategori', $arsip->kategori) == 'KU.01.03.07' ? 'selected' : '' }}>01.03.07 - Penetapan Peraturan Daerah APBD oleh Wali Kota</option>
+                                                    <option value="KU.01.03.08" {{ old('kategori', $arsip->kategori) == 'KU.01.03.08' ? 'selected' : '' }}>01.03.08 - Peraturan Daerah tentang APBD</option>
+
+                                                    <!-- 01.04 - RAPBD Perubahan -->
+                                                    <option value="KU.01.04" {{ old('kategori', $arsip->kategori) == 'KU.01.04' ? 'selected' : '' }}>01.04 - Anggaran Pendapatan dan Belanja Daerah Perubahan (RAPBD-P)</option>
+                                                    <option value="KU.01.04.01" {{ old('kategori', $arsip->kategori) == 'KU.01.04.01' ? 'selected' : '' }}>01.04.01 - Kebijakan Umum, Strategi, Prioritas, dan Renstra</option>
+                                                    <option value="KU.01.04.02" {{ old('kategori', $arsip->kategori) == 'KU.01.04.02' ? 'selected' : '' }}>01.04.02 - Dokumen Rancangan Kebijakan Umum Anggaran
+                                                    <option value="KU.01.04.03" {{ old('kategori', $arsip->kategori) == 'KU.01.04.03' ? 'selected' : '' }}>01.04.03 - KUA Perubahan beserta Nota Kesepakatan</option>
+                                                    <option value="KU.01.04.04" {{ old('kategori', $arsip->kategori) == 'KU.01.04.04' ? 'selected' : '' }}>01.04.04 - Dokumen Rancangan Prioritas Plafon Anggaran Sementara (PPAS) Perubahan</option>
+                                                    <option value="KU.01.04.05" {{ old('kategori', $arsip->kategori) == 'KU.01.04.05' ? 'selected' : '' }}>01.04.05 - Nota Kesepakatan Prioritas Plafon Anggaran</option>
+                                                    <option value="KU.01.04.06" {{ old('kategori', $arsip->kategori) == 'KU.01.04.06' ? 'selected' : '' }}>01.04.06 - Prioritas Plafon Anggaran Perubahan</option>
+
+                                                    <!-- 01.05 - RKA-SKPD Perubahan -->
+                                                    <option value="KU.01.05" {{ old('kategori', $arsip->kategori) == 'KU.01.05' ? 'selected' : '' }}>01.05 - Penyusunan Rencana Kerja Anggaran Satuan Kerja Perangkat Daerah (RKA-SKPD) Perubahan</option>
+                                                    <option value="KU.01.05.01" {{ old('kategori', $arsip->kategori) == 'KU.01.05.01' ? 'selected' : '' }}>01.05.01 - Dokumen Pedoman Penyusunan RKA-SKPD Perubahan yang telah disetujui Sekretaris Daerah</option>
+                                                    <option value="KU.01.05.02" {{ old('kategori', $arsip->kategori) == 'KU.01.05.02' ? 'selected' : '' }}>01.05.02 - Dokumen RKA-SKPD Perubahan</option>
+
+                                                    <!-- 01.06 - Penyampaian RAPBD Perubahan -->
+                                                    <option value="KU.01.06" {{ old('kategori', $arsip->kategori) == 'KU.01.06' ? 'selected' : '' }}>01.06 - Penyampaian Rancangan Anggaran Pendapatan dan Belanja Daerah Perubahan kepada Dewan Perwakilan Rakyat Daerah (DPRD)</option>
+                                                    <option value="KU.01.06.01" {{ old('kategori', $arsip->kategori) == 'KU.01.06.01' ? 'selected' : '' }}>01.06.01 - Pengantar Nota Keuangan Pemerintah dan Rancangan Peraturan Daerah RAPBD Perubahan, Nota Keuangan Pemerintah dan Materi RAPBD Perubahan</option>
+                                                    <option value="KU.01.06.02" {{ old('kategori', $arsip->kategori) == 'KU.01.06.02' ? 'selected' : '' }}>01.06.02 - Hasil Pembahasan Rencana Anggaran Pendapatan dan Belanja Daerah (RAPBD) Perubahan oleh Dewan Perwakilan Rakyat Daerah (DPRD) dan Pemerintah Daerah</option>
+                                                    <option value="KU.01.06.03" {{ old('kategori', $arsip->kategori) == 'KU.01.06.03' ? 'selected' : '' }}>01.06.03 - Dokumen Persetujuan Bersama antara DPRD dan Kepala Daerah tentang Rancangan Peraturan Daerah APBD Perubahan</option>
+                                                    <option value="KU.01.06.04" {{ old('kategori', $arsip->kategori) == 'KU.01.06.04' ? 'selected' : '' }}>01.06.04 - Dokumen Rancangan Penjabaran APBD beserta Lampirannya</option>
+                                                    <option value="KU.01.06.05" {{ old('kategori', $arsip->kategori) == 'KU.01.06.05' ? 'selected' : '' }}>01.06.05 - Penyampaian Permohonan Evaluasi kepada Gubernur tentang RAPBD Perubahan beserta Penjabarannya</option>
+                                                    <option value="KU.01.06.06" {{ old('kategori', $arsip->kategori) == 'KU.01.06.06' ? 'selected' : '' }}>01.06.06 - Hasil Evaluasi Gubernur tentang RAPBD Perubahan</option>
+                                                    <option value="KU.01.06.07" {{ old('kategori', $arsip->kategori) == 'KU.01.06.07' ? 'selected' : '' }}>01.06.07 - Penetapan Peraturan Daerah APBD Perubahan oleh Wali Kota beserta Penjabarannya</option>
+                                                    <option value="KU.01.06.08" {{ old('kategori', $arsip->kategori) == 'KU.01.06.08' ? 'selected' : '' }}>01.06.08 - Peraturan Daerah tentang APBD Perubahan</option>
+
+                                                    <!-- 02 - Penyusunan Anggaran -->
+                                                    <option value="KU.02" {{ old('kategori', $arsip->kategori) == 'KU.02' ? 'selected' : '' }}>02 - Penyusunan Anggaran</option>
+                                                    <option value="KU.02.01" {{ old('kategori', $arsip->kategori) == 'KU.02.01' ? 'selected' : '' }}>02.01 - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kelurahan</option>
+                                                    <option value="KU.02.02" {{ old('kategori', $arsip->kategori) == 'KU.02.02' ? 'selected' : '' }}>02.02 - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kecamatan</option>
+                                                    <option value="KU.02.03" {{ old('kategori', $arsip->kategori) == 'KU.02.03' ? 'selected' : '' }}>02.03 - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kota</option>
+                                                    <option value="KU.02.04" {{ old('kategori', $arsip->kategori) == 'KU.02.04' ? 'selected' : '' }}>02.04 - Rancangan Dokumen Pelaksanaan Anggaran (RDPA) SKPD yang telah disetujui Sekretaris Daerah</option>
+                                                    <option value="KU.02.05" {{ old('kategori', $arsip->kategori) == 'KU.02.05' ? 'selected' : '' }}>02.05 - Dokumen Pelaksanaan Anggaran (DPA) SKPD yang telah disahkan oleh Pejabat Pengelola Keuangan Daerah</option>
+
+                                                    <option value="KU.03" {{ old('kategori', $arsip->kategori) == 'KU.03' ? 'selected' : '' }}>03 - Pelaksanaan Anggaran</option>
+                                                    <option value="KU.03.01" {{ old('kategori', $arsip->kategori) == 'KU.03.01' ? 'selected' : '' }}>03.01 - Pendapatan</option>
+                                                    <option value="KU.03.01.01" {{ old('kategori', $arsip->kategori) == 'KU.03.01.01' ? 'selected' : '' }}>03.01.01 - Pendapatan Asli Daerah</option>
+                                                    <option value="KU.03.01.01.01" {{ old('kategori', $arsip->kategori) == 'KU.03.01.01.01' ? 'selected' : '' }}>03.01.01.01 - Retribusi Daerah</option>
+                                                    <option value="KU.03.01.01.02" {{ old('kategori', $arsip->kategori) == 'KU.03.01.01.02' ? 'selected' : '' }}>03.01.01.02 - Hasil Perusahaan Milik Daerah dan Hasil Pengelolaan Kekayaan Daerah yang Dipisahkan</option>
+                                                    <option value="KU.03.01.01.03" {{ old('kategori', $arsip->kategori) == 'KU.03.01.01.03' ? 'selected' : '' }}>03.01.01.03 - Lain-Lain Pendapatan Asli Daerah Yang Sah</option>
+                                                    <option value="KU.03.01.02" {{ old('kategori', $arsip->kategori) == 'KU.03.01.02' ? 'selected' : '' }}>03.01.02 - Dana Perimbangan</option>
+                                                    <option value="KU.03.01.02.01" {{ old('kategori', $arsip->kategori) == 'KU.03.01.02.01' ? 'selected' : '' }}>03.01.02.01 - Dana Bagi Hasil</option>
+                                                    <option value="KU.03.01.02.02" {{ old('kategori', $arsip->kategori) == 'KU.03.01.02.02' ? 'selected' : '' }}>03.01.02.02 - Dana Alokasi Umum</option>
+                                                    <option value="KU.03.01.02.03" {{ old('kategori', $arsip->kategori) == 'KU.03.01.02.03' ? 'selected' : '' }}>03.01.02.03 - Dana Alokasi Khusus</option>
+                                                    <option value="KU.03.01.03" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03' ? 'selected' : '' }}>03.01.03 - Lain-Lain Pendapatan Daerah Yang Sah</option>
+                                                    <option value="KU.03.01.03.01" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03.01' ? 'selected' : '' }}>03.01.03.01 - Hibah</option>
+                                                    <option value="KU.03.01.03.02" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03.02' ? 'selected' : '' }}>03.01.03.02 - Dana Darurat</option>
+                                                    <option value="KU.03.01.03.03" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03.03' ? 'selected' : '' }}>03.01.03.03 - Dana Bagi Hasil Pajak dari Provinsi dan Pemerintah Daerah Lainnya</option>
+                                                    <option value="KU.03.01.03.04" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03.04' ? 'selected' : '' }}>03.01.03.04 - Dana Penyesuaian dan Otonomi Khusus</option>
+                                                    <option value="KU.03.01.03.05" {{ old('kategori', $arsip->kategori) == 'KU.03.01.03.05' ? 'selected' : '' }}>03.01.03.05 - Bantuan Keuangan dari Provinsi atau Pemerintah Daerah Lainnya</option>
+
+                                                    <option value="KU.03.02" {{ old('kategori', $arsip->kategori) == 'KU.03.02' ? 'selected' : '' }}>03.02 - Belanja</option>
+                                                    <option value="KU.03.02.01" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01' ? 'selected' : '' }}>03.02.01 - Belanja Operasi</option>
+                                                    <option value="KU.03.02.01.01" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.01' ? 'selected' : '' }}>03.02.01.01 - Belanja Pegawai</option>
+                                                    <option value="KU.03.02.01.02" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.02' ? 'selected' : '' }}>03.02.01.02 - Belanja Barang dan Jasa</option>
+                                                    <option value="KU.03.02.01.03" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.03' ? 'selected' : '' }}>03.02.01.03 - Belanja Bunga</option>
+                                                    <option value="KU.03.02.01.04" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.04' ? 'selected' : '' }}>03.02.01.04 - Belanja Subsidi</option>
+                                                    <option value="KU.03.02.01.05" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.05' ? 'selected' : '' }}>03.02.01.05 - Belanja Hibah</option>
+                                                    <option value="KU.03.02.01.06" {{ old('kategori', $arsip->kategori) == 'KU.03.02.01.06' ? 'selected' : '' }}>03.02.01.06 - Belanja Bantuan Sosial</option>
+                                                    <option value="KU.03.02.02" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02' ? 'selected' : '' }}>03.02.02 - Belanja Modal</option>
+                                                    <option value="KU.03.02.02.01" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.01' ? 'selected' : '' }}>03.02.02.01 - Belanja Tanah</option>
+                                                    <option value="KU.03.02.02.02" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.02' ? 'selected' : '' }}>03.02.02.02 - Belanja Peralatan dan Mesin</option>
+                                                    <option value="KU.03.02.02.03" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.03' ? 'selected' : '' }}>03.02.02.03 - Belanja Gedung dan Bangunan</option>
+                                                    <option value="KU.03.02.02.04" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.04' ? 'selected' : '' }}>03.02.02.04 - Belanja Jalan, Irigasi dan Jaringan</option>
+                                                    <option value="KU.03.02.02.05" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.05' ? 'selected' : '' }}>03.02.02.05 - Belanja Aset Tetap Lainnya</option>
+                                                    <option value="KU.03.02.02.06" {{ old('kategori', $arsip->kategori) == 'KU.03.02.02.06' ? 'selected' : '' }}>03.02.02.06 - Belanja Aset Lainnya</option>
+                                                    <option value="KU.03.02.03" {{ old('kategori', $arsip->kategori) == 'KU.03.02.03' ? 'selected' : '' }}>03.02.03 - Belanja Tak Terduga</option>
+                                                    <option value="KU.03.02.03.01" {{ old('kategori', $arsip->kategori) == 'KU.03.02.03.01' ? 'selected' : '' }}>03.02.03.01 - Belanja Tak Terduga</option>
+
+                                                    <option value="KU.03.03" {{ old('kategori', $arsip->kategori) == 'KU.03.03' ? 'selected' : '' }}>03.03 - Pembiayaan</option>
+                                                    <option value="KU.03.03.01" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01' ? 'selected' : '' }}>03.03.01 - Penerimaan Pembiayaan</option>
+                                                    <option value="KU.03.03.01.01" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.01' ? 'selected' : '' }}>03.03.01.01 - Sisa Lebih Perhitungan Anggaran Tahun Anggaran Sebelumnya</option>
+                                                    <option value="KU.03.03.01.02" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.02' ? 'selected' : '' }}>03.03.01.02 - Pencairan Dana Cadangan</option>
+                                                    <option value="KU.03.03.01.03" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.03' ? 'selected' : '' }}>03.03.01.03 - Hasil Penjualan Kekayaan Daerah yang Dipisahkan</option>
+                                                    <option value="KU.03.03.01.04" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.04' ? 'selected' : '' }}>03.03.01.04 - Penerimaan Pinjaman Daerah</option>
+                                                    <option value="KU.03.03.01.05" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.05' ? 'selected' : '' }}>03.03.01.05 - Penerimaan Kembali Pemberian Pinjaman</option>
+                                                    <option value="KU.03.03.01.06" {{ old('kategori', $arsip->kategori) == 'KU.03.03.01.06' ? 'selected' : '' }}>03.03.01.06 - Penerimaan Piutang Daerah</option>
+                                                    <option value="KU.03.03.02" {{ old('kategori', $arsip->kategori) == 'KU.03.03.02' ? 'selected' : '' }}>03.03.02 - Pengeluaran Pembiayaan</option>
+                                                    <option value="KU.03.03.02.01" {{ old('kategori', $arsip->kategori) == 'KU.03.03.02.01' ? 'selected' : '' }}>03.03.02.01 - Pembentukan Dana Cadangan</option>
+                                                    <option value="KU.03.03.02.02" {{ old('kategori', $arsip->kategori) == 'KU.03.03.02.02' ? 'selected' : '' }}>03.03.02.02 - Penyertaan Modal (Investasi) Pemerintah Daerah</option>
+                                                    <option value="KU.03.03.02.03" {{ old('kategori', $arsip->kategori) == 'KU.03.03.02.03' ? 'selected' : '' }}>03.03.02.03 - Pembayaran Pokok Utang</option>
+                                                    <option value="KU.03.03.02.04" {{ old('kategori', $arsip->kategori) == 'KU.03.03.02.04' ? 'selected' : '' }}>03.03.02.04 - Pemberian Pinjaman Daerah</option>
+
+                                                    <option value="KU.04" {{ old('kategori', $arsip->kategori) == 'KU.04' ? 'selected' : '' }}>04 - Dokumen Penerimaan Lain-Lain Pendapatan yang Sah</option>
+                                                    <option value="KU.04.01" {{ old('kategori', $arsip->kategori) == 'KU.04.01' ? 'selected' : '' }}>04.01 - Bukti Penerimaan Pembiayaan</option>
+                                                    <option value="KU.04.01.01" {{ old('kategori', $arsip->kategori) == 'KU.04.01.01' ? 'selected' : '' }}>04.01.01 - SiLPA</option>
+                                                    <option value="KU.04.01.02" {{ old('kategori', $arsip->kategori) == 'KU.04.01.02' ? 'selected' : '' }}>04.01.02 - Dana Cadangan</option>
+                                                    <option value="KU.04.01.03" {{ old('kategori', $arsip->kategori) == 'KU.04.01.03' ? 'selected' : '' }}>04.01.03 - Dana Berguir</option>
+                                                    <option value="KU.04.01.04" {{ old('kategori', $arsip->kategori) == 'KU.04.01.04' ? 'selected' : '' }}>04.01.04 - Pinjaman Daerah</option>
+                                                    <option value="KU.04.01.05" {{ old('kategori', $arsip->kategori) == 'KU.04.01.05' ? 'selected' : '' }}>04.01.05 - Pengalihan Piutang PBB P2 menjadi PAD</option>
+                                                    <option value="KU.04.02" {{ old('kategori', $arsip->kategori) == 'KU.04.02' ? 'selected' : '' }}>04.02 - Bukti Pengeluaran Pembiayaan</option>
+                                                    <option value="KU.04.02.01" {{ old('kategori', $arsip->kategori) == 'KU.04.02.01' ? 'selected' : '' }}>04.02.01 - Investasi Jangka Panjang dalam Bentuk Dana Berguir</option>
+                                                    <option value="KU.04.02.02" {{ old('kategori', $arsip->kategori) == 'KU.04.02.02' ? 'selected' : '' }}>04.02.02 - Penyertaan Modal pada BUMD</option>
+                                                    <option value="KU.04.02.03" {{ old('kategori', $arsip->kategori) == 'KU.04.02.03' ? 'selected' : '' }}>04.02.03 - Penambahan Penyertaan Modal pada BUMD</option>
+                                                    <option value="KU.04.02.04" {{ old('kategori', $arsip->kategori) == 'KU.04.02.04' ? 'selected' : '' }}>04.02.04 - Pengeluaran dari Dana Cadangan</option>
+                                                    <option value="KU.04.02.05" {{ old('kategori', $arsip->kategori) == 'KU.04.02.05' ? 'selected' : '' }}>04.02.05 - Pembiayaan bagi Usaha Masyarakat Kecil dan Menengah (UMKM)</option>
+                                                    <option value="KU.04.02.06" {{ old('kategori', $arsip->kategori) == 'KU.04.02.06' ? 'selected' : '' }}>04.02.06 - Penyertaan Modal pada Bank Perkreditan Rakyat (BPR) milik Pemerintah Daerah</option>
+
+                                                    <option value="KU.05" {{ old('kategori', $arsip->kategori) == 'KU.05' ? 'selected' : '' }}>05 - Dokumen Penatausahaan Keuangan</option>
+                                                    <option value="KU.05.01" {{ old('kategori', $arsip->kategori) == 'KU.05.01' ? 'selected' : '' }}>05.01 - Surat Penyediaan Dana (SPD)</option>
+                                                    <option value="KU.05.02" {{ old('kategori', $arsip->kategori) == 'KU.05.02' ? 'selected' : '' }}>05.02 - Surat Permohonan Pembayaran (SPP)</option>
+                                                    <option value="KU.05.03" {{ old('kategori', $arsip->kategori) == 'KU.05.03' ? 'selected' : '' }}>05.03 - Surat Perintah Membayar (SPM)</option>
+                                                    <option value="KU.05.04" {{ old('kategori', $arsip->kategori) == 'KU.05.04' ? 'selected' : '' }}>05.04 - Surat Perintah Pencairan Dana (SP2D)</option>
+
+                                                    <option value="KU.06" {{ old('kategori', $arsip->kategori) == 'KU.06' ? 'selected' : '' }}>06 - Pertanggungjawaban Penggunaan Dana</option>
+                                                    <option value="KU.06.01" {{ old('kategori', $arsip->kategori) == 'KU.06.01' ? 'selected' : '' }}>06.01 - Buku Kas Umum (BKU)</option>
+                                                    <option value="KU.06.02" {{ old('kategori', $arsip->kategori) == 'KU.06.02' ? 'selected' : '' }}>06.02 - Buku Kas Pembantu (BKP)</option>
+                                                    <option value="KU.06.03" {{ old('kategori', $arsip->kategori) == 'KU.06.03' ? 'selected' : '' }}>06.03 - Ringkasan Perincian Pengeluaran Objek</option>
+                                                    <option value="KU.06.04" {{ old('kategori', $arsip->kategori) == 'KU.06.04' ? 'selected' : '' }}>06.04 - Rekening Koran Bank</option>
+                                                    <option value="KU.06.05" {{ old('kategori', $arsip->kategori) == 'KU.06.05' ? 'selected' : '' }}>06.05 - Pertanggungjawaban Fungsionalitas dan Administrasi</option>
+                                                    <option value="KU.06.06" {{ old('kategori', $arsip->kategori) == 'KU.06.06' ? 'selected' : '' }}>06.06 - Bukti Penyetoran Pajak</option>
+                                                    <option value="KU.06.07" {{ old('kategori', $arsip->kategori) == 'KU.06.07' ? 'selected' : '' }}>06.07 - Register Penutupan Kas</option>
+                                                    <option value="KU.06.08" {{ old('kategori', $arsip->kategori) == 'KU.06.08' ? 'selected' : '' }}>06.08 - Berita Acara Pemeriksaan</option>
+                                                    <option value="KU.06.09" {{ old('kategori', $arsip->kategori) == 'KU.06.09' ? 'selected' : '' }}>06.09 - Laporan Realisasi Anggaran (LRA), Neraca, Laporan Operasional (LO), Laporan Perubahan Ekuitas (LPE), Catatan Atas Laporan Keuangan (CaLK), Arsip Data Komputer (ADK)</option>
+                                                    <option value="KU.06.10" {{ old('kategori', $arsip->kategori) == 'KU.06.10' ? 'selected' : '' }}>06.10 - Laporan Pendapatan Daerah</option>
+                                                    <option value="KU.06.11" {{ old('kategori', $arsip->kategori) == 'KU.06.11' ? 'selected' : '' }}>06.11 - Laporan Keadaan Kredit Anggaran</option>
+                                                    <option value="KU.06.12" {{ old('kategori', $arsip->kategori) == 'KU.06.12' ? 'selected' : '' }}>06.12 - Laporan Realisasi Anggaran, Laporan Operasional, Neraca Bulanan/Triwulan/Semesteran</option>
+                                                    <option value="KU.06.13" {{ old('kategori', $arsip->kategori) == 'KU.06.13' ? 'selected' : '' }}>06.13 - Berita Acara Rekonsiliasi Data Realisasi Pendapatan Daerah</option>
+                                                    <option value="KU.06.14" {{ old('kategori', $arsip->kategori) == 'KU.06.14' ? 'selected' : '' }}>06.14 - Berita Acara Rekonsiliasi Data Realisasi Belanja Daerah dan Pembiayaan Daerah</option>
+
+                                                    <option value="KU.07" {{ old('kategori', $arsip->kategori) == 'KU.07' ? 'selected' : '' }}>07 - Daftar Gaji</option>
+                                                    <option value="KU.08" {{ old('kategori', $arsip->kategori) == 'KU.08' ? 'selected' : '' }}>08 - Kartu Gaji</option>
+                                                    <option value="KU.09" {{ old('kategori', $arsip->kategori) == 'KU.09' ? 'selected' : '' }}>09 - Data Rekening Bendahara Umum Daerah (BUD)</option>
+
+                                                    <option value="KU.10" {{ old('kategori', $arsip->kategori) == 'KU.10' ? 'selected' : '' }}>10 - Laporan Keuangan Tahunan</option>
+                                                    <option value="KU.10.01" {{ old('kategori', $arsip->kategori) == 'KU.10.01' ? 'selected' : '' }}>10.01 - Laporan Realisasi Anggaran (LRA)</option>
+                                                    <option value="KU.10.02" {{ old('kategori', $arsip->kategori) == 'KU.10.02' ? 'selected' : '' }}>10.02 - Laporan Perubahan Saldo Anggaran Lebih (LP-SAL)</option>
+                                                    <option value="KU.10.03" {{ old('kategori', $arsip->kategori) == 'KU.10.03' ? 'selected' : '' }}>10.03 - Neraca</option>
+                                                    <option value="KU.10.04" {{ old('kategori', $arsip->kategori) == 'KU.10.04' ? 'selected' : '' }}>10.04 - Laporan Operasional (LO)</option>
+                                                    <option value="KU.10.05" {{ old('kategori', $arsip->kategori) == 'KU.10.05' ? 'selected' : '' }}>10.05 - Laporan Arus Kas (LAK)</option>
+                                                    <option value="KU.10.06" {{ old('kategori', $arsip->kategori) == 'KU.10.06' ? 'selected' : '' }}>10.06 - Laporan Perubahan Ekuitas (LPE)</option>
+                                                    <option value="KU.10.07" {{ old('kategori', $arsip->kategori) == 'KU.10.07' ? 'selected' : '' }}>10.07 - Catatan Atas Laporan Keuangan (CaLK)</option>
+
+                                                    <option value="KU.11" {{ old('kategori', $arsip->kategori) == 'KU.11' ? 'selected' : '' }}>11 - Bantuan/Pinjaman Luar Negeri</option>
+                                                    <option value="KU.11.01" {{ old('kategori', $arsip->kategori) == 'KU.11.01' ? 'selected' : '' }}>11.01 - Permohonan Pinjaman Luar Negeri (Blue Book)</option>
+                                                    <option value="KU.11.02" {{ old('kategori', $arsip->kategori) == 'KU.11.02' ? 'selected' : '' }}>11.02 - Dokumen Kesanggupan Negara Donor untuk Membiayai (Green Book)</option>
+                                                    <option value="KU.11.03" {{ old('kategori', $arsip->kategori) == 'KU.11.03' ? 'selected' : '' }}>11.03 - Dokumen Memorandum of Understanding (MoU), dan Dokumen Sejenisnya</option>
+                                                    <option value="KU.11.04" {{ old('kategori', $arsip->kategori) == 'KU.11.04' ? 'selected' : '' }}>11.04 - Dokumen Loan Agreement (PLHN) seperti Draft Agreement, Legal Opinion, Surat Menyurat dengan Lender</option>
+                                                    <option value="KU.11.05" {{ old('kategori', $arsip->kategori) == 'KU.11.05' ? 'selected' : '' }}>11.05 - Alokasi dan Relokasi Penggunaan Dana Luar Negeri, antara lain Usulan Luncuran Dana</option>
+                                                    <option value="KU.11.06" {{ old('kategori', $arsip->kategori) == 'KU.11.06' ? 'selected' : '' }}>11.06 - Aplikasi Penarikan Dana Bantuan Luar Negeri berikut Lampirannya</option>
+                                                    <option value="KU.11.06.01" {{ old('kategori', $arsip->kategori) == 'KU.11.06.01' ? 'selected' : '' }}>11.06.01 - Reimbursement</option>
+                                                    <option value="KU.11.06.02" {{ old('kategori', $arsip->kategori) == 'KU.11.06.02' ? 'selected' : '' }}>11.06.02 - Direct Payment/Transfer Procedure</option>
+                                                    <option value="KU.11.06.03" {{ old('kategori', $arsip->kategori) == 'KU.11.06.03' ? 'selected' : '' }}>11.06.03 - Special Commitment/L/C Opening</option>
+                                                    <option value="KU.11.06.04" {{ old('kategori', $arsip->kategori) == 'KU.11.06.04' ? 'selected' : '' }}>11.06.04 - Special Account/Impress Fund</option>
+                                                    <option value="KU.11.07" {{ old('kategori', $arsip->kategori) == 'KU.11.07' ? 'selected' : '' }}>11.07 - Dokumen Otorisasi Penarikan Dana (Payment Advice)</option>
+                                                    <option value="KU.11.08" {{ old('kategori', $arsip->kategori) == 'KU.11.08' ? 'selected' : '' }}>11.08 - Dokumen Realisasi Pencairan Dana Bantuan Luar Negeri, yaitu: Surat Perintah Pencairan Dana, SPM beserta lampirannya, antara lain SPP, Kontrak, BA, dan Data Pendukung Lainnya</option>
+                                                    <option value="KU.11.09" {{ old('kategori', $arsip->kategori) == 'KU.11.09' ? 'selected' : '' }}>11.09 - Replenishment (Permintaan Penarikan Dana dari Negara Donor) meliputi antara lain No Object Letter (NOL), Project Implementation, Notification of Contract, Withdrawal Authorization (WA), Statement of Expenditure (SE)</option>
+                                                    <option value="KU.11.10" {{ old('kategori', $arsip->kategori) == 'KU.11.10' ? 'selected' : '' }}>11.10 - Staff Appraisal Report</option>
+                                                    <option value="KU.11.11" {{ old('kategori', $arsip->kategori) == 'KU.11.11' ? 'selected' : '' }}>11.11 - Report/Laporan yang terdiri dari</option>
+                                                    <option value="KU.11.11.01" {{ old('kategori', $arsip->kategori) == 'KU.11.11.01' ? 'selected' : '' }}>11.11.01 - Progress Report</option>
+                                                    <option value="KU.11.11.02" {{ old('kategori', $arsip->kategori) == 'KU.11.11.02' ? 'selected' : '' }}>11.11.02 - Monthly Report</option>
+                                                    <option value="KU.11.11.03" {{ old('kategori', $arsip->kategori) == 'KU.11.11.03' ? 'selected' : '' }}>11.11.03 - Quarterly Report</option>
+                                                    <option value="KU.11.12" {{ old('kategori', $arsip->kategori) == 'KU.11.12' ? 'selected' : '' }}>11.12 - Laporan Hutang Daerah</option>
+                                                    <option value="KU.11.12.01" {{ old('kategori', $arsip->kategori) == 'KU.11.12.01' ? 'selected' : '' }}>11.12.01 - Laporan Pembayaran Hutang Daerah</option>
+                                                    <option value="KU.11.12.02" {{ old('kategori', $arsip->kategori) == 'KU.11.12.02' ? 'selected' : '' }}>11.12.02 - Laporan Posisi Hutang Daerah</option>
+                                                    <option value="KU.11.13" {{ old('kategori', $arsip->kategori) == 'KU.11.13' ? 'selected' : '' }}>11.13 - Completion Report/Annual Report</option>
+                                                    <option value="KU.11.14" {{ old('kategori', $arsip->kategori) == 'KU.11.14' ? 'selected' : '' }}>11.14 - Ketentuan/Peraturan yang Menyangkut Bantuan/Pinjaman Luar Negeri</option>
+
+                                                    <option value="KU.12" {{ old('kategori', $arsip->kategori) == 'KU.12' ? 'selected' : '' }}>12 - Pengelolaan APBD/Dana Pinjaman/Hibah Luar Negeri (PHLN)</option>
+                                                    <option value="KU.12.01" {{ old('kategori', $arsip->kategori) == 'KU.12.01' ? 'selected' : '' }}>12.01 - Keputusan Kepala Daerah tentang Penetapan</option>
+                                                    <option value="KU.12.01.01" {{ old('kategori', $arsip->kategori) == 'KU.12.01.01' ? 'selected' : '' }}>12.01.01 - Kuasa Penggunaan Anggaran</option>
+                                                    <option value="KU.12.01.02" {{ old('kategori', $arsip->kategori) == 'KU.12.01.02' ? 'selected' : '' }}>12.01.02 - Kuasa Pengguna Barang/Jasa</option>
+                                                    <option value="KU.12.01.03" {{ old('kategori', $arsip->kategori) == 'KU.12.01.03' ? 'selected' : '' }}>12.01.03 - Pejabat Pembuat Komitmen</option>
+                                                    <option value="KU.12.01.04" {{ old('kategori', $arsip->kategori) == 'KU.12.01.04' ? 'selected' : '' }}>12.01.04 - Pejabat Pembuat Daftar Gaji</option>
+                                                    <option value="KU.12.01.05" {{ old('kategori', $arsip->kategori) == 'KU.12.01.05' ? 'selected' : '' }}>12.01.05 - Pejabat Penandatanganan SPM</option>
+                                                    <option value="KU.12.01.06" {{ old('kategori', $arsip->kategori) == 'KU.12.01.06' ? 'selected' : '' }}>12.01.06 - Bendahara Penerimaan/Pengeluaran</option>
+                                                    <option value="KU.12.01.07" {{ old('kategori', $arsip->kategori) == 'KU.12.01.07' ? 'selected' : '' }}>12.01.07 - Pengelola Barang</option>
+                                                    <option value="KU.12.01.08" {{ old('kategori', $arsip->kategori) == 'KU.12.01.08' ? 'selected' : '' }}>12.01.08 - Berita Acara Serah Terima Jabatan</option>
+
+                                                    <option value="KU.13" {{ old('kategori', $arsip->kategori) == 'KU.13' ? 'selected' : '' }}>13 - Akuntansi Pemerintah Daerah</option>
+                                                    <option value="KU.13.01" {{ old('kategori', $arsip->kategori) == 'KU.13.01' ? 'selected' : '' }}>13.01 - Kebijakan Akuntansi Pemerintah Daerah</option>
+                                                    <option value="KU.13.02" {{ old('kategori', $arsip->kategori) == 'KU.13.02' ? 'selected' : '' }}>13.02 - Sistem Akuntansi Pemerintah Daerah</option>
+                                                    <option value="KU.13.03" {{ old('kategori', $arsip->kategori) == 'KU.13.03' ? 'selected' : '' }}>13.03 - Bagan Akun Standar</option>
+                                                    <option value="KU.13.04" {{ old('kategori', $arsip->kategori) == 'KU.13.04' ? 'selected' : '' }}>13.04 - Arsip Data Komputer</option>
+
+                                                    <option value="KU.14" {{ old('kategori', $arsip->kategori) == 'KU.14' ? 'selected' : '' }}>14 - Penyaluran Anggaran Tugas Pembantuan</option>
+                                                    <option value="KU.14.01" {{ old('kategori', $arsip->kategori) == 'KU.14.01' ? 'selected' : '' }}>14.01 - Penetapan Pemimpin Proyek/Bagian Proyek, Bendahara, atas Penggunaan Anggaran Kegiatan Pembantuan, termasuk Specimen Tanda Tangan</option>
+                                                    <option value="KU.14.02" {{ old('kategori', $arsip->kategori) == 'KU.14.02' ? 'selected' : '' }}>14.02 - Berkas Permintaan Pembayaran (SPP) dan lampirannya:</option>
+                                                    <option value="KU.14.02.01" {{ old('kategori', $arsip->kategori) == 'KU.14.02.01' ? 'selected' : '' }}>14.02.01 - SPP-SPP-Daftar Perincian Penggunaan SPPR-SPDR-L, SPM-LS, SPM-DUA, Bilyet giro, SPM Nihil</option>
+                                                    <option value="KU.14.02.02" {{ old('kategori', $arsip->kategori) == 'KU.14.02.02' ? 'selected' : '' }}>14.02.02 - Penagihan/Invoice, Faktur Pajak, Bukti Penerimaan Kas/Bank beserta Bukti Pendukungnya antara lain Copy Faktur Pajak dan Nota Kredit Bank</option>
+                                                    <option value="KU.14.02.03" {{ old('kategori', $arsip->kategori) == 'KU.14.02.03' ? 'selected' : '' }}>14.02.03 - Permintaan Pelayanan Jasa/Service Report dan Berita Acara Penyelesaian Pekerjaan</option>
+                                                    <option value="KU.14.03" {{ old('kategori', $arsip->kategori) == 'KU.14.03' ? 'selected' : '' }}>14.03 - Buku Rekening Bank</option>
+                                                    <option value="KU.14.04" {{ old('kategori', $arsip->kategori) == 'KU.14.04' ? 'selected' : '' }}>14.04 - Keputusan Pembukuan Rekening</option>
+                                                    <option value="KU.14.05" {{ old('kategori', $arsip->kategori) == 'KU.14.05' ? 'selected' : '' }}>14.05 - Pembukuan Anggaran terdiri dari:</option>
+                                                    <option value="KU.14.05.01" {{ old('kategori', $arsip->kategori) == 'KU.14.05.01' ? 'selected' : '' }}>14.05.01 - Buku Kas Umum (BKU)</option>
+                                                    <option value="KU.14.05.02" {{ old('kategori', $arsip->kategori) == 'KU.14.05.02' ? 'selected' : '' }}>14.05.02 - Buku Kas Pembantu</option>
+                                                    <option value="KU.14.05.03" {{ old('kategori', $arsip->kategori) == 'KU.14.05.03' ? 'selected' : '' }}>14.05.03 - Register dan Buku Tambahan</option>
+                                                    <option value="KU.14.05.04" {{ old('kategori', $arsip->kategori) == 'KU.14.05.04' ? 'selected' : '' }}>14.05.04 - Daftar Pembukuan Selama Rekening masih aktif</option>
+                                                    <option value="KU.14.05.05" {{ old('kategori', $arsip->kategori) == 'KU.14.05.05' ? 'selected' : '' }}>14.05.05 - Pencairan/Pengeluaran (DPP)</option>
+                                                    <option value="KU.14.05.06" {{ old('kategori', $arsip->kategori) == 'KU.14.05.06' ? 'selected' : '' }}>14.05.06 - Daftar Pembukuan Pencairan/Pengeluaran (DPP)</option>
+                                                    <option value="KU.14.05.07" {{ old('kategori', $arsip->kategori) == 'KU.14.05.07' ? 'selected' : '' }}>14.05.07 - Daftar Himpunan Pencairan (DHIP)</option>
+                                                    <option value="KU.14.05.08" {{ old('kategori', $arsip->kategori) == 'KU.14.05.08' ? 'selected' : '' }}>14.05.08 - Rekening Koran</option>
+
+                                                    <option value="KU.15" {{ old('kategori', $arsip->kategori) == 'KU.15' ? 'selected' : '' }}>15 - Penerimaan Anggaran Tugas Pembantuan</option>
+                                                    <option value="KU.15.01" {{ old('kategori', $arsip->kategori) == 'KU.15.01' ? 'selected' : '' }}>15.01 - Berkas Penerimaan Keuangan Pelaksanaan dan Tugas Pembantuan Termasuk Dana Sisa atau Pengeluaran Lainnya</option>
+                                                    <option value="KU.15.02" {{ old('kategori', $arsip->kategori) == 'KU.15.02' ? 'selected' : '' }}>15.02 - Berkas Penerimaan Pajak termasuk PPh 21, PPh 22, PPh 23, dan PPn, dan Denda Keterlambatan Menyelesaikan Pekerjaan</option>
+
+                                                    <option value="KU.16" {{ old('kategori', $arsip->kategori) == 'KU.16' ? 'selected' : '' }}>16 - Pengelolaan Anggaran Pemilu</option>
+                                                    <option value="KU.16.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01' ? 'selected' : '' }}>16.01 - Penyusunan Anggaran Pilkada dan Biaya Bantuan Pemilu dari APBD</option>
+                                                    <option value="KU.16.01.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.01' ? 'selected' : '' }}>16.01.01 - Kebijakan Keuangan Pilkada dan Penyusunan Anggaran Bantuan Pemilu</option>
+                                                    <option value="KU.16.01.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.02' ? 'selected' : '' }}>16.01.02 - Peraturan/Pedoman/Standar Belanja Pegawai, Barang dan Jasa, Operasional dan Kontingensi untuk Biaya Pilkada dan Bantuan Pemilu</option>
+                                                    <option value="KU.16.01.03" {{ old('kategori', $arsip->kategori) == 'KU.16.01.03' ? 'selected' : '' }}>16.01.03 - Bahan Usulan Rencana Kegiatan dan Anggaran (RKA) Pilkada KPUD dan Panitia Pengawas Daerah Provinsi, PPK, PPS, KPPS dan Permohonan Pengajuan RKA KPUD dan Panitia Pengawas</option>
+                                                    <option value="KU.16.01.04" {{ old('kategori', $arsip->kategori) == 'KU.16.01.04' ? 'selected' : '' }}>16.01.04 - Berkas Pembahasan RKA Pilkada dan Bantuan Pemilu</option>
+                                                    <option value="KU.16.01.05" {{ old('kategori', $arsip->kategori) == 'KU.16.01.05' ? 'selected' : '' }}>16.01.05 - Rencana Anggaran Satuan Kerja (RASK) Pilkada dan Bantuan Pemilu Provinsi</option>
+                                                    <option value="KU.16.01.06" {{ old('kategori', $arsip->kategori) == 'KU.16.01.06' ? 'selected' : '' }}>16.01.06 - Dokumen Rancangan Anggaran Satuan Kerja (DRASK) Pilkada KPUD dan Panitia Pengawas Provinsi dan Bantuan Biaya Pemilu dari APBD</option>
+                                                    <option value="KU.16.01.07" {{ old('kategori', $arsip->kategori) == 'KU.16.01.07' ? 'selected' : '' }}>16.01.07 - Berkas Pembentukan Dana Cadangan Pilkada</option>
+                                                    <option value="KU.16.01.08" {{ old('kategori', $arsip->kategori) == 'KU.16.01.08' ? 'selected' : '' }}>16.01.08 - Bahan Rapat Rancangan Peraturan Daerah tentang Pilkada, dan Bantuan Biaya Pemilu dari APBD</option>
+                                                    <option value="KU.16.01.09" {{ old('kategori', $arsip->kategori) == 'KU.16.01.09' ? 'selected' : '' }}>16.01.09 - Nota Persetujuan DPRD tentang Peraturan Daerah Pilkada dan Bantuan Biaya Pemilu dari APBD</option>
+                                                    <option value="KU.16.01.10" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10' ? 'selected' : '' }}>16.01.10 - Pelaksanaan Anggaran Pilkada dan Anggaran Biaya Bantuan Pemilu</option>
+                                                    <option value="KU.16.01.10.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10.01' ? 'selected' : '' }}>16.01.10.01 - Berkas Penetapan Bendahara dan Atasan Langsung Bendahara KPUD, Bendahara Panitia Pengawas Daerah dan Bendahara pada Panitia Pilkada dan Pemilu</option>
+                                                    <option value="KU.16.01.10.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10.02' ? 'selected' : '' }}>16.01.10.02 - Berkas Penerimaan Komisi, Rabat Pembayaran Pengadaan Jasa, Bunga, Pelaksanaan Pilkada/Pemilu</option>
+                                                    <option value="KU.16.01.10.03" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10.03' ? 'selected' : '' }}>16.01.10.03 - Berkas Setor Sisa Dana Pilkada/Pemilu</option>
+                                                    <option value="KU.16.01.10.04" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10.04' ? 'selected' : '' }}>16.01.10.04 - Berkas Penyaluran Biaya Pemilu Termasuk Di antaranya Bukti Transfer Bank</option>
+                                                    <option value="KU.16.01.10.05" {{ old('kategori', $arsip->kategori) == 'KU.16.01.10.05' ? 'selected' : '' }}>16.01.10.05 - Pedoman Dokumen Penyediaan Pembiayaan Kegiatan Operasional (PPKO) Pemilu Termasuk Perubahan/Pergeseran/Revisinya</option>
+                                                    <option value="KU.16.01.11" {{ old('kategori', $arsip->kategori) == 'KU.16.01.11' ? 'selected' : '' }}>16.01.11 - Pelaksanaan Anggaran Operasional Pemilu</option>
+                                                    <option value="KU.16.01.11.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.11.01' ? 'selected' : '' }}>16.01.11.01 - Dokumen Penyediaan Pembiayaan Kegiatan Operasional (PPKO) Pemilu termasuk Perubahan/Pergeseran/Revisinya</option>
+                                                    <option value="KU.16.01.11.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.11.02' ? 'selected' : '' }}>16.01.11.02 - Berkas Penetapan Bendahara dan Atasan Langsung Bendahara KPUD Provinsi, Panitia Pengawas Daerah dan Pemegang Uang Muka Cabang (PUMC) PPK dan Panitia Pengawas</option>
+                                                    <option value="KU.16.01.11.03" {{ old('kategori', $arsip->kategori) == 'KU.16.01.11.03' ? 'selected' : '' }}>16.01.11.03 - Berkas Penyaluran Biaya Pemilu ke PPK, PPS, dan KPPS Termasuk di antaranya Bukti Transfer Bank</option>
+                                                    <option value="KU.16.01.12" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12' ? 'selected' : '' }}>16.01.12 - Pemeriksaan/ Pengawasan Keuangan Daerah</option>
+                                                    <option value="KU.16.01.12.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.01' ? 'selected' : '' }}>16.01.12.01 - Laporan Hasil Pemeriksaan Badan Pemeriksa Keuangan</option>
+                                                    <option value="KU.16.01.12.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.02' ? 'selected' : '' }}>16.01.12.02 - Hasil Pengawasan dan Pemeriksaan Internal</option>
+                                                    <option value="KU.16.01.12.03" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.03' ? 'selected' : '' }}>16.01.12.03 - Laporan Aparat Pemeriksaan Fungsional</option>
+                                                    <option value="KU.16.01.12.03.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.03.01' ? 'selected' : '' }}>16.01.12.03.01 - LHP (Laporan Hasil Pemeriksaan)</option>
+                                                    <option value="KU.16.01.12.03.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.03.02' ? 'selected' : '' }}>16.01.12.03.02 - MHP (Memorandum Hasil Pemeriksaan)</option>
+                                                    <option value="KU.16.01.12.03.03" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.03.03' ? 'selected' : '' }}>16.01.12.03.03 - Tindak Lanjut/Tanggapan LHP</option>
+                                                    <option value="KU.16.01.12.04" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.04' ? 'selected' : '' }}>16.01.12.04 - Dokumen Penyelesaian Kerugian Daerah</option>
+                                                    <option value="KU.16.01.12.04.01" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.04.01' ? 'selected' : '' }}>16.01.12.04.01 - Tuntutan Perbendaharaan</option>
+                                                    <option value="KU.16.01.12.04.02" {{ old('kategori', $arsip->kategori) == 'KU.16.01.12.04.02' ? 'selected' : '' }}>16.01.12.04.02 - Tuntutan Ganti Rugi</option>
+
+                                                    <option value="KU.17" {{ old('kategori', $arsip->kategori) == 'KU.17' ? 'selected' : '' }}>17 - Pengadaan Barang/Jasa</option>
+                                                    <option value="KU.17.01" {{ old('kategori', $arsip->kategori) == 'KU.17.01' ? 'selected' : '' }}>17.01 - Rencana Umum Pengadaan (RUP)</option>
+                                                    <option value="KU.17.02" {{ old('kategori', $arsip->kategori) == 'KU.17.02' ? 'selected' : '' }}>17.02 - Pelaksanaan Pengadaan</option>
+                                                    <option value="KU.17.02.01" {{ old('kategori', $arsip->kategori) == 'KU.17.02.01' ? 'selected' : '' }}>17.02.01 - Swakelola</option>
+                                                    <option value="KU.17.02.02" {{ old('kategori', $arsip->kategori) == 'KU.17.02.02' ? 'selected' : '' }}>17.02.02 - Pengadaan Langsung</option>
+                                                    <option value="KU.17.02.03" {{ old('kategori', $arsip->kategori) == 'KU.17.02.03' ? 'selected' : '' }}>17.02.03 - Penunjukan Langsung</option>
+                                                    <option value="KU.17.02.04" {{ old('kategori', $arsip->kategori) == 'KU.17.02.04' ? 'selected' : '' }}>17.02.04 - Tender</option>
+                                                    <option value="KU.17.02.05" {{ old('kategori', $arsip->kategori) == 'KU.17.02.05' ? 'selected' : '' }}>17.02.05 - E-Purchasing</option>
+                                                    <option value="KU.17.03" {{ old('kategori', $arsip->kategori) == 'KU.17.03' ? 'selected' : '' }}>17.03 - Laporan Pengadaan Barang/Jasa</option>
+
+                                                    </optgroup>
+
                                                 <!-- Traditional categories (maintaining backward compatibility) -->
                                                 <optgroup label="Kategori Tradisional">
                                                     <option value="Surat Masuk" {{ old('kategori', $arsip->kategori) == 'Surat Masuk' ? 'selected' : '' }}>Surat Masuk</option>

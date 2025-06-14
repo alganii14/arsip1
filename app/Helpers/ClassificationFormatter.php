@@ -416,6 +416,354 @@ class ClassificationFormatter
                 elseif ($subCode1 == '03') $description .= ' - Telekomunikasi';
             }
         }
+        // Handle KU (Keuangan) classification
+        elseif (strpos($code, 'KU.') === 0) {
+            $parts = explode('.', $code);
+            $mainCode = isset($parts[1]) ? $parts[1] : null;
+            $subCode1 = isset($parts[2]) ? $parts[2] : null;
+            $subCode2 = isset($parts[3]) ? $parts[3] : null;
+            $subCode3 = isset($parts[4]) ? $parts[4] : null;
+
+            if ($mainCode == '01') {
+                $description = 'Rencana Anggaran Pendapatan dan Belanja Daerah, dan Anggaran Pendapatan dan Belanja Daerah Perubahan';
+                if ($subCode1 == '01') {
+                    $description .= ' - Penyusunan Prioritas Plafon Anggaran';
+                    if ($subCode2 == '01') $description .= ' - Kebijakan Umum, Strategi, Prioritas dan Renstra';
+                    elseif ($subCode2 == '02') $description .= ' - Dokumen Rancangan kebijakan Umum Anggaran (KUA) yang telah dibahas bersama antara DPRD dan Pemerintah Daerah';
+                    elseif ($subCode2 == '03') $description .= ' - KUA beserta Nota Kesepakatannya';
+                    elseif ($subCode2 == '04') $description .= ' - Dokumen Rancangan Prioritas Plafon Anggaran Sementara (PPAS)';
+                    elseif ($subCode2 == '05') $description .= ' - Nota Kesepakatan PPA';
+                    elseif ($subCode2 == '06') $description .= ' - Prioritas Plafon Anggaran';
+                }
+                elseif ($subCode1 == '02') {
+                    $description .= ' - Penyusunan Rencana Kerja Anggaran Satuan Kerja Perangkat Daerah (RKA-SKPD)';
+                    if ($subCode2 == '01') $description .= ' - Dokumen Pedoman Penyusunan RKA-SKPD yang telah disetujui Sekretaris Daerah';
+                    elseif ($subCode2 == '02') $description .= ' - Dokumen RKA-SKPD';
+                }
+                elseif ($subCode1 == '03') {
+                    $description .= ' - Penyampaian Rancangan Anggaran Pendapatan dan Belanja Daerah kepada Dewan Perwakilan Rakyat Daerah';
+                    if ($subCode2 == '01') $description .= ' - Pengantar Nota Keuangan Pemerintah dan Rancangan Peraturan Daerah APBD';
+                    elseif ($subCode2 == '02') $description .= ' - Hasil Pembahasan Rancangan Anggaran Pendapatan dan Belanja Daerah (RAPBD) oleh Dewan Perwakilan Rakyat Daerah (DPRD) dan Pemerintah Daerah';
+                    elseif ($subCode2 == '03') $description .= ' - Dokumen Persetujuan Evaluasi kepada Gubernur tentang Rancangan Peraturan Daerah APBD Perubahan';
+                    elseif ($subCode2 == '04') $description .= ' - Dokumen Rancangan Penjabaran APBD beserta Lampirannya';
+                    elseif ($subCode2 == '05') $description .= ' - Penyampaian Permohonan Evaluasi kepada Gubernur tentang RAPBD beserta penjabarannya';
+                    elseif ($subCode2 == '06') $description .= ' - Hasil Evaluasi Gubernur tentang RAPBD';
+                    elseif ($subCode2 == '07') $description .= ' - Penetapan Peraturan Daerah APBD oleh Wali Kota';
+                    elseif ($subCode2 == '08') $description .= ' - Peraturan Daerah tentang APBD';
+                }
+                elseif ($subCode1 == '04') {
+                    $description .= ' - Anggaran Pendapatan dan Belanja Daerah Perubahan (RAPBD-P)';
+                    if ($subCode2 == '01') $description .= ' - Kebijakan Umum, Strategi, Prioritas, dan Renstra';
+                    elseif ($subCode2 == '02') $description .= ' - Dokumen Rancangan Kebijakan Umum Anggaran (KUA) yang telah dibahas bersama antara DPRD dan Pemerintah Daerah';
+                    elseif ($subCode2 == '03') $description .= ' - KUA Perubahan beserta Nota Kesepakatannya';
+                    elseif ($subCode2 == '04') $description .= ' - Dokumen Rancangan Prioritas Plafon Anggaran Sementara (PPAS) Perubahan';
+                    elseif ($subCode2 == '05') $description .= ' - Nota Kesepakatan Prioritas Plafon Anggaran';
+                    elseif ($subCode2 == '06') $description .= ' - Prioritas Plafon Anggaran Perubahan';
+                }
+                elseif ($subCode1 == '05') {
+                    $description .= ' - Penyusunan Rencana Kerja Anggaran Satuan Kerja Perangkat Daerah (RKA-SKPD) Perubahan';
+                    if ($subCode2 == '01') $description .= ' - Dokumen Pedoman Penyusunan RKA-SKPD Perubahan yang telah disetujui Sekretaris Daerah';
+                    elseif ($subCode2 == '02') $description .= ' - Dokumen RKA-SKPD Perubahan';
+                }
+                elseif ($subCode1 == '06') {
+                    $description .= ' - Penyampaian Rancangan Anggaran Pendapatan dan Belanja Daerah Perubahan kepada Dewan Perwakilan Rakyat Daerah (DPRD)';
+                    if ($subCode2 == '01') $description .= ' - Pengantar Nota Keuangan Pemerintah dan Rancangan Peraturan Daerah RAPBD Perubahan, Nota Keuangan Pemerintah dan Materi RAPBD Perubahan';
+                    elseif ($subCode2 == '02') $description .= ' - Hasil Pembahasan Rencana Anggaran Pendapatan dan Belanja Daerah (RAPBD) Perubahan oleh Dewan Perwakilan Rakyat Daerah (DPRD) dan Pemerintah Daerah';
+                    elseif ($subCode2 == '03') $description .= ' - Dokumen Persetujuan Bersama antara DPRD dan Kepala Daerah tentang Rancangan Peraturan Daerah APBD Perubahan';
+                    elseif ($subCode2 == '04') $description .= ' - Dokumen Rancangan Penjabaran APBD beserta Lampirannya';
+                    elseif ($subCode2 == '05') $description .= ' - Penyampaian Permohonan Evaluasi kepada Gubernur tentang RAPBD Perubahan beserta Penjabarannya';
+                    elseif ($subCode2 == '06') $description .= ' - Hasil Evaluasi Gubernur tentang RAPBD Perubahan';
+                    elseif ($subCode2 == '07') $description .= ' - Penetapan Peraturan Daerah APBD Perubahan oleh Wali Kota beserta Penjabarannya';
+                    elseif ($subCode2 == '08') $description .= ' - Peraturan Daerah tentang APBD Perubahan';
+                }
+            }
+            elseif ($mainCode == '02') {
+                $description = 'Penyusunan Anggaran';
+                if ($subCode1 == '01') $description .= ' - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kelurahan';
+                elseif ($subCode1 == '02') $description .= ' - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kecamatan';
+                elseif ($subCode1 == '03') $description .= ' - Hasil Musyawarah Rencana Pembangunan (Musrenbang) Kota';
+                elseif ($subCode1 == '04') $description .= ' - Rancangan Dokumen Pelaksanaan Anggaran (RDPA) SKPD yang telah disetujui Sekretaris Daerah';
+                elseif ($subCode1 == '05') $description .= ' - Dokumen Pelaksanaan Anggaran (DPA) SKPD yang telah disahkan oleh Pejabat Pengelola Keuangan Daerah';
+            }
+            elseif ($mainCode == '03') {
+                $description = 'Pelaksanaan Anggaran';
+                if ($subCode1 == '01') {
+                    $description .= ' - Pendapatan';
+                    if ($subCode2 == '01') {
+                        $description .= ' - Pendapatan Asli Daerah';
+                        if ($subCode3 == '01') $description .= ' - Retribusi Daerah';
+                        elseif ($subCode3 == '02') $description .= ' - Hasil Perusahaan Milik Daerah dan Hasil Pengelolaan Kekayaan Daerah yang Dipisahkan';
+                        elseif ($subCode3 == '03') $description .= ' - Lain-Lain Pendapatan Asli Daerah Yang Sah';
+                    }
+                    elseif ($subCode2 == '02') {
+                        $description .= ' - Dana Perimbangan';
+                        if ($subCode3 == '01') $description .= ' - Dana Bagi Hasil';
+                        elseif ($subCode3 == '02') $description .= ' - Dana Alokasi Umum';
+                        elseif ($subCode3 == '03') $description .= ' - Dana Alokasi Khusus';
+                    }
+                    elseif ($subCode2 == '03') {
+                        $description .= ' - Lain-Lain Pendapatan Daerah Yang Sah';
+                        if ($subCode3 == '01') $description .= ' - Hibah';
+                        elseif ($subCode3 == '02') $description .= ' - Dana Darurat';
+                        elseif ($subCode3 == '03') $description .= ' - Dana Bagi Hasil Pajak dari Provinsi dan Pemerintah Daerah Lainnya';
+                        elseif ($subCode3 == '04') $description .= ' - Dana Penyesuaian dan Otonomi Khusus';
+                        elseif ($subCode3 == '05') $description .= ' - Bantuan Keuangan dari Provinsi atau Pemerintah Daerah Lainnya';
+                    }
+                }
+                elseif ($subCode1 == '02') {
+                    $description .= ' - Belanja';
+                    if ($subCode2 == '01') {
+                        $description .= ' - Belanja Operasi';
+                        if ($subCode3 == '01') $description .= ' - Belanja Pegawai';
+                        elseif ($subCode3 == '02') $description .= ' - Belanja Barang dan Jasa';
+                        elseif ($subCode3 == '03') $description .= ' - Belanja Bunga';
+                        elseif ($subCode3 == '04') $description .= ' - Belanja Subsidi';
+                        elseif ($subCode3 == '05') $description .= ' - Belanja Hibah';
+                        elseif ($subCode3 == '06') $description .= ' - Belanja Bantuan Sosial';
+                    }
+                    elseif ($subCode2 == '02') {
+                        $description .= ' - Belanja Modal';
+                        if ($subCode3 == '01') $description .= ' - Belanja Tanah';
+                        elseif ($subCode3 == '02') $description .= ' - Belanja Peralatan dan Mesin';
+                        elseif ($subCode3 == '03') $description .= ' - Belanja Gedung dan Bangunan';
+                        elseif ($subCode3 == '04') $description .= ' - Belanja Jalan, Irigasi dan Jaringan';
+                        elseif ($subCode3 == '05') $description .= ' - Belanja Aset Tetap Lainnya';
+                        elseif ($subCode3 == '06') $description .= ' - Belanja Aset Lainnya';
+                    }
+                    elseif ($subCode2 == '03') {
+                        $description .= ' - Belanja Tak Terduga';
+                        if ($subCode3 == '01') $description .= ' - Belanja Tak Terduga';
+                    }
+                }
+                elseif ($subCode1 == '03') {
+                    $description .= ' - Pembiayaan';
+                    if ($subCode2 == '01') {
+                        $description .= ' - Penerimaan Pembiayaan';
+                        if ($subCode3 == '01') $description .= ' - Sisa Lebih Perhitungan Anggaran Tahun Anggaran Sebelumnya';
+                        elseif ($subCode3 == '02') $description .= ' - Pencairan Dana Cadangan';
+                        elseif ($subCode3 == '03') $description .= ' - Hasil Penjualan Kekayaan Daerah yang Dipisahkan';
+                        elseif ($subCode3 == '04') $description .= ' - Penerimaan Pinjaman Daerah';
+                        elseif ($subCode3 == '05') $description .= ' - Penerimaan Kembali Pemberian Pinjaman';
+                        elseif ($subCode3 == '06') $description .= ' - Penerimaan Piutang Daerah';
+                    }
+                    elseif ($subCode2 == '02') {
+                        $description .= ' - Pengeluaran Pembiayaan';
+                        if ($subCode3 == '01') $description .= ' - Pembentukan Dana Cadangan';
+                        elseif ($subCode3 == '02') $description .= ' - Penyertaan Modal (Investasi) Pemerintah Daerah';
+                        elseif ($subCode3 == '03') $description .= ' - Pembayaran Pokok Utang';
+                        elseif ($subCode3 == '04') $description .= ' - Pemberian Pinjaman Daerah';
+                    }
+                }
+            }
+            elseif ($mainCode == '04') {
+                $description = 'Dokumen Penerimaan Lain-Lain Pendapatan yang Sah';
+                if ($subCode1 == '01') {
+                    $description .= ' - Bukti Penerimaan Pembiayaan';
+                    if ($subCode2 == '01') $description .= ' - SiLPA';
+                    elseif ($subCode2 == '02') $description .= ' - Dana Cadangan';
+                    elseif ($subCode2 == '03') $description .= ' - Dana Berguir';
+                    elseif ($subCode2 == '04') $description .= ' - Pinjaman Daerah';
+                    elseif ($subCode2 == '05') $description .= ' - Pengalihan Piutang PBB P2 menjadi PAD';
+                }
+                elseif ($subCode1 == '02') {
+                    $description .= ' - Bukti Pengeluaran Pembiayaan';
+                    if ($subCode2 == '01') $description .= ' - Investasi Jangka Panjang dalam Bentuk Dana Berguir';
+                    elseif ($subCode2 == '02') $description .= ' - Penyertaan Modal pada BUMD';
+                    elseif ($subCode2 == '03') $description .= ' - Penambahan Penyertaan Modal pada BUMD';
+                    elseif ($subCode2 == '04') $description .= ' - Pengeluaran dari Dana Cadangan';
+                    elseif ($subCode2 == '05') $description .= ' - Pembiayaan bagi Usaha Masyarakat Kecil dan Menengah (UMKM)';
+                    elseif ($subCode2 == '06') $description .= ' - Penyertaan Modal pada Bank Perkreditan Rakyat (BPR) milik Pemerintah Daerah';
+                }
+            }
+            elseif ($mainCode == '05') {
+                $description = 'Dokumen Penatausahaan Keuangan';
+                if ($subCode1 == '01') $description .= ' - Surat Penyediaan Dana (SPD)';
+                elseif ($subCode1 == '02') $description .= ' - Surat Permohonan Pembayaran (SPP)';
+                elseif ($subCode1 == '03') $description .= ' - Surat Perintah Membayar (SPM)';
+                elseif ($subCode1 == '04') $description .= ' - Surat Perintah Pencairan Dana (SP2D)';
+            }
+            elseif ($mainCode == '06') {
+                $description = 'Pertanggungjawaban Penggunaan Dana';
+                if ($subCode1 == '01') $description .= ' - Buku Kas Umum (BKU)';
+                elseif ($subCode1 == '02') $description .= ' - Buku Kas Pembantu (BKP)';
+                elseif ($subCode1 == '03') $description .= ' - Ringkasan Perincian Pengeluaran Objek';
+                elseif ($subCode1 == '04') $description .= ' - Rekening Koran Bank';
+                elseif ($subCode1 == '05') $description .= ' - Pertanggungjawaban Fungsionalitas dan Administrasi';
+                elseif ($subCode1 == '06') $description .= ' - Bukti Penyetoran Pajak';
+                elseif ($subCode1 == '07') $description .= ' - Register Penutupan Kas';
+                elseif ($subCode1 == '08') $description .= ' - Berita Acara Pemeriksaan';
+                elseif ($subCode1 == '09') $description .= ' - Laporan Realisasi Anggaran (LRA), Neraca, Laporan Operasional (LO), Laporan Perubahan Ekuitas (LPE), Catatan Atas Laporan Keuangan (CaLK), Arsip Data Komputer (ADK)';
+                elseif ($subCode1 == '10') $description .= ' - Laporan Pendapatan Daerah';
+                elseif ($subCode1 == '11') $description .= ' - Laporan Keadaan Kredit Anggaran';
+                elseif ($subCode1 == '12') $description .= ' - Laporan Realisasi Anggaran, Laporan Operasional, Neraca Bulanan/Triwulan/Semesteran';
+                elseif ($subCode1 == '13') $description .= ' - Berita Acara Rekonsiliasi Data Realisasi Pendapatan Daerah';
+                elseif ($subCode1 == '14') $description .= ' - Berita Acara Rekonsiliasi Data Realisasi Belanja Daerah dan Pembiayaan Daerah';
+            }
+            elseif ($mainCode == '07') {
+                $description = 'Daftar Gaji';
+            }
+            elseif ($mainCode == '08') {
+                $description = 'Kartu Gaji';
+            }
+            elseif ($mainCode == '09') {
+                $description = 'Data Rekening Bendahara Umum Daerah (BUD)';
+            }
+            elseif ($mainCode == '10') {
+                $description = 'Laporan Keuangan Tahunan';
+                if ($subCode1 == '01') $description .= ' - Laporan Realisasi Anggaran (LRA)';
+                elseif ($subCode1 == '02') $description .= ' - Laporan Perubahan Saldo Anggaran Lebih (LP-SAL)';
+                elseif ($subCode1 == '03') $description .= ' - Neraca';
+                elseif ($subCode1 == '04') $description .= ' - Laporan Operasional (LO)';
+                elseif ($subCode1 == '05') $description .= ' - Laporan Arus Kas (LAK)';
+                elseif ($subCode1 == '06') $description .= ' - Laporan Perubahan Ekuitas (LPE)';
+                elseif ($subCode1 == '07') $description .= ' - Catatan Atas Laporan Keuangan (CaLK)';
+            }
+            elseif ($mainCode == '11') {
+                $description = 'Bantuan/Pinjaman Luar Negeri';
+                if ($subCode1 == '01') $description .= ' - Permohonan Pinjaman Luar Negeri (Blue Book)';
+                elseif ($subCode1 == '02') $description .= ' - Dokumen Kesanggupan Negara Donor untuk Membiayai (Green Book)';
+                elseif ($subCode1 == '03') $description .= ' - Dokumen Memorandum of Understanding (MoU), dan Dokumen Sejenisnya';
+                elseif ($subCode1 == '04') $description .= ' - Dokumen Loan Agreement (PLHN) seperti Draft Agreement, Legal Opinion, Surat Menyurat dengan Lender';
+                elseif ($subCode1 == '05') $description .= ' - Alokasi dan Relokasi Penggunaan Dana Luar Negeri, antara lain Usulan Luncuran Dana';
+                elseif ($subCode1 == '06') {
+                    $description .= ' - Aplikasi Penarikan Dana Bantuan Luar Negeri berikut Lampirannya';
+                    if ($subCode2 == '01') $description .= ' - Reimbursement';
+                    elseif ($subCode2 == '02') $description .= ' - Direct Payment/Transfer Procedure';
+                    elseif ($subCode2 == '03') $description .= ' - Special Commitment/L/C Opening';
+                    elseif ($subCode2 == '04') $description .= ' - Special Account/Impress Fund';
+                }
+                elseif ($subCode1 == '07') $description .= ' - Dokumen Otorisasi Penarikan Dana (Payment Advice)';
+                elseif ($subCode1 == '08') $description .= ' - Dokumen Realisasi Pencairan Dana Bantuan Luar Negeri, yaitu: Surat Perintah Pencairan Dana, SPM beserta lampirannya, antara lain SPP, Kontrak, BA, dan Data Pendukung Lainnya';
+                elseif ($subCode1 == '09') $description .= ' - Replenishment (Permintaan Penarikan Dana dari Negara Donor) meliputi antara lain No Object Letter (NOL), Project Implementation, Notification of Contract, Withdrawal Authorization (WA), Statement of Expenditure (SE)';
+                elseif ($subCode1 == '10') $description .= ' - Staff Appraisal Report';
+                elseif ($subCode1 == '11') {
+                    $description .= ' - Report/Laporan yang terdiri dari';
+                    if ($subCode2 == '01') $description .= ' - Progress Report';
+                    elseif ($subCode2 == '02') $description .= ' - Monthly Report';
+                    elseif ($subCode2 == '03') $description .= ' - Quarterly Report';
+                }
+                elseif ($subCode1 == '12') {
+                    $description .= ' - Laporan Hutang Daerah';
+                    if ($subCode2 == '01') $description .= ' - Laporan Pembayaran Hutang Daerah';
+                    elseif ($subCode2 == '02') $description .= ' - Laporan Posisi Hutang Daerah';
+                }
+                elseif ($subCode1 == '13') $description .= ' - Completion Report/Annual Report';
+                elseif ($subCode1 == '14') $description .= ' - Ketentuan/Peraturan yang Menyangkut Bantuan/Pinjaman Luar Negeri';
+            }
+            elseif ($mainCode == '12') {
+                $description = 'Pengelolaan APBD/Dana Pinjaman/Hibah Luar Negeri (PHLN)';
+                if ($subCode1 == '01') {
+                    $description .= ' - Keputusan Kepala Daerah tentang Penetapan';
+                    if ($subCode2 == '01') $description .= ' - Kuasa Penggunaan Anggaran';
+                    elseif ($subCode2 == '02') $description .= ' - Kuasa Pengguna Barang/Jasa';
+                    elseif ($subCode2 == '03') $description .= ' - Pejabat Pembuat Komitmen';
+                    elseif ($subCode2 == '04') $description .= ' - Pejabat Pembuat Daftar Gaji';
+                    elseif ($subCode2 == '05') $description .= ' - Pejabat Penandatanganan SPM';
+                    elseif ($subCode2 == '06') $description .= ' - Bendahara Penerimaan/Pengeluaran';
+                    elseif ($subCode2 == '07') $description .= ' - Pengelola Barang';
+                    elseif ($subCode2 == '08') $description .= ' - Berita Acara Serah Terima Jabatan';
+                }
+            }
+            elseif ($mainCode == '13') {
+                $description = 'Akuntansi Pemerintah Daerah';
+                if ($subCode1 == '01') $description .= ' - Kebijakan Akuntansi Pemerintah Daerah';
+                elseif ($subCode1 == '02') $description .= ' - Sistem Akuntansi Pemerintah Daerah';
+                elseif ($subCode1 == '03') $description .= ' - Bagan Akun Standar';
+                elseif ($subCode1 == '04') $description .= ' - Arsip Data Komputer';
+            }
+            elseif ($mainCode == '14') {
+                $description = 'Penyaluran Anggaran Tugas Pembantuan';
+                if ($subCode1 == '01') $description .= ' - Penetapan Pemimpin Proyek/Bagian Proyek, Bendahara, atas Penggunaan Anggaran Kegiatan Pembantuan, termasuk Specimen Tanda Tangan';
+                elseif ($subCode1 == '02') {
+                    $description .= ' - Berkas Permintaan Pembayaran (SPP) dan lampirannya:';
+                    if ($subCode2 == '01') $description .= ' - SPP-SPP-Daftar Perincian Penggunaan SPPR-SPDR-L, SPM-LS, SPM-DUA, Bilyet giro, SPM Nihil';
+                    elseif ($subCode2 == '02') $description .= ' - Penagihan/Invoice, Faktur Pajak, Bukti Penerimaan Kas/Bank beserta Bukti Pendukungnya antara lain Copy Faktur Pajak dan Nota Kredit Bank';
+                    elseif ($subCode2 == '03') $description .= ' - Permintaan Pelayanan Jasa/Service Report dan Berita Acara Penyelesaian Pekerjaan';
+                }
+                elseif ($subCode1 == '03') $description .= ' - Buku Rekening Bank';
+                elseif ($subCode1 == '04') $description .= ' - Keputusan Pembukuan Rekening';
+                elseif ($subCode1 == '05') {
+                    $description .= ' - Pembukuan Anggaran terdiri dari:';
+                    if ($subCode2 == '01') $description .= ' - Buku Kas Umum (BKU)';
+                    elseif ($subCode2 == '02') $description .= ' - Buku Kas Pembantu';
+                    elseif ($subCode2 == '03') $description .= ' - Register dan Buku Tambahan';
+                    elseif ($subCode2 == '04') $description .= ' - Daftar Pembukuan Selama Rekening masih aktif';
+                    elseif ($subCode2 == '05') $description .= ' - Pencairan/Pengeluaran (DPP)';
+                    elseif ($subCode2 == '06') $description .= ' - Daftar Pembukuan Pencairan/Pengeluaran (DPP)';
+                    elseif ($subCode2 == '07') $description .= ' - Daftar Himpunan Pencairan (DHIP)';
+                    elseif ($subCode2 == '08') $description .= ' - Rekening Koran';
+                }
+            }
+            elseif ($mainCode == '15') {
+                $description = 'Penerimaan Anggaran Tugas Pembantuan';
+                if ($subCode1 == '01') $description .= ' - Berkas Penerimaan Keuangan Pelaksanaan dan Tugas Pembantuan Termasuk Dana Sisa atau Pengeluaran Lainnya';
+                elseif ($subCode1 == '02') $description .= ' - Berkas Penerimaan Pajak termasuk PPh 21, PPh 22, PPh 23, dan PPn, dan Denda Keterlambatan Menyelesaikan Pekerjaan';
+            }
+            elseif ($mainCode == '16') {
+                $description = 'Pengelolaan Anggaran Pemilu';
+                if ($subCode1 == '01') {
+                    $description .= ' - Penyusunan Anggaran Pilkada dan Biaya Bantuan Pemilu dari APBD';
+                    if ($subCode2 == '01') $description .= ' - Kebijakan Keuangan Pilkada dan Penyusunan Anggaran Bantuan Pemilu';
+                    elseif ($subCode2 == '02') $description .= ' - Peraturan/Pedoman/Standar Belanja Pegawai, Barang dan Jasa, Operasional dan Kontingensi untuk Biaya Pilkada dan Bantuan Pemilu';
+                    elseif ($subCode2 == '03') $description .= ' - Bahan Usulan Rencana Kegiatan dan Anggaran (RKA) Pilkada KPUD dan Panitia Pengawas Daerah Provinsi, PPK, PPS, KPPS dan Permohonan Pengajuan RKA KPUD dan Panitia Pengawas';
+                    elseif ($subCode2 == '04') $description .= ' - Berkas Pembahasan RKA Pilkada dan Bantuan Pemilu';
+                    elseif ($subCode2 == '05') $description .= ' - Rencana Anggaran Satuan Kerja (RASK) Pilkada dan Bantuan Pemilu Provinsi';
+                    elseif ($subCode2 == '06') $description .= ' - Dokumen Rancangan Anggaran Satuan Kerja (DRASK) Pilkada KPUD dan Panitia Pengawas Provinsi dan Bantuan Biaya Pemilu dari APBD';
+                    elseif ($subCode2 == '07') $description .= ' - Berkas Pembentukan Dana Cadangan Pilkada';
+                    elseif ($subCode2 == '08') $description .= ' - Bahan Rapat Rancangan Peraturan Daerah tentang Pilkada, dan Bantuan Biaya Pemilu dari APBD';
+                    elseif ($subCode2 == '09') $description .= ' - Nota Persetujuan DPRD tentang Peraturan Daerah Pilkada dan Bantuan Biaya Pemilu dari APBD';
+                    elseif ($subCode2 == '10') {
+                        $description .= ' - Pelaksanaan Anggaran Pilkada dan Anggaran Biaya Bantuan Pemilu';
+                        if ($subCode3 == '01') $description .= ' - Berkas Penetapan Bendahara dan Atasan Langsung Bendahara KPUD, Bendahara Panitia Pengawas Daerah dan Bendahara pada Panitia Pilkada dan Pemilu';
+                        elseif ($subCode3 == '02') $description .= ' - Berkas Penerimaan Komisi, Rabat Pembayaran Pengadaan Jasa, Bunga, Pelaksanaan Pilkada/Pemilu';
+                        elseif ($subCode3 == '03') $description .= ' - Berkas Setor Sisa Dana Pilkada/Pemilu';
+                        elseif ($subCode3 == '04') $description .= ' - Berkas Penyaluran Biaya Pemilu Termasuk Di antaranya Bukti Transfer Bank';
+                        elseif ($subCode3 == '05') $description .= ' - Pedoman Dokumen Penyediaan Pembiayaan Kegiatan Operasional (PPKO) Pemilu Termasuk Perubahan/Pergeseran/Revisinya';
+                    }
+                    elseif ($subCode2 == '11') {
+                        $description .= ' - Pelaksanaan Anggaran Operasional Pemilu';
+                        if ($subCode3 == '01') $description .= ' - Dokumen Penyediaan Pembiayaan Kegiatan Operasional (PPKO) Pemilu termasuk Perubahan/Pergeseran/Revisinya';
+                        elseif ($subCode3 == '02') $description .= ' - Berkas Penetapan Bendahara dan Atasan Langsung Bendahara KPUD Provinsi, Panitia Pengawas Daerah dan Pemegang Uang Muka Cabang (PUMC) PPK dan Panitia Pengawas';
+                        elseif ($subCode3 == '03') $description .= ' - Berkas Penyaluran Biaya Pemilu ke PPK, PPS, dan KPPS Termasuk di antaranya Bukti Transfer Bank';
+                    }
+                    elseif ($subCode2 == '12') {
+                        $description .= ' - Pemeriksaan/ Pengawasan Keuangan Daerah';
+                        if ($subCode3 == '01') $description .= ' - Laporan Hasil Pemeriksaan Badan Pemeriksa Keuangan';
+                        elseif ($subCode3 == '02') $description .= ' - Hasil Pengawasan dan Pemeriksaan Internal';
+                        elseif ($subCode3 == '03') {
+                            $description .= ' - Laporan Aparat Pemeriksaan Fungsional';
+                            if (isset($parts[4])) {
+                                $subCode4 = $parts[4];
+                                if ($subCode4 == '01') $description .= ' - LHP (Laporan Hasil Pemeriksaan)';
+                                elseif ($subCode4 == '02') $description .= ' - MHP (Memorandum Hasil Pemeriksaan)';
+                                elseif ($subCode4 == '03') $description .= ' - Tindak Lanjut/Tanggapan LHP';
+                            }
+                        }
+                        elseif ($subCode3 == '04') {
+                            $description .= ' - Dokumen Penyelesaian Kerugian Daerah';
+                            if (isset($parts[4])) {
+                                $subCode4 = $parts[4];
+                                if ($subCode4 == '01') $description .= ' - Tuntutan Perbendaharaan';
+                                elseif ($subCode4 == '02') $description .= ' - Tuntutan Ganti Rugi';
+                            }
+                        }
+                    }
+                }
+            }
+            elseif ($mainCode == '17') {
+                $description = 'Pengadaan Barang/Jasa';
+                if ($subCode1 == '01') $description .= ' - Rencana Umum Pengadaan (RUP)';
+                elseif ($subCode1 == '02') {
+                    $description .= ' - Pelaksanaan Pengadaan';
+                    if ($subCode2 == '01') $description .= ' - Swakelola';
+                    elseif ($subCode2 == '02') $description .= ' - Pengadaan Langsung';
+                    elseif ($subCode2 == '03') $description .= ' - Penunjukan Langsung';
+                    elseif ($subCode2 == '04') $description .= ' - Tender';
+                    elseif ($subCode2 == '05') $description .= ' - E-Purchasing';
+                }
+                elseif ($subCode1 == '03') $description .= ' - Laporan Pengadaan Barang/Jasa';
+            }
+        }
 
         return $description;
     }
@@ -434,6 +782,8 @@ class ClassificationFormatter
             return 'border-success text-success bg-success';
         } elseif (strpos($code, 'RT.') === 0) {
             return 'border-warning text-warning bg-warning';
+        } elseif (strpos($code, 'KU.') === 0) {
+            return 'border-info text-info bg-info';
         }
 
         return 'border-secondary text-secondary bg-secondary';

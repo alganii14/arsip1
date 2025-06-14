@@ -175,15 +175,16 @@ class ArsipController extends Controller
         $type = 'AR';
         $code = null;
 
-        // Try to extract classification code for AR, KP, or RT formats
-        if (preg_match('/(AR|KP|RT)[\.|\s|\-\/]?(\d{2})[\.|\s|\-\/]?(\d{2})?[\.|\s|\-\/]?(\d{2})?/i', $documentNumber, $matches)) {
-            $prefix = strtoupper($matches[1]); // AR, KP, or RT
+        // Try to extract classification code for AR, KP, RT, or KU formats
+        // Pattern yang menangkap semua format 3-level dan 4-level
+        if (preg_match('/(KU|KP|RT|AR)\.(\d{2})\.(\d{2})(?:\.(\d{2}))?/i', $documentNumber, $matches)) {
+            $prefix = strtoupper($matches[1]); // KU, KP, RT, or AR
             $mainCode = isset($matches[2]) ? $matches[2] : null;
             $subCode1 = isset($matches[3]) ? $matches[3] : null;
             $subCode2 = isset($matches[4]) ? $matches[4] : null;
 
             if ($mainCode) {
-                // We have at least the main code (e.g., AR.01, KP.02, RT.03)
+                // We have at least the main code (e.g., AR.01, KP.02, RT.03, KU.01)
                 $code = "$prefix.$mainCode";
                 $type = $prefix;
 
@@ -198,14 +199,17 @@ class ArsipController extends Controller
                     case 'RT':
                         $category = 'Kerumahtanggaan';
                         break;
+                    case 'KU':
+                        $category = 'Keuangan';
+                        break;
                 }
 
                 if ($subCode1) {
-                    // We have the first subdivision (e.g., AR.01.01, KP.02.03, RT.03.01)
+                    // We have the first subdivision (e.g., AR.01.01, KP.02.03, RT.03.01, KU.01.02)
                     $code .= ".$subCode1";
 
                     if ($subCode2) {
-                        // We have the second subdivision (e.g., AR.01.01.01)
+                        // We have the second subdivision (e.g., AR.01.01.01, KU.01.02.01)
                         $code .= ".$subCode2";
                     }
                 }

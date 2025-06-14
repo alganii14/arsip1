@@ -110,23 +110,16 @@ class DocumentNumberExtractor
      */
     private static function extractFromFilename($fileName)
     {
-        // Pola khusus untuk dokumen seperti "NOTA DINAS", "MONEV SRIKANDI", dll
-        $specialPatterns = [
-            '/NOTA\s*DINAS.*MONEV.*SRIKANDI/i' => 'AR.03.09/1-Kec.Cddp/XII/2024',
-            '/MONEV.*SRIKANDI/i' => 'AR.03.09/1-Kec.Cddp/XII/2024',
-            '/DRAFT.*NODIN.*MONEV.*SRIKANDI/i' => 'AR.03.09/1-Kec.Cddp/XII/2024',
-            '/NODIN.*MONEV.*SRIKANDI/i' => 'AR.03.09/1-Kec.Cddp/XII/2024',
-        ];
-
-        foreach ($specialPatterns as $pattern => $docNumber) {
-            if (preg_match($pattern, $fileName)) {
-                Log::info("DocumentNumberExtractor: Matched special pattern in filename: {$pattern}");
-                return $docNumber;
-            }
+        // Cari pola nomor dokumen langsung di nama file terlebih dahulu
+        $docNumber = self::findDocumentNumber($fileName);
+        if ($docNumber) {
+            Log::info("DocumentNumberExtractor: Found document number in filename: {$docNumber}");
+            return $docNumber;
         }
 
-        // Cari pola nomor dokumen langsung di nama file
-        return self::findDocumentNumber($fileName);
+        // Jika tidak ada pola nomor yang ditemukan, tidak ada fallback khusus
+        Log::info("DocumentNumberExtractor: No document number pattern found in filename");
+        return null;
     }
 
     /**
@@ -246,34 +239,53 @@ class DocumentNumberExtractor
 
         Log::info("DocumentNumberExtractor: Analyzing content for document number, length: " . strlen($content));
 
-        // Pola-pola untuk mencari nomor dokumen (AR, KP, RT)
+        // Pola-pola untuk mencari nomor dokumen (AR, KP, RT, KU)
+        // Urutan sangat penting - pola yang lebih spesifik harus di atas
         $patterns = [
-            // Format dengan Nomor: - prioritas tinggi untuk KP dan RT
+            // PRIORITAS TERTINGGI: Format dengan Nomor: untuk AR dan KU 4-level
+            '/Nomor\s*:\s*((AR)\.(\d{2})\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
+            '/Nomor\s*:\s*((KU)\.(\d{2})\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
+
+            // PRIORITAS TINGGI: Format lengkap untuk AR dan KU 4-level
+            '/\b(AR)\.(\d{2})\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
+            '/\b(KU)\.(\d{2})\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
+
+            // Format dengan Nomor: - prioritas untuk KU, KP, RT, AR 3-level
+            '/Nomor\s*:\s*((KU)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
             '/Nomor\s*:\s*((KP)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
             '/Nomor\s*:\s*((RT)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
             '/Nomor\s*:\s*((AR)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4}))/i',
 
-            // Format lengkap - prioritas untuk KP dan RT
-            '/(KP)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})/i',
-            '/(RT)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})/i',
-            '/(AR)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})/i',
+            // Format lengkap - prioritas untuk KU, KP dan RT 3-level
+            '/\b(KU)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
+            '/\b(KP)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
+            '/\b(RT)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
+            '/\b(AR)\.(\d{2})\.(\d{2})\/(\d+)\-([A-Za-z\.]+)\/([A-Z]+)\/(\d{4})\b/i',
 
-            // Format lebih umum
-            '/(KP)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
-            '/(RT)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
-            '/(AR)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
+            // Format lebih umum untuk AR dan KU 4-level
+            '/\b(AR)\.(\d{2})\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
+            '/\b(KU)\.(\d{2})\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
+
+            // Format lebih umum untuk 3-level
+            '/\b(KU)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
+            '/\b(KP)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
+            '/\b(RT)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
+            '/\b(AR)\.(\d{2})\.(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?\b/i',
 
             // Format dengan garis miring
+            '/(KU)\/(\d{2})\/(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
             '/(KP)\/(\d{2})\/(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
             '/(RT)\/(\d{2})\/(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
             '/(AR)\/(\d{2})\/(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i',
 
             // Format di baris Nomor (lebih umum)
+            '/Nomor\s*:\s*((KU)[^\n\r]*)/i',
             '/Nomor\s*:\s*((KP)[^\n\r]*)/i',
             '/Nomor\s*:\s*((RT)[^\n\r]*)/i',
             '/Nomor\s*:\s*((AR)[^\n\r]*)/i',
 
             // Format No. atau No:
+            '/No\.?\s*:\s*((KU)[^\n\r]*)/i',
             '/No\.?\s*:\s*((KP)[^\n\r]*)/i',
             '/No\.?\s*:\s*((RT)[^\n\r]*)/i',
             '/No\.?\s*:\s*((AR)[^\n\r]*)/i',
@@ -314,14 +326,64 @@ class DocumentNumberExtractor
 
         Log::info("DocumentNumberExtractor: Formatting document number: {$extractedNumber} -> {$cleaned}");
 
-        // Jika sudah dalam format yang benar untuk AR, KP, atau RT, return apa adanya
-        if (preg_match('/^(AR|KP|RT)\.(\d{2})\.(\d{2})\/\d+\-[A-Za-z\.]+\/[A-Z]+\/\d{4}$/', $cleaned)) {
+        // Jika sudah dalam format yang benar untuk AR, KP, RT, atau KU (3 atau 4 level), return apa adanya
+        if (preg_match('/^(AR|KP|RT|KU)\.(\d{2})\.(\d{2})(?:\.(\d{2}))?\/\d+\-[A-Za-z\.]+\/[A-Z]+\/\d{4}$/', $cleaned)) {
             return $cleaned;
         }
 
-        // Coba ekstrak komponen-komponen dan format ulang
-        if (preg_match('/(AR|KP|RT)\.?(\d{2})\.?(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i', $cleaned, $parts)) {
-            $prefix = strtoupper($parts[1]); // AR, KP, atau RT
+        // Coba ekstrak komponen-komponen untuk format AR 4-level
+        if (preg_match('/(AR)\.?(\d{2})\.?(\d{2})\.?(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i', $cleaned, $parts)) {
+            $prefix = strtoupper($parts[1]); // AR
+            $formatted = $prefix . '.' . str_pad($parts[2], 2, '0', STR_PAD_LEFT) . '.' . str_pad($parts[3], 2, '0', STR_PAD_LEFT) . '.' . str_pad($parts[4], 2, '0', STR_PAD_LEFT);
+
+            // Tambahkan nomor referensi (default 1)
+            $refNum = !empty($parts[5]) ? $parts[5] : '1';
+            $formatted .= '/' . $refNum;
+
+            // Tambahkan kode lokasi (default Kec.Cddp)
+            $location = !empty($parts[6]) ? $parts[6] : 'Kec.Cddp';
+            $formatted .= '-' . $location;
+
+            // Tambahkan bulan dalam angka Romawi (default bulan sekarang)
+            $month = !empty($parts[7]) ? $parts[7] : self::getCurrentMonthRoman();
+            $formatted .= '/' . strtoupper($month);
+
+            // Tambahkan tahun (default tahun sekarang)
+            $year = !empty($parts[8]) ? $parts[8] : date('Y');
+            $formatted .= '/' . $year;
+
+            Log::info("DocumentNumberExtractor: Formatted AR 4-level to: {$formatted}");
+            return $formatted;
+        }
+
+        // Coba ekstrak komponen-komponen untuk format KU 4-level
+        if (preg_match('/(KU)\.?(\d{2})\.?(\d{2})\.?(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i', $cleaned, $parts)) {
+            $prefix = strtoupper($parts[1]); // KU
+            $formatted = $prefix . '.' . str_pad($parts[2], 2, '0', STR_PAD_LEFT) . '.' . str_pad($parts[3], 2, '0', STR_PAD_LEFT) . '.' . str_pad($parts[4], 2, '0', STR_PAD_LEFT);
+
+            // Tambahkan nomor referensi (default 1)
+            $refNum = !empty($parts[5]) ? $parts[5] : '1';
+            $formatted .= '/' . $refNum;
+
+            // Tambahkan kode lokasi (default Kec.Cddp)
+            $location = !empty($parts[6]) ? $parts[6] : 'Kec.Cddp';
+            $formatted .= '-' . $location;
+
+            // Tambahkan bulan dalam angka Romawi (default bulan sekarang)
+            $month = !empty($parts[7]) ? $parts[7] : self::getCurrentMonthRoman();
+            $formatted .= '/' . strtoupper($month);
+
+            // Tambahkan tahun (default tahun sekarang)
+            $year = !empty($parts[8]) ? $parts[8] : date('Y');
+            $formatted .= '/' . $year;
+
+            Log::info("DocumentNumberExtractor: Formatted KU 4-level to: {$formatted}");
+            return $formatted;
+        }
+
+        // Coba ekstrak komponen-komponen untuk format 3-level (AR, KP, RT, KU)
+        if (preg_match('/(AR|KP|RT|KU)\.?(\d{2})\.?(\d{2})(?:\/(\d+))?(?:\-([A-Za-z\.]+))?(?:\/([A-Z]+))?(?:\/(\d{4}))?/i', $cleaned, $parts)) {
+            $prefix = strtoupper($parts[1]); // AR, KP, RT, atau KU
             $formatted = $prefix . '.' . str_pad($parts[2], 2, '0', STR_PAD_LEFT) . '.' . str_pad($parts[3], 2, '0', STR_PAD_LEFT);
 
             // Tambahkan nomor referensi (default 1)
