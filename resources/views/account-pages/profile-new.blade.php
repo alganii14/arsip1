@@ -6,7 +6,12 @@
         <div class="container">
             <div class="card card-body py-2 bg-transparent shadow-none">
                 <div class="row">
-
+                    <div class="col-auto">
+                        <div
+                            class="avatar avatar-2xl rounded-circle position-relative mt-n7 border border-gray-100 border-4">
+                            <img src="../assets/img/team-2.jpg" alt="profile_image" class="w-100">
+                        </div>
+                    </div>
                     <div class="col-auto my-auto">
                         <div class="h-100">
                             <h3 class="mb-0 font-weight-bold">

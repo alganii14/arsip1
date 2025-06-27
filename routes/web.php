@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\JreController;
 use App\Http\Controllers\PeminjamanArsipController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,17 +54,14 @@ Route::middleware('guest')->group(function () {
 // Routes for all authenticated users
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Logout
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
     // Profile
-    Route::get('/profile', function () {
-        return view('account-pages.profile');
-    })->name('profile');
+    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile');
+    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.change-password');
 
     Route::get('/laravel-examples/user-profile', [ProfileController::class, 'index'])->name('users.profile');
     Route::put('/laravel-examples/user-profile/update', [ProfileController::class, 'update'])->name('users.update');

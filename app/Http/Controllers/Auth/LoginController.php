@@ -29,6 +29,15 @@ class LoginController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input dengan pesan bahasa Indonesia
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ], [
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'password.required' => 'Password wajib diisi',
+        ]);
 
         $credentials = $request->only('email', 'password');
 
@@ -40,10 +49,8 @@ class LoginController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-
-
         return back()->withErrors([
-            'message' => 'The provided credentials do not match our records.',
+            'message' => 'Email atau password yang Anda masukkan tidak cocok dengan data kami.',
         ])->withInput($request->only('email'));
     }
 

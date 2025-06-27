@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Test AR 4-Level Extraction Priority</h1>
-    
+
     <h2>Test Case 1: Content with AR 4-level and AR 3-level</h2>
     <div>
         <strong>Expected:</strong> AR.01.01.02/1-Kec.Cddp/XII/2025 (4-level should be prioritized)<br>
@@ -18,7 +18,7 @@ Tanggal: 15 Desember 2025
 Footer dokumen: AR.03.09/2082-Disarpus/XI/2024
         </pre>
     </div>
-    
+
     <h2>Test Case 2: Multiple AR codes</h2>
     <div>
         <strong>Expected:</strong> AR.01.01.02/1-Kec.Cddp/XII/2025 (from Nomor: line)<br>
@@ -30,7 +30,7 @@ NOTA DINAS BARU
 Nomor: AR.01.01.02/1-Kec.Cddp/XII/2025
         </pre>
     </div>
-    
+
     <h2>Summary</h2>
     <p>
         The extraction logic has been updated to:
@@ -42,7 +42,7 @@ Nomor: AR.01.01.02/1-Kec.Cddp/XII/2025
             <li>✅ Support both AR and KU 4-level formats</li>
         </ul>
     </p>
-    
+
     <h2>Key Changes Made</h2>
     <ol>
         <li><strong>DocumentNumberExtractor.php:</strong>
@@ -60,7 +60,7 @@ Nomor: AR.01.01.02/1-Kec.Cddp/XII/2025
             </ul>
         </li>
     </ol>
-    
+
     <p><strong>Result:</strong> When you upload the PDF with AR.01.01.02/1-Kec.Cddp/XII/2025, the system should now correctly extract this number instead of the wrong AR.03.09 number.</p>
 </body>
 </html>
