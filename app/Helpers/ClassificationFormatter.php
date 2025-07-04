@@ -488,75 +488,78 @@ class ClassificationFormatter
             elseif ($mainCode == '03') {
                 $description = 'Pelaksanaan Anggaran';
                 if ($subCode1 == '01') {
-                    $description .= ' - Pendapatan';
-                    if ($subCode2 == '01') {
-                        $description .= ' - Pendapatan Asli Daerah';
-                        if ($subCode3 == '01') $description .= ' - Retribusi Daerah';
-                        elseif ($subCode3 == '02') $description .= ' - Hasil Perusahaan Milik Daerah dan Hasil Pengelolaan Kekayaan Daerah yang Dipisahkan';
-                        elseif ($subCode3 == '03') $description .= ' - Lain-Lain Pendapatan Asli Daerah Yang Sah';
-                    }
-                    elseif ($subCode2 == '02') {
-                        $description .= ' - Dana Perimbangan';
-                        if ($subCode3 == '01') $description .= ' - Dana Bagi Hasil';
-                        elseif ($subCode3 == '02') $description .= ' - Dana Alokasi Umum';
-                        elseif ($subCode3 == '03') $description .= ' - Dana Alokasi Khusus';
-                    }
-                    elseif ($subCode2 == '03') {
-                        $description .= ' - Lain-Lain Pendapatan Daerah Yang Sah';
-                        if ($subCode3 == '01') $description .= ' - Hibah';
-                        elseif ($subCode3 == '02') $description .= ' - Dana Darurat';
-                        elseif ($subCode3 == '03') $description .= ' - Dana Bagi Hasil Pajak dari Provinsi dan Pemerintah Daerah Lainnya';
-                        elseif ($subCode3 == '04') $description .= ' - Dana Penyesuaian dan Otonomi Khusus';
-                        elseif ($subCode3 == '05') $description .= ' - Bantuan Keuangan dari Provinsi atau Pemerintah Daerah Lainnya';
-                    }
+                    $description .= ' - Surat Penyedia Dana (SPP, SPM, dan SP2D): UP, GU, TU, LS';
                 }
                 elseif ($subCode1 == '02') {
-                    $description .= ' - Belanja';
-                    if ($subCode2 == '01') {
-                        $description .= ' - Belanja Operasi';
-                        if ($subCode3 == '01') $description .= ' - Belanja Pegawai';
-                        elseif ($subCode3 == '02') $description .= ' - Belanja Barang dan Jasa';
-                        elseif ($subCode3 == '03') $description .= ' - Belanja Bunga';
-                        elseif ($subCode3 == '04') $description .= ' - Belanja Subsidi';
-                        elseif ($subCode3 == '05') $description .= ' - Belanja Hibah';
-                        elseif ($subCode3 == '06') $description .= ' - Belanja Bantuan Sosial';
-                    }
-                    elseif ($subCode2 == '02') {
-                        $description .= ' - Belanja Modal';
-                        if ($subCode3 == '01') $description .= ' - Belanja Tanah';
-                        elseif ($subCode3 == '02') $description .= ' - Belanja Peralatan dan Mesin';
-                        elseif ($subCode3 == '03') $description .= ' - Belanja Gedung dan Bangunan';
-                        elseif ($subCode3 == '04') $description .= ' - Belanja Jalan, Irigasi dan Jaringan';
-                        elseif ($subCode3 == '05') $description .= ' - Belanja Aset Tetap Lainnya';
-                        elseif ($subCode3 == '06') $description .= ' - Belanja Aset Lainnya';
-                    }
-                    elseif ($subCode2 == '03') {
-                        $description .= ' - Belanja Tak Terduga';
-                        if ($subCode3 == '01') $description .= ' - Belanja Tak Terduga';
-                    }
+                    $description .= ' - Pendapatan Asli Daerah';
+                    if ($subCode2 == '01') $description .= ' - Surat Setoran Pajak (SSP) Daerah Pajak Kendaraan Bermotor';
+                    elseif ($subCode2 == '02') $description .= ' - Surat Setoran Pajak (SSP) Daerah Pajak Bea Balik Nama Kendaraan Bermotor (BBNKB)';
+                    elseif ($subCode2 == '03') $description .= ' - Surat Setoran Pajak (SSP) Daerah Pajak Bahan Bakar Kendaraan Bermotor (PBBKB)';
+                    elseif ($subCode2 == '04') $description .= ' - Surat Setoran Pajak (SSP) Daerah Pajak Air Permukaan';
+                    elseif ($subCode2 == '05') $description .= ' - Surat Setoran Pajak (SSP) Daerah Pajak Rokok';
+                    elseif ($subCode2 == '06') $description .= ' - Surat Ketetapan Retribusi Daerah';
+                    elseif ($subCode2 == '07') $description .= ' - Bukti Pembayaran Retribusi Jasa Umum';
+                    elseif ($subCode2 == '08') $description .= ' - Bukti Pembayaran Retribusi Jasa Usaha';
+                    elseif ($subCode2 == '09') $description .= ' - Bukti Pembayaran Retribusi Perizinan Tertentu';
+                    elseif ($subCode2 == '10') $description .= ' - Bukti Pembayaran Retribusi Pengendalian Lalu Lintas';
+                    elseif ($subCode2 == '11') $description .= ' - Bukti Pembayaran Retribusi Perpanjangan Izin Mempekerjakan Tenaga Kerja Asing (IMTA)';
+                    elseif ($subCode2 == '12') $description .= ' - Bukti Penerimaan Jasa Layanan Kesehatan Masyarakat';
+                    elseif ($subCode2 == '13') $description .= ' - Dokumen Rasionalitas Hasil Pengelolaan Kekayaan Daerah';
+                    elseif ($subCode2 == '14') $description .= ' - Bukti Penerimaan SKPD dari Badan Pengelolaan Pendapatan Daerah';
+                    elseif ($subCode2 == '15') $description .= ' - Bukti Penerimaan dari Pengelolaan Dana Bergulir';
+                    elseif ($subCode2 == '16') $description .= ' - Bukti Penerimaan Bunga dan atau Jasa Giro pada Bank';
                 }
                 elseif ($subCode1 == '03') {
-                    $description .= ' - Pembiayaan';
-                    if ($subCode2 == '01') {
-                        $description .= ' - Penerimaan Pembiayaan';
-                        if ($subCode3 == '01') $description .= ' - Sisa Lebih Perhitungan Anggaran Tahun Anggaran Sebelumnya';
-                        elseif ($subCode3 == '02') $description .= ' - Pencairan Dana Cadangan';
-                        elseif ($subCode3 == '03') $description .= ' - Hasil Penjualan Kekayaan Daerah yang Dipisahkan';
-                        elseif ($subCode3 == '04') $description .= ' - Penerimaan Pinjaman Daerah';
-                        elseif ($subCode3 == '05') $description .= ' - Penerimaan Kembali Pemberian Pinjaman';
-                        elseif ($subCode3 == '06') $description .= ' - Penerimaan Piutang Daerah';
-                    }
-                    elseif ($subCode2 == '02') {
-                        $description .= ' - Pengeluaran Pembiayaan';
-                        if ($subCode3 == '01') $description .= ' - Pembentukan Dana Cadangan';
-                        elseif ($subCode3 == '02') $description .= ' - Penyertaan Modal (Investasi) Pemerintah Daerah';
-                        elseif ($subCode3 == '03') $description .= ' - Pembayaran Pokok Utang';
-                        elseif ($subCode3 == '04') $description .= ' - Pemberian Pinjaman Daerah';
-                    }
+                    $description .= ' - Dokumen Penerimaan Dana Perimbangan';
+                    if ($subCode2 == '01') $description .= ' - Dana Bagi Hasil yang Bersumber dari Pajak dan Bukan Pajak';
+                    elseif ($subCode2 == '02') $description .= ' - Dana Bagi Hasil untuk Kota';
+                    elseif ($subCode2 == '03') $description .= ' - Dana Alokasi Umum (Dana Alokasi Umum)';
+                    elseif ($subCode2 == '04') $description .= ' - Daerah yang Menerima DAU';
+                    elseif ($subCode2 == '05') $description .= ' - Dana Alokasi Khusus (DAK)';
+                }
+                elseif ($subCode1 == '04') {
+                    $description .= ' - Dokumen Penerimaan Lain-lain Pendapatan yang Sah';
+                    if ($subCode2 == '01') $description .= ' - Alokasi Dana Penyesuaian';
+                    elseif ($subCode2 == '02') $description .= ' - Dana Otonomi Khusus dan Bantuan Operasional Sekolah';
+                    elseif ($subCode2 == '03') $description .= ' - Bagi Hasil Pajak dari Pemerintah Pusat';
+                    elseif ($subCode2 == '04') $description .= ' - Bantuan Keuangan Pemerintah Pusat';
+                    elseif ($subCode2 == '05') $description .= ' - Penerimaan Hibat yang Bersumber dari APBN, Pemerintah Daerah Lainnya atau Sumbangan dari Pihak Ketiga';
+                }
+                elseif ($subCode1 == '05') {
+                    $description .= ' - Surat Setoran Bukan Pajak (SSBP)';
+                }
+                elseif ($subCode1 == '06') {
+                    $description .= ' - Penerimaan Sisa Lebih Perhitungan Anggaran (SiLPA)';
+                }
+                elseif ($subCode1 == '07') {
+                    $description .= ' - Dokumen Pengelolaan Barang Milik Negara/Daerah';
+                }
+                elseif ($subCode1 == '08') {
+                    $description .= ' - Dokumen Piutang Daerah';
+                }
+                elseif ($subCode1 == '09') {
+                    $description .= ' - Dokumen Pengelolaan Investasi';
+                }
+                elseif ($subCode1 == '10') {
+                    $description .= ' - Dokumen Belanja Langsung';
+                    if ($subCode2 == '01') $description .= ' - Belanja Pegawai';
+                    elseif ($subCode2 == '02') $description .= ' - Belanja Barang Jasa';
+                    elseif ($subCode2 == '03') $description .= ' - Belanja Modal';
+                }
+                elseif ($subCode1 == '11') {
+                    $description .= ' - Dokumen Belanja Tidak Langsung';
+                    if ($subCode2 == '01') $description .= ' - Pegawai';
+                    elseif ($subCode2 == '02') $description .= ' - Hibah';
+                    elseif ($subCode2 == '03') $description .= ' - Belanja Bagi Hasil';
+                    elseif ($subCode2 == '04') $description .= ' - Subsidi';
+                    elseif ($subCode2 == '05') $description .= ' - Bunga';
+                    elseif ($subCode2 == '06') $description .= ' - Bantuan Sosial';
+                    elseif ($subCode2 == '07') $description .= ' - Bantuan Keuangan Pemerintah Pusat';
+                    elseif ($subCode2 == '08') $description .= ' - Belanja Tidak Terduga';
                 }
             }
             elseif ($mainCode == '04') {
-                $description = 'Dokumen Penerimaan Lain-Lain Pendapatan yang Sah';
+                $description = 'Pembiayaan Daerah';
                 if ($subCode1 == '01') {
                     $description .= ' - Bukti Penerimaan Pembiayaan';
                     if ($subCode2 == '01') $description .= ' - SiLPA';

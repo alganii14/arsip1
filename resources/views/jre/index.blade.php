@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Alert Messages -->
             @if(session('success'))
             <div class="row">
@@ -46,7 +46,7 @@
                 </div>
             </div>
             @endif
-            
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border shadow-xs">
@@ -54,13 +54,13 @@
                             <div class="d-sm-flex align-items-center">
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">Daftar Arsip di JRE</h6>
-                                    <p class="text-sm">Arsip yang telah melewati masa retensi (5 tahun)</p>
+                                    <p class="text-sm">Arsip yang telah otomatis dipindahkan karena masa retensi sudah berakhir (5 tahun)</p>
                                 </div>
                                 <div class="ms-auto d-flex">
                                     <form action="{{ route('jre.check-retention') }}" method="POST" class="me-3">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-sync-alt me-1"></i> Cek Arsip untuk JRE
+                                            <i class="fas fa-sync-alt me-1"></i> Sinkronisasi Arsip JRE
                                         </button>
                                     </form>
                                     <div class="input-group w-sm-25 ms-auto">
@@ -111,7 +111,7 @@
                                                 @php
                                                     $statusClass = 'info';
                                                     $statusText = 'Inaktif';
-                                                    
+
                                                     if($jre->status == 'inactive') {
                                                         $statusClass = 'info';
                                                         $statusText = 'Inaktif';

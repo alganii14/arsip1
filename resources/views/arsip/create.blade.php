@@ -466,63 +466,70 @@
                                                     <option value="KU.02.05" {{ old('kategori') == 'KU.02.05' ? 'selected' : '' }}>02.05 - Dokumen Pelaksanaan Anggaran (DPA) SKPD yang telah disahkan oleh Pejabat Pengelola Keuangan Daerah</option>
 
                                                     <option value="KU.03" {{ old('kategori') == 'KU.03' ? 'selected' : '' }}>03 - Pelaksanaan Anggaran</option>
-                                                    <option value="KU.03.01" {{ old('kategori') == 'KU.03.01' ? 'selected' : '' }}>03.01 - Pendapatan</option>
-                                                    <option value="KU.03.01.01" {{ old('kategori') == 'KU.03.01.01' ? 'selected' : '' }}>03.01.01 - Pendapatan Asli Daerah</option>
-                                                    <option value="KU.03.01.01.01" {{ old('kategori') == 'KU.03.01.01.01' ? 'selected' : '' }}>03.01.01.01 - Retribusi Daerah</option>
-                                                    <option value="KU.03.01.01.02" {{ old('kategori') == 'KU.03.01.01.02' ? 'selected' : '' }}>03.01.01.02 - Hasil Perusahaan Milik Daerah dan Hasil Pengelolaan Kekayaan Daerah yang Dipisahkan</option>
-                                                    <option value="KU.03.01.01.03" {{ old('kategori') == 'KU.03.01.01.03' ? 'selected' : '' }}>03.01.01.03 - Lain-Lain Pendapatan Asli Daerah Yang Sah</option>
-                                                    <option value="KU.03.01.02" {{ old('kategori') == 'KU.03.01.02' ? 'selected' : '' }}>03.01.02 - Dana Perimbangan</option>
-                                                    <option value="KU.03.01.02.01" {{ old('kategori') == 'KU.03.01.02.01' ? 'selected' : '' }}>03.01.02.01 - Dana Bagi Hasil</option>
-                                                    <option value="KU.03.01.02.02" {{ old('kategori') == 'KU.03.01.02.02' ? 'selected' : '' }}>03.01.02.02 - Dana Alokasi Umum</option>
-                                                    <option value="KU.03.01.02.03" {{ old('kategori') == 'KU.03.01.02.03' ? 'selected' : '' }}>03.01.02.03 - Dana Alokasi Khusus</option>
-                                                    <option value="KU.03.01.03" {{ old('kategori') == 'KU.03.01.03' ? 'selected' : '' }}>03.01.03 - Lain-Lain Pendapatan Daerah Yang Sah</option>
-                                                    <option value="KU.03.01.03.01" {{ old('kategori') == 'KU.03.01.03.01' ? 'selected' : '' }}>03.01.03.01 - Hibah</option>
-                                                    <option value="KU.03.01.03.02" {{ old('kategori') == 'KU.03.01.03.02' ? 'selected' : '' }}>03.01.03.02 - Dana Darurat</option>
-                                                    <option value="KU.03.01.03.03" {{ old('kategori') == 'KU.03.01.03.03' ? 'selected' : '' }}>03.01.03.03 - Dana Bagi Hasil Pajak dari Provinsi dan Pemerintah Daerah Lainnya</option>
-                                                    <option value="KU.03.01.03.04" {{ old('kategori') == 'KU.03.01.03.04' ? 'selected' : '' }}>03.01.03.04 - Dana Penyesuaian dan Otonomi Khusus</option>
-                                                    <option value="KU.03.01.03.05" {{ old('kategori') == 'KU.03.01.03.05' ? 'selected' : '' }}>03.01.03.05 - Bantuan Keuangan dari Provinsi atau Pemerintah Daerah Lainnya</option>
+                                                    <option value="KU.03.01" {{ old('kategori') == 'KU.03.01' ? 'selected' : '' }}>03.01 - Surat Penyedia Dana (SPP, SPM, dan SP2D): UP, GU, TU, LS</option>
 
-                                                    <option value="KU.03.02" {{ old('kategori') == 'KU.03.02' ? 'selected' : '' }}>03.02 - Belanja</option>
-                                                    <option value="KU.03.02.01" {{ old('kategori') == 'KU.03.02.01' ? 'selected' : '' }}>03.02.01 - Belanja Operasi</option>
-                                                    <option value="KU.03.02.01.01" {{ old('kategori') == 'KU.03.02.01.01' ? 'selected' : '' }}>03.02.01.01 - Belanja Pegawai</option>
-                                                    <option value="KU.03.02.01.02" {{ old('kategori') == 'KU.03.02.01.02' ? 'selected' : '' }}>03.02.01.02 - Belanja Barang dan Jasa</option>
-                                                    <option value="KU.03.02.01.03" {{ old('kategori') == 'KU.03.02.01.03' ? 'selected' : '' }}>03.02.01.03 - Belanja Bunga</option>
-                                                    <option value="KU.03.02.01.04" {{ old('kategori') == 'KU.03.02.01.04' ? 'selected' : '' }}>03.02.01.04 - Belanja Subsidi</option>
-                                                    <option value="KU.03.02.01.05" {{ old('kategori') == 'KU.03.02.01.05' ? 'selected' : '' }}>03.02.01.05 - Belanja Hibah</option>
-                                                    <option value="KU.03.02.01.06" {{ old('kategori') == 'KU.03.02.01.06' ? 'selected' : '' }}>03.02.01.06 - Belanja Bantuan Sosial</option>
-                                                    <option value="KU.03.02.02" {{ old('kategori') == 'KU.03.02.02' ? 'selected' : '' }}>03.02.02 - Belanja Modal</option>
-                                                    <option value="KU.03.02.02.01" {{ old('kategori') == 'KU.03.02.02.01' ? 'selected' : '' }}>03.02.02.01 - Belanja Tanah</option>
-                                                    <option value="KU.03.02.02.02" {{ old('kategori') == 'KU.03.02.02.02' ? 'selected' : '' }}>03.02.02.02 - Belanja Peralatan dan Mesin</option>
-                                                    <option value="KU.03.02.02.03" {{ old('kategori') == 'KU.03.02.02.03' ? 'selected' : '' }}>03.02.02.03 - Belanja Gedung dan Bangunan</option>
-                                                    <option value="KU.03.02.02.04" {{ old('kategori') == 'KU.03.02.02.04' ? 'selected' : '' }}>03.02.02.04 - Belanja Jalan, Irigasi dan Jaringan</option>
-                                                    <option value="KU.03.02.02.05" {{ old('kategori') == 'KU.03.02.02.05' ? 'selected' : '' }}>03.02.02.05 - Belanja Aset Tetap Lainnya</option>
-                                                    <option value="KU.03.02.02.06" {{ old('kategori') == 'KU.03.02.02.06' ? 'selected' : '' }}>03.02.02.06 - Belanja Aset Lainnya</option>
-                                                    <option value="KU.03.02.03" {{ old('kategori') == 'KU.03.02.03' ? 'selected' : '' }}>03.02.03 - Belanja Tak Terduga</option>
-                                                    <option value="KU.03.02.03.01" {{ old('kategori') == 'KU.03.02.03.01' ? 'selected' : '' }}>03.02.03.01 - Belanja Tak Terduga</option>
+                                                    <option value="KU.03.02" {{ old('kategori') == 'KU.03.02' ? 'selected' : '' }}>03.02 - Pendapatan Asli Daerah</option>
+                                                    <option value="KU.03.02.01" {{ old('kategori') == 'KU.03.02.01' ? 'selected' : '' }}>03.02.01 - Surat Setoran Pajak (SSP) Daerah Pajak Kendaraan Bermotor</option>
+                                                    <option value="KU.03.02.02" {{ old('kategori') == 'KU.03.02.02' ? 'selected' : '' }}>03.02.02 - Surat Setoran Pajak (SSP) Daerah Pajak Bea Balik Nama Kendaraan Bermotor (BBNKB)</option>
+                                                    <option value="KU.03.02.03" {{ old('kategori') == 'KU.03.02.03' ? 'selected' : '' }}>03.02.03 - Surat Setoran Pajak (SSP) Daerah Pajak Bahan Bakar Kendaraan Bermotor (PBBKB)</option>
+                                                    <option value="KU.03.02.04" {{ old('kategori') == 'KU.03.02.04' ? 'selected' : '' }}>03.02.04 - Surat Setoran Pajak (SSP) Daerah Pajak Air Permukaan</option>
+                                                    <option value="KU.03.02.05" {{ old('kategori') == 'KU.03.02.05' ? 'selected' : '' }}>03.02.05 - Surat Setoran Pajak (SSP) Daerah Pajak Rokok</option>
+                                                    <option value="KU.03.02.06" {{ old('kategori') == 'KU.03.02.06' ? 'selected' : '' }}>03.02.06 - Surat Ketetapan Retribusi Daerah</option>
+                                                    <option value="KU.03.02.07" {{ old('kategori') == 'KU.03.02.07' ? 'selected' : '' }}>03.02.07 - Bukti Pembayaran Retribusi Jasa Umum</option>
+                                                    <option value="KU.03.02.08" {{ old('kategori') == 'KU.03.02.08' ? 'selected' : '' }}>03.02.08 - Bukti Pembayaran Retribusi Jasa Usaha</option>
+                                                    <option value="KU.03.02.09" {{ old('kategori') == 'KU.03.02.09' ? 'selected' : '' }}>03.02.09 - Bukti Pembayaran Retribusi Perizinan Tertentu</option>
+                                                    <option value="KU.03.02.10" {{ old('kategori') == 'KU.03.02.10' ? 'selected' : '' }}>03.02.10 - Bukti Pembayaran Retribusi Pengendalian Lalu Lintas</option>
+                                                    <option value="KU.03.02.11" {{ old('kategori') == 'KU.03.02.11' ? 'selected' : '' }}>03.02.11 - Bukti Pembayaran Retribusi Perpanjangan Izin Mempekerjakan Tenaga Kerja Asing (IMTA)</option>
+                                                    <option value="KU.03.02.12" {{ old('kategori') == 'KU.03.02.12' ? 'selected' : '' }}>03.02.12 - Bukti Penerimaan Jasa Layanan Kesehatan Masyarakat</option>
+                                                    <option value="KU.03.02.13" {{ old('kategori') == 'KU.03.02.13' ? 'selected' : '' }}>03.02.13 - Dokumen Rasionalitas Hasil Pengelolaan Kekayaan Daerah</option>
+                                                    <option value="KU.03.02.14" {{ old('kategori') == 'KU.03.02.14' ? 'selected' : '' }}>03.02.14 - Bukti Penerimaan SKPD dari Badan Pengelolaan Pendapatan Daerah</option>
+                                                    <option value="KU.03.02.15" {{ old('kategori') == 'KU.03.02.15' ? 'selected' : '' }}>03.02.15 - Bukti Penerimaan dari Pengelolaan Dana Bergulir</option>
+                                                    <option value="KU.03.02.16" {{ old('kategori') == 'KU.03.02.16' ? 'selected' : '' }}>03.02.16 - Bukti Penerimaan Bunga dan atau Jasa Giro pada Bank</option>
 
-                                                    <option value="KU.03.03" {{ old('kategori') == 'KU.03.03' ? 'selected' : '' }}>03.03 - Pembiayaan</option>
-                                                    <option value="KU.03.03.01" {{ old('kategori') == 'KU.03.03.01' ? 'selected' : '' }}>03.03.01 - Penerimaan Pembiayaan</option>
-                                                    <option value="KU.03.03.01.01" {{ old('kategori') == 'KU.03.03.01.01' ? 'selected' : '' }}>03.03.01.01 - Sisa Lebih Perhitungan Anggaran Tahun Anggaran Sebelumnya</option>
-                                                    <option value="KU.03.03.01.02" {{ old('kategori') == 'KU.03.03.01.02' ? 'selected' : '' }}>03.03.01.02 - Pencairan Dana Cadangan</option>
-                                                    <option value="KU.03.03.01.03" {{ old('kategori') == 'KU.03.03.01.03' ? 'selected' : '' }}>03.03.01.03 - Hasil Penjualan Kekayaan Daerah yang Dipisahkan</option>
-                                                    <option value="KU.03.03.01.04" {{ old('kategori') == 'KU.03.03.01.04' ? 'selected' : '' }}>03.03.01.04 - Penerimaan Pinjaman Daerah</option>
-                                                    <option value="KU.03.03.01.05" {{ old('kategori') == 'KU.03.03.01.05' ? 'selected' : '' }}>03.03.01.05 - Penerimaan Kembali Pemberian Pinjaman</option>
-                                                    <option value="KU.03.03.01.06" {{ old('kategori') == 'KU.03.03.01.06' ? 'selected' : '' }}>03.03.01.06 - Penerimaan Piutang Daerah</option>
-                                                    <option value="KU.03.03.02" {{ old('kategori') == 'KU.03.03.02' ? 'selected' : '' }}>03.03.02 - Pengeluaran Pembiayaan</option>
-                                                    <option value="KU.03.03.02.01" {{ old('kategori') == 'KU.03.03.02.01' ? 'selected' : '' }}>03.03.02.01 - Pembentukan Dana Cadangan</option>
-                                                    <option value="KU.03.03.02.02" {{ old('kategori') == 'KU.03.03.02.02' ? 'selected' : '' }}>03.03.02.02 - Penyertaan Modal (Investasi) Pemerintah Daerah</option>
-                                                    <option value="KU.03.03.02.03" {{ old('kategori') == 'KU.03.03.02.03' ? 'selected' : '' }}>03.03.02.03 - Pembayaran Pokok Utang</option>
-                                                    <option value="KU.03.03.02.04" {{ old('kategori') == 'KU.03.03.02.04' ? 'selected' : '' }}>03.03.02.04 - Pemberian Pinjaman Daerah</option>
+                                                    <option value="KU.03.03" {{ old('kategori') == 'KU.03.03' ? 'selected' : '' }}>03.03 - Dokumen Penerimaan Dana Perimbangan</option>
+                                                    <option value="KU.03.03.01" {{ old('kategori') == 'KU.03.03.01' ? 'selected' : '' }}>03.03.01 - Dana Bagi Hasil yang Bersumber dari Pajak dan Bukan Pajak</option>
+                                                    <option value="KU.03.03.02" {{ old('kategori') == 'KU.03.03.02' ? 'selected' : '' }}>03.03.02 - Dana Bagi Hasil untuk Kota</option>
+                                                    <option value="KU.03.03.03" {{ old('kategori') == 'KU.03.03.03' ? 'selected' : '' }}>03.03.03 - Dana Alokasi Umum (Dana Alokasi Umum)</option>
+                                                    <option value="KU.03.03.04" {{ old('kategori') == 'KU.03.03.04' ? 'selected' : '' }}>03.03.04 - Daerah yang Menerima DAU</option>
+                                                    <option value="KU.03.03.05" {{ old('kategori') == 'KU.03.03.05' ? 'selected' : '' }}>03.03.05 - Dana Alokasi Khusus (DAK)</option>
 
-                                                    <option value="KU.04" {{ old('kategori') == 'KU.04' ? 'selected' : '' }}>04 - Dokumen Penerimaan Lain-Lain Pendapatan yang Sah</option>
+                                                    <option value="KU.03.04" {{ old('kategori') == 'KU.03.04' ? 'selected' : '' }}>03.04 - Dokumen Penerimaan Lain-lain Pendapatan yang Sah</option>
+                                                    <option value="KU.03.04.01" {{ old('kategori') == 'KU.03.04.01' ? 'selected' : '' }}>03.04.01 - Alokasi Dana Penyesuaian</option>
+                                                    <option value="KU.03.04.02" {{ old('kategori') == 'KU.03.04.02' ? 'selected' : '' }}>03.04.02 - Dana Otonomi Khusus dan Bantuan Operasional Sekolah</option>
+                                                    <option value="KU.03.04.03" {{ old('kategori') == 'KU.03.04.03' ? 'selected' : '' }}>03.04.03 - Bagi Hasil Pajak dari Pemerintah Pusat</option>
+                                                    <option value="KU.03.04.04" {{ old('kategori') == 'KU.03.04.04' ? 'selected' : '' }}>03.04.04 - Bantuan Keuangan Pemerintah Pusat</option>
+                                                    <option value="KU.03.04.05" {{ old('kategori') == 'KU.03.04.05' ? 'selected' : '' }}>03.04.05 - Penerimaan Hibat yang Bersumber dari APBN, Pemerintah Daerah Lainnya atau Sumbangan dari Pihak Ketiga</option>
+
+                                                    <option value="KU.03.05" {{ old('kategori') == 'KU.03.05' ? 'selected' : '' }}>03.05 - Surat Setoran Bukan Pajak (SSBP)</option>
+                                                    <option value="KU.03.06" {{ old('kategori') == 'KU.03.06' ? 'selected' : '' }}>03.06 - Penerimaan Sisa Lebih Perhitungan Anggaran (SiLPA)</option>
+                                                    <option value="KU.03.07" {{ old('kategori') == 'KU.03.07' ? 'selected' : '' }}>03.07 - Dokumen Pengelolaan Barang Milik Negara/Daerah</option>
+                                                    <option value="KU.03.08" {{ old('kategori') == 'KU.03.08' ? 'selected' : '' }}>03.08 - Dokumen Piutang Daerah</option>
+                                                    <option value="KU.03.09" {{ old('kategori') == 'KU.03.09' ? 'selected' : '' }}>03.09 - Dokumen Pengelolaan Investasi</option>
+
+                                                    <option value="KU.03.10" {{ old('kategori') == 'KU.03.10' ? 'selected' : '' }}>03.10 - Dokumen Belanja Langsung</option>
+                                                    <option value="KU.03.10.01" {{ old('kategori') == 'KU.03.10.01' ? 'selected' : '' }}>03.10.01 - Belanja Pegawai</option>
+                                                    <option value="KU.03.10.02" {{ old('kategori') == 'KU.03.10.02' ? 'selected' : '' }}>03.10.02 - Belanja Barang Jasa</option>
+                                                    <option value="KU.03.10.03" {{ old('kategori') == 'KU.03.10.03' ? 'selected' : '' }}>03.10.03 - Belanja Modal</option>
+
+                                                    <option value="KU.03.11" {{ old('kategori') == 'KU.03.11' ? 'selected' : '' }}>03.11 - Dokumen Belanja Tidak Langsung</option>
+                                                    <option value="KU.03.11.01" {{ old('kategori') == 'KU.03.11.01' ? 'selected' : '' }}>03.11.01 - Pegawai</option>
+                                                    <option value="KU.03.11.02" {{ old('kategori') == 'KU.03.11.02' ? 'selected' : '' }}>03.11.02 - Hibah</option>
+                                                    <option value="KU.03.11.03" {{ old('kategori') == 'KU.03.11.03' ? 'selected' : '' }}>03.11.03 - Belanja Bagi Hasil</option>
+                                                    <option value="KU.03.11.04" {{ old('kategori') == 'KU.03.11.04' ? 'selected' : '' }}>03.11.04 - Subsidi</option>
+                                                    <option value="KU.03.11.05" {{ old('kategori') == 'KU.03.11.05' ? 'selected' : '' }}>03.11.05 - Bunga</option>
+                                                    <option value="KU.03.11.06" {{ old('kategori') == 'KU.03.11.06' ? 'selected' : '' }}>03.11.06 - Bantuan Sosial</option>
+                                                    <option value="KU.03.11.07" {{ old('kategori') == 'KU.03.11.07' ? 'selected' : '' }}>03.11.07 - Bantuan Keuangan Pemerintah Pusat</option>
+                                                    <option value="KU.03.11.08" {{ old('kategori') == 'KU.03.11.08' ? 'selected' : '' }}>03.11.08 - Belanja Tidak Terduga</option>
+
+                                                    <option value="KU.04" {{ old('kategori') == 'KU.04' ? 'selected' : '' }}>04 - Pembiayaan Daerah</option>
                                                     <option value="KU.04.01" {{ old('kategori') == 'KU.04.01' ? 'selected' : '' }}>04.01 - Bukti Penerimaan Pembiayaan</option>
                                                     <option value="KU.04.01.01" {{ old('kategori') == 'KU.04.01.01' ? 'selected' : '' }}>04.01.01 - SiLPA</option>
                                                     <option value="KU.04.01.02" {{ old('kategori') == 'KU.04.01.02' ? 'selected' : '' }}>04.01.02 - Dana Cadangan</option>
-                                                    <option value="KU.04.01.03" {{ old('kategori') == 'KU.04.01.03' ? 'selected' : '' }}>04.01.03 - Dana Berguir</option>
+                                                    <option value="KU.04.01.03" {{ old('kategori') == 'KU.04.01.03' ? 'selected' : '' }}>04.01.03 - Dana Bergulir</option>
                                                     <option value="KU.04.01.04" {{ old('kategori') == 'KU.04.01.04' ? 'selected' : '' }}>04.01.04 - Pinjaman Daerah</option>
                                                     <option value="KU.04.01.05" {{ old('kategori') == 'KU.04.01.05' ? 'selected' : '' }}>04.01.05 - Pengalihan Piutang PBB P2 menjadi PAD</option>
                                                     <option value="KU.04.02" {{ old('kategori') == 'KU.04.02' ? 'selected' : '' }}>04.02 - Bukti Pengeluaran Pembiayaan</option>
-                                                    <option value="KU.04.02.01" {{ old('kategori') == 'KU.04.02.01' ? 'selected' : '' }}>04.02.01 - Investasi Jangka Panjang dalam Bentuk Dana Berguir</option>
+                                                    <option value="KU.04.02.01" {{ old('kategori') == 'KU.04.02.01' ? 'selected' : '' }}>04.02.01 - Investasi Jangka Panjang dalam Bentuk Dana Bergulir</option>
                                                     <option value="KU.04.02.02" {{ old('kategori') == 'KU.04.02.02' ? 'selected' : '' }}>04.02.02 - Penyertaan Modal pada BUMD</option>
                                                     <option value="KU.04.02.03" {{ old('kategori') == 'KU.04.02.03' ? 'selected' : '' }}>04.02.03 - Penambahan Penyertaan Modal pada BUMD</option>
                                                     <option value="KU.04.02.04" {{ old('kategori') == 'KU.04.02.04' ? 'selected' : '' }}>04.02.04 - Pengeluaran dari Dana Cadangan</option>
@@ -701,18 +708,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-4">
-                                            <label for="lokasi" class="form-control-label text-sm">Lokasi Penyimpanan</label>
-                                            <input type="text" class="form-control @error('lokasi') is-invalid @enderror" id="lokasi" name="lokasi" value="{{ old('lokasi') }}">
-                                            @error('lokasi')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <small class="form-text text-muted">
-                                                Lokasi penyimpanan fisik arsip (opsional)
-                                            </small>
-                                        </div>
-                                    </div>
+
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">

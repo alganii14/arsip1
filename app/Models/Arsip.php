@@ -45,6 +45,7 @@ class Arsip extends Model
     {
         return $this->peminjaman()
             ->whereIn('status', ['dipinjam', 'terlambat'])
+            ->where('confirmation_status', 'approved')
             ->exists();
     }
 
@@ -60,7 +61,8 @@ class Arsip extends Model
     {
         // Set retention date to 5 years after tanggal_arsip
         if ($this->tanggal_arsip) {
-            $this->retention_date = Carbon::parse($this->tanggal_arsip)->addYears(5);
+            $date = Carbon::parse($this->attributes['tanggal_arsip'])->addYears(5);
+            $this->attributes['retention_date'] = $date->format('Y-m-d');
             $this->save();
         }
     }
@@ -68,18 +70,32 @@ class Arsip extends Model
     public function shouldMoveToJre()
     {
         if (!$this->is_archived_to_jre && $this->retention_date) {
-            return Carbon::now()->gte($this->retention_date);
+            $today = Carbon::today();
+            $retentionDate = Carbon::parse($this->attributes['retention_date']);
+            return $today->gte($retentionDate);
         }
         return false;
     }
 
     public function shouldShowRetentionNotification()
     {
-        if (!$this->has_retention_notification && $this->retention_date) {
-            // Only show notification when retention date has been reached
-            return Carbon::now()->gte($this->retention_date);
+        // Since we auto-move to JRE, this is only for display purposes
+        if (!$this->is_archived_to_jre && $this->retention_date) {
+            $today = Carbon::today();
+            $retentionDate = Carbon::parse($this->attributes['retention_date']);
+            return $today->gte($retentionDate);
         }
         return false;
+    }
+
+    public function autoMoveToJreIfExpired()
+    {
+        if ($this->shouldMoveToJre()) {
+            $this->has_retention_notification = true;
+            $this->save();
+            return $this->moveToJre('Automatically moved to JRE when retention date reached');
+        }
+        return null;
     }
 
     public function moveToJre($notes = null)

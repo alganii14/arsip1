@@ -44,18 +44,22 @@ class DocumentNumberExtractor
         }
 
         $content = null;
+        $firstPageContent = null;
 
         // Extract content berdasarkan tipe file
         switch ($extension) {
             case 'pdf':
                 Log::info("DocumentNumberExtractor: Extracting from PDF file");
-                $content = self::extractFromPdf($file);
+                $pdfData = self::extractFromPdf($file);
+                $content = $pdfData['fullContent'];
+                $firstPageContent = $pdfData['firstPageContent'];
                 break;
 
             case 'doc':
             case 'docx':
                 Log::info("DocumentNumberExtractor: Extracting from Word file");
                 $content = self::extractFromWord($file);
+                $firstPageContent = $content; // Word files don't have clear page separation
                 break;
 
             case 'jpg':
@@ -64,11 +68,13 @@ class DocumentNumberExtractor
                 Log::info("DocumentNumberExtractor: Processing image file (filename only)");
                 // Untuk gambar, gunakan nama file saja karena butuh OCR untuk baca isi
                 $content = $fileName;
+                $firstPageContent = $fileName;
                 break;
 
             default:
                 Log::info("DocumentNumberExtractor: Using filename for unsupported file type");
                 $content = $fileName;
+                $firstPageContent = $fileName;
                 break;
         }
 
@@ -90,16 +96,53 @@ class DocumentNumberExtractor
                 $result['documentDate'] = $docDate;
             }
 
-            // Extract document name/subject
-            $docName = self::findDocumentName($content);
+            // Extract document name/subject - prioritize first page for multi-page documents
+            $docName = null;
+            if (!empty($firstPageContent)) {
+                $docName = self::findDocumentName($firstPageContent);
+                if ($docName) {
+                    Log::info("DocumentNumberExtractor: Found document name in first page: {$docName}");
+                } else {
+                    Log::info("DocumentNumberExtractor: No document name found in first page, searching full content");
+                    $docName = self::findDocumentName($content);
+                    if ($docName) {
+                        Log::info("DocumentNumberExtractor: Found document name in full content: {$docName}");
+                    }
+                }
+            } else {
+                $docName = self::findDocumentName($content);
+                if ($docName) {
+                    Log::info("DocumentNumberExtractor: Found document name in content: {$docName}");
+                }
+            }
+
             if ($docName) {
-                Log::info("DocumentNumberExtractor: Found document name in content: {$docName}");
                 $result['documentName'] = $docName;
             }
         }
 
         if (!$result['documentNumber'] && !$result['documentDate'] && !$result['documentName']) {
             Log::warning("DocumentNumberExtractor: No document data found in file: {$fileName}");
+        }
+
+        // Filter out unwanted fields that shouldn't be extracted
+        if (!empty($result['documentName'])) {
+            $unwantedFields = ['Sifat', 'Lampiran', 'Biasa', 'Rahasia', 'Terbatas'];
+
+            foreach ($unwantedFields as $field) {
+                if (stripos($result['documentName'], $field) === 0) {
+                    // If document name starts with unwanted field, try to extract again with filtered content
+                    $filteredContent = preg_replace('/^(Sifat|Lampiran)\s*:\s*[^\n\r]*[\n\r]*/im', '', $firstPageContent ?? $content);
+                    if ($filteredContent !== ($firstPageContent ?? $content)) {
+                        $newDocName = self::findDocumentName($filteredContent);
+                        if ($newDocName && !in_array(strtolower($newDocName), array_map('strtolower', $unwantedFields))) {
+                            $result['documentName'] = $newDocName;
+                            Log::info("DocumentNumberExtractor: Filtered out unwanted field, new document name: {$newDocName}");
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         return $result;
@@ -130,13 +173,14 @@ class DocumentNumberExtractor
         try {
             if (!class_exists('\\Smalot\\PdfParser\\Parser')) {
                 Log::warning("DocumentNumberExtractor: PDF Parser not available");
-                return null;
+                return ['fullContent' => null, 'firstPageContent' => null];
             }
 
             $parser = new Parser();
             $pdf = $parser->parseFile($file->getPathname());
 
-            $text = '';
+            $fullText = '';
+            $firstPageText = '';
             $pages = $pdf->getPages();
 
             Log::info("DocumentNumberExtractor: PDF has " . count($pages) . " pages");
@@ -146,7 +190,7 @@ class DocumentNumberExtractor
             if (!empty($details)) {
                 foreach ($details as $key => $value) {
                     if (is_string($value)) {
-                        $text .= $key . ': ' . $value . "\n";
+                        $fullText .= $key . ': ' . $value . "\n";
                     }
                 }
             }
@@ -154,24 +198,33 @@ class DocumentNumberExtractor
             // Proses halaman-halaman
             foreach ($pages as $i => $page) {
                 $pageText = $page->getText();
-                $text .= $pageText . "\n";
+                $fullText .= $pageText . "\n";
+
+                // Simpan konten halaman pertama secara terpisah
+                if ($i === 0) {
+                    $firstPageText = $pageText;
+                    Log::info("DocumentNumberExtractor: First page text length: " . strlen($firstPageText));
+                }
 
                 Log::info("DocumentNumberExtractor: Processed page " . ($i+1) . ", text length: " . strlen($pageText));
 
-                // Jika sudah menemukan indikator nomor dokumen, bisa berhenti
-                if (preg_match('/Nomor\s*:/i', $pageText) && preg_match('/AR[\.\s\/]?\d{2}[\.\s\/]?\d{2}/i', $pageText)) {
+                // Jika sudah menemukan indikator nomor dokumen di halaman pertama, bisa berhenti
+                if ($i === 0 && preg_match('/Nomor\s*:/i', $pageText) && preg_match('/AR[\.\s\/]?\d{2}[\.\s\/]?\d{2}/i', $pageText)) {
                     Log::info("DocumentNumberExtractor: Found document number indicators on page " . ($i+1));
                     break;
                 }
             }
 
-            Log::info("DocumentNumberExtractor: Total extracted text length: " . strlen($text));
+            Log::info("DocumentNumberExtractor: Total extracted text length: " . strlen($fullText));
 
-            return $text;
+            return [
+                'fullContent' => $fullText,
+                'firstPageContent' => $firstPageText
+            ];
 
         } catch (\Exception $e) {
             Log::error("DocumentNumberExtractor: PDF extraction error: " . $e->getMessage());
-            return null;
+            return ['fullContent' => null, 'firstPageContent' => null];
         }
     }
 
@@ -610,36 +663,48 @@ class DocumentNumberExtractor
             return null;
         }
 
-        Log::info("DocumentNumberExtractor: Analyzing content for document name, length: " . strlen($content));
+        try {
+            Log::info("DocumentNumberExtractor: Analyzing content for document name, length: " . strlen($content));
+        } catch (\Exception $e) {
+            // Log not available, continue without logging
+        }
 
         // Pola-pola untuk mencari nama/subjek dokumen
         $patterns = [
-            // Format: Hal : Laporan Monev SRIKANDI
-            '/Hal\s*:\s*([^\n\r]+)/i',
+            // Format: Hal : Penyerahan SK Kenaikan Pangkat
+            //         Periode Desember 2024 (multi-line support, stop at Yth. or Kepada)
+            '/Hal\s*:\s*(.*?)(?=\n\s*Yth\.|\n\s*Kepada|\n\s*\n)/s',
 
             // Format: Subject : ...
-            '/Subject\s*:\s*([^\n\r]+)/i',
+            '/Subject\s*:\s*(.*?)(?=\n\s*Yth\.|\n\s*Kepada|\n\s*\n)/s',
 
             // Format: Perihal : ...
-            '/Perihal\s*:\s*([^\n\r]+)/i',
+            '/Perihal\s*:\s*(.*?)(?=\n\s*Yth\.|\n\s*Kepada|\n\s*\n)/s',
 
             // Format: Tentang : ...
-            '/Tentang\s*:\s*([^\n\r]+)/i',
+            '/Tentang\s*:\s*(.*?)(?=\n\s*Yth\.|\n\s*Kepada|\n\s*\n)/s',
 
             // Format: Re : ...
             '/Re\s*:\s*([^\n\r]+)/i',
 
             // Look for document titles after headers like "NOTA DINAS"
-            '/NOTA\s+DINAS[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\nHal\s*:\s*([^\n\r]+)/i',
+            '/NOTA\s+DINAS[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\n[^\n\r]*\nHal\s*:\s*(.*?)(?=\n\s*Yth\.|\n\s*Kepada|\n\s*\n)/s',
 
             // Look for specific patterns in SRIKANDI documents
             '/Laporan\s+Monev\s+SRIKANDI/i',
             '/MONEV\s+SRIKANDI/i',
         ];
 
+        // Fields to skip/ignore - these are document metadata, not document names
+        $skipFields = ['Sifat', 'Lampiran', 'Nomor', 'Tanggal', 'Dari', 'Kepada'];
+
         foreach ($patterns as $index => $pattern) {
             if (preg_match($pattern, $content, $matches)) {
-                Log::info("DocumentNumberExtractor: Found document name with pattern #" . ($index + 1) . ": " . $matches[0]);
+                try {
+                    Log::info("DocumentNumberExtractor: Found document name with pattern #" . ($index + 1) . ": " . $matches[0]);
+                } catch (\Exception $e) {
+                    // Log not available, continue without logging
+                }
 
                 $documentName = null;
 
@@ -654,9 +719,24 @@ class DocumentNumberExtractor
                 // Clean up the document name
                 $documentName = self::cleanDocumentName($documentName);
 
+                // Skip if the document name is just a metadata field
                 if (!empty($documentName)) {
-                    Log::info("DocumentNumberExtractor: Extracted document name: {$documentName}");
-                    return $documentName;
+                    $isSkippedField = false;
+                    foreach ($skipFields as $skipField) {
+                        if (stripos($documentName, $skipField) === 0) {
+                            $isSkippedField = true;
+                            break;
+                        }
+                    }
+
+                    if (!$isSkippedField) {
+                        try {
+                            Log::info("DocumentNumberExtractor: Extracted document name: {$documentName}");
+                        } catch (\Exception $e) {
+                            // Log not available, continue without logging
+                        }
+                        return $documentName;
+                    }
                 }
             }
         }
@@ -665,8 +745,19 @@ class DocumentNumberExtractor
         $fileName = basename($content);
         $cleanFileName = self::extractNameFromFilename($fileName);
         if ($cleanFileName) {
-            Log::info("DocumentNumberExtractor: Extracted document name from filename: {$cleanFileName}");
-            return $cleanFileName;
+            // Check if the filename result is just a metadata field
+            $isSkippedField = false;
+            foreach ($skipFields as $skipField) {
+                if (stripos($cleanFileName, $skipField) === 0) {
+                    $isSkippedField = true;
+                    break;
+                }
+            }
+
+            if (!$isSkippedField) {
+                Log::info("DocumentNumberExtractor: Extracted document name from filename: {$cleanFileName}");
+                return $cleanFileName;
+            }
         }
 
         Log::info("DocumentNumberExtractor: No document name patterns matched");
@@ -681,8 +772,31 @@ class DocumentNumberExtractor
         // Remove common prefixes
         $name = preg_replace('/^(Hal\s*:\s*|Subject\s*:\s*|Perihal\s*:\s*|Tentang\s*:\s*|Re\s*:\s*)/i', '', $name);
 
+        // Remove document type prefixes and malformed prefixes
+        $name = preg_replace('/^(Biasa\s*[-\s]*|Surat\s*Biasa\s*[-\s]*|Sifat\s*[-\s]*|Lampiran\s*[-\s]*)/i', '', $name);
+
+        // Remove malformed prefixes like ": : Biasa -", ": Biasa -", etc.
+        $name = preg_replace('/^[:;\s]*[:;\s]*\s*(Biasa|Sifat|Lampiran)\s*[-\s]*/i', '', $name);
+
+        // More specific pattern for cases like ": : Biasa -"
+        $name = preg_replace('/^:\s*:\s*(Biasa|Sifat|Lampiran)\s*-\s*/i', '', $name);
+
+        // Remove any remaining colons at the beginning
+        $name = preg_replace('/^[:;\s]+/', '', $name);
+
+        // Handle multi-line text - replace newlines with spaces
+        $name = preg_replace('/\s*\n\s*/', ' ', $name);
+
         // Remove extra whitespace
         $name = preg_replace('/\s+/', ' ', $name);
+
+        // Remove unwanted words from the beginning
+        $unwantedWords = ['Sifat', 'Biasa', 'Lampiran', 'Nomor', 'Tanggal'];
+        $words = explode(' ', $name);
+        while (!empty($words) && in_array(ucfirst(strtolower($words[0])), $unwantedWords)) {
+            array_shift($words);
+        }
+        $name = implode(' ', $words);
 
         // Trim
         $name = trim($name);
@@ -714,9 +828,12 @@ class DocumentNumberExtractor
             return 'Draft Nota Dinas Monev';
         }
 
-        // Remove common prefixes like dates, numbers
+        // Remove common prefixes like dates, numbers, and document types
         $name = preg_replace('/^\d{8,14}[-_]?/', '', $name);
         $name = preg_replace('/^DRAFT[-_\s]*/i', '', $name);
+        $name = preg_replace('/^BIASA[-_\s]*/i', '', $name);
+        $name = preg_replace('/^SIFAT[-_\s]*/i', '', $name);
+        $name = preg_replace('/^LAMPIRAN[-_\s]*/i', '', $name);
 
         // Replace underscores and dashes with spaces
         $name = str_replace(['_', '-'], ' ', $name);
@@ -725,6 +842,14 @@ class DocumentNumberExtractor
         $name = preg_replace('/\s+/', ' ', $name);
 
         $name = trim($name);
+
+        // Remove unwanted words from the beginning
+        $unwantedWords = ['Sifat', 'Biasa', 'Lampiran', 'Nomor', 'Tanggal'];
+        $words = explode(' ', $name);
+        while (!empty($words) && in_array(ucfirst(strtolower($words[0])), $unwantedWords)) {
+            array_shift($words);
+        }
+        $name = implode(' ', $words);
 
         // Only return if it's meaningful (more than 3 characters and contains letters)
         if (strlen($name) > 3 && preg_match('/[a-zA-Z]/', $name)) {

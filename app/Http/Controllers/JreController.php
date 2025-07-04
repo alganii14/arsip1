@@ -30,7 +30,7 @@ class JreController extends Controller
         ]);
 
         $arsip = Arsip::findOrFail($request->arsip_id);
-        
+
         // Move to JRE
         $arsip->moveToJre($request->notes);
 
@@ -70,9 +70,9 @@ class JreController extends Controller
         $arsip->is_archived_to_jre = false;
         $arsip->archived_to_jre_at = null;
         $arsip->save();
-        
+
         $jre->delete();
-        
+
         return redirect()->route('jre.index')->with('success', 'Data JRE berhasil dihapus');
     }
 
@@ -83,39 +83,44 @@ class JreController extends Controller
             ->whereNotNull('retention_date')
             ->whereDate('retention_date', '<=', Carbon::now())
             ->get();
-            
+
         $count = 0;
         foreach ($arsipsToMove as $arsip) {
+            // Mark retention notification first
+            $arsip->has_retention_notification = true;
+            $arsip->save();
+
+            // Then automatically move to JRE
             $arsip->moveToJre('Automatically moved to JRE based on retention date');
             $count++;
         }
-        
-        return redirect()->back()->with('success', "$count arsip telah dipindahkan ke JRE");
+
+        return redirect()->back()->with('success', "$count arsip telah otomatis dipindahkan ke JRE");
     }
-    
+
     // Recover archive from JRE
     public function recover(Jre $jre)
     {
         $arsip = $jre->arsip;
-        
+
         // Update JRE status
         $jre->update([
             'status' => 'recovered',
             'notes' => $jre->notes . "\n[" . now() . "] Arsip dipulihkan dari JRE."
         ]);
-        
+
         // Update arsip status
         $arsip->is_archived_to_jre = false;
         $arsip->archived_to_jre_at = null;
         $arsip->has_retention_notification = false;
-        
+
         // Extend retention period by 5 more years from current date
         $arsip->retention_date = Carbon::now()->addYears(5);
         $arsip->save();
-        
+
         return redirect()->route('jre.index')->with('success', 'Arsip berhasil dipulihkan dari JRE dan masa retensi diperpanjang 5 tahun');
     }
-    
+
     // Destroy archive
     public function destroyArchive(Jre $jre)
     {
@@ -124,10 +129,10 @@ class JreController extends Controller
             'status' => 'destroyed',
             'notes' => $jre->notes . "\n[" . now() . "] Arsip dimusnahkan."
         ]);
-        
+
         return redirect()->route('jre.index')->with('success', 'Status arsip berhasil diubah menjadi dimusnahkan');
     }
-    
+
     // Transfer archive
     public function transfer(Request $request, Jre $jre)
     {
@@ -135,14 +140,14 @@ class JreController extends Controller
             'transfer_location' => 'required|string',
             'transfer_notes' => 'nullable|string',
         ]);
-        
+
         // Update JRE status
         $jre->update([
             'status' => 'transferred',
-            'notes' => $jre->notes . "\n[" . now() . "] Arsip dipindahkan ke: " . $request->transfer_location . 
+            'notes' => $jre->notes . "\n[" . now() . "] Arsip dipindahkan ke: " . $request->transfer_location .
                       ($request->transfer_notes ? "\nCatatan: " . $request->transfer_notes : "")
         ]);
-        
+
         return redirect()->route('jre.index')->with('success', 'Status arsip berhasil diubah menjadi dipindahkan');
     }
 }

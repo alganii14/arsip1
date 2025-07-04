@@ -118,6 +118,11 @@ Route::middleware('auth')->group(function () {
         Route::get('peminjaman/{peminjaman}/return', [PeminjamanArsipController::class, 'returnForm'])->name('peminjaman.return-form');
         Route::post('peminjaman/{peminjaman}/process-return', [PeminjamanArsipController::class, 'processReturn'])->name('peminjaman.process-return');
         Route::post('peminjaman/check-overdue', [PeminjamanArsipController::class, 'checkOverdue'])->name('peminjaman.check-overdue');
+
+        // Peminjaman - Admin Confirmation
+        Route::get('peminjaman-pending', [PeminjamanArsipController::class, 'pending'])->name('peminjaman.pending');
+        Route::post('peminjaman/{peminjaman}/approve', [PeminjamanArsipController::class, 'approve'])->name('peminjaman.approve');
+        Route::post('peminjaman/{peminjaman}/reject', [PeminjamanArsipController::class, 'reject'])->name('peminjaman.reject');
     });
 
     // Routes accessible only by admin

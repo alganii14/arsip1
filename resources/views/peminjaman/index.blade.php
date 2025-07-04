@@ -24,6 +24,14 @@
                                     </span>
                                     <span class="btn-inner--text">Tambah Peminjaman</span>
                                 </a>
+                                @if(Auth::user()->isAdmin())
+                                    <a href="{{ route('peminjaman.pending') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
+                                        <span class="btn-inner--icon">
+                                            <i class="fas fa-hourglass-half me-2"></i>
+                                        </span>
+                                        <span class="btn-inner--text">Persetujuan Pending</span>
+                                    </a>
+                                @endif
                                 <a href="{{ route('arsip.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                     <span class="btn-inner--icon">
                                         <i class="fas fa-archive me-2"></i>
@@ -35,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Alert Messages -->
             @if(session('success'))
             <div class="row">
@@ -48,7 +56,7 @@
                 </div>
             </div>
             @endif
-            
+
             @if(session('error'))
             <div class="row">
                 <div class="col-12">
@@ -60,7 +68,7 @@
                 </div>
             </div>
             @endif
-            
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border shadow-xs">
@@ -107,6 +115,7 @@
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Batas Waktu</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Kembali</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Status</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Konfirmasi</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Durasi</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
                                         </tr>
@@ -140,7 +149,7 @@
                                                 @php
                                                     $statusClass = 'primary';
                                                     $statusText = 'Dipinjam';
-                                                    
+
                                                     if($peminjaman->status === 'dipinjam') {
                                                         $statusClass = 'primary';
                                                         $statusText = 'Dipinjam';
@@ -150,10 +159,33 @@
                                                     } elseif($peminjaman->status === 'terlambat') {
                                                         $statusClass = 'danger';
                                                         $statusText = 'Terlambat';
+                                                    } elseif($peminjaman->status === 'pending') {
+                                                        $statusClass = 'warning';
+                                                        $statusText = 'Pending';
                                                     }
                                                 @endphp
                                                 <span class="badge badge-sm border border-{{ $statusClass }} text-{{ $statusClass }} bg-{{ $statusClass }}">
                                                     {{ $statusText }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $confirmationClass = 'secondary';
+                                                    $confirmationText = 'N/A';
+
+                                                    if($peminjaman->confirmation_status === 'pending') {
+                                                        $confirmationClass = 'warning';
+                                                        $confirmationText = 'Pending';
+                                                    } elseif($peminjaman->confirmation_status === 'approved') {
+                                                        $confirmationClass = 'success';
+                                                        $confirmationText = 'Disetujui';
+                                                    } elseif($peminjaman->confirmation_status === 'rejected') {
+                                                        $confirmationClass = 'danger';
+                                                        $confirmationText = 'Ditolak';
+                                                    }
+                                                @endphp
+                                                <span class="badge badge-sm border border-{{ $confirmationClass }} text-{{ $confirmationClass }} bg-{{ $confirmationClass }}">
+                                                    {{ $confirmationText }}
                                                 </span>
                                             </td>
                                             <td>
@@ -166,18 +198,18 @@
                                                     <a href="{{ route('peminjaman.show', $peminjaman->id) }}" class="btn btn-sm btn-info me-2">
                                                         <i class="fas fa-eye me-1"></i> Detail
                                                     </a>
-                                                    
+
                                                     @if(!Auth::user()->isPeminjam())
                                                         @if($peminjaman->status !== 'dikembalikan')
                                                             <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success me-2">
                                                                 <i class="fas fa-undo me-1"></i> Kembalikan
                                                             </a>
                                                         @endif
-                                                        
+
                                                         <a href="{{ route('peminjaman.edit', $peminjaman->id) }}" class="btn btn-sm btn-warning me-2">
                                                             <i class="fas fa-edit me-1"></i> Edit
                                                         </a>
-                                                        
+
                                                         <form action="{{ route('peminjaman.destroy', $peminjaman->id) }}" method="POST" style="display:inline;">
                                                             @csrf @method('DELETE')
                                                             <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data peminjaman ini?')">

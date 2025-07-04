@@ -120,29 +120,28 @@ class ArsipController extends Controller
 
     public function download(Arsip $arsip)
     {
-        if ($arsip->file_path) {
+        if ($arsip->file_path && Storage::disk('public')->exists($arsip->file_path)) {
             return Storage::disk('public')->download($arsip->file_path);
         }
 
         return back()->with('error', 'File tidak ditemukan');
     }
 
-    // Check for archives that need notification
+    // Check for archives that need notification (now automatically moves to JRE)
     public function checkNotifications()
     {
         $count = 0;
         $arsips = Arsip::where('is_archived_to_jre', false)->get();
 
         foreach ($arsips as $arsip) {
-            // Only mark as notification if current date is past or equal to retention date
-            if (!$arsip->has_retention_notification && $arsip->retention_date && Carbon::now()->gte($arsip->retention_date)) {
-                $arsip->has_retention_notification = true;
-                $arsip->save();
+            // Auto-move to JRE if retention date reached
+            if ($arsip->shouldMoveToJre()) {
+                $arsip->autoMoveToJreIfExpired();
                 $count++;
             }
         }
 
-        return redirect()->back()->with('success', "$count arsip telah ditandai sudah pada masa retensi");
+        return redirect()->back()->with('success', "$count arsip telah otomatis dipindahkan ke JRE");
     }
     public function detail(Arsip $arsip)
     {
@@ -206,12 +205,23 @@ class ArsipController extends Controller
 
                 if ($subCode1) {
                     // We have the first subdivision (e.g., AR.01.01, KP.02.03, RT.03.01, KU.01.02)
-                    $code .= ".$subCode1";
+                    $testCode = "$prefix.$mainCode.$subCode1";
 
-                    if ($subCode2) {
-                        // We have the second subdivision (e.g., AR.01.01.01, KU.01.02.01)
-                        $code .= ".$subCode2";
+                    // Check if this code exists in the ClassificationFormatter
+                    $testDescription = \App\Helpers\ClassificationFormatter::getDescription($testCode);
+                    if (!empty($testDescription)) {
+                        $code = $testCode;
+
+                        if ($subCode2) {
+                            // We have the second subdivision (e.g., AR.01.01.01, KU.01.02.01)
+                            $testCode2 = "$prefix.$mainCode.$subCode1.$subCode2";
+                            $testDescription2 = \App\Helpers\ClassificationFormatter::getDescription($testCode2);
+                            if (!empty($testDescription2)) {
+                                $code = $testCode2;
+                            }
+                        }
                     }
+                    // If the subdivision doesn't exist, keep the main code (e.g., KU.03 instead of KU.03.07)
                 }
             }
         }

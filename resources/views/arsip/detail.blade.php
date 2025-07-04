@@ -105,7 +105,7 @@
                                                 <div class="col-7 text-sm">{{ $arsip->tanggal_arsip->format('d/m/Y') }}</div>
                                             </div>
                                             <div class="row mb-2">
-                                                <div class="col-5 text-sm font-weight-semibold">Lokasi Rak:</div>
+                                                <div class="col-5 text-sm font-weight-semibold">Rak Penyimpanan:</div>
                                                 <div class="col-7 text-sm">{{ $arsip->rak ?: 'Tidak ada informasi rak' }}</div>
                                             </div>
                                             <div class="row mb-2">

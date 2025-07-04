@@ -76,17 +76,9 @@
                             <div class="d-sm-flex align-items-center">
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">Daftar Arsip</h6>
-                                    <p class="text-sm">Informasi tentang semua arsip dokumen</p>
+                                    <p class="text-sm">Informasi tentang semua arsip dokumen. Arsip yang sudah masa retensi akan otomatis dipindahkan ke JRE.</p>
                                 </div>
                                 <div class="ms-auto d-flex">
-                                    @if(!Auth::user()->isPeminjam())
-                                    <form action="{{ route('arsip.check-notifications') }}" method="POST" class="me-3">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-dark">
-                                            <i class="fas fa-bell me-1"></i> Cek Notifikasi
-                                        </button>
-                                    </form>
-                                    @endif
                                     <div class="input-group w-sm-25 ms-auto">
                                         <span class="input-group-text text-body">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -110,7 +102,7 @@
                                             @if(!Auth::user()->isPeminjam())
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Retensi</th>
                                             @endif
-                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Rak</th>
+
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Status</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
                                         </tr>
@@ -158,11 +150,7 @@
                                                 </p>
                                             </td>
                                             @endif
-                                            <td>
-                                                <p class="text-sm font-weight-normal mb-0">
-                                                    {{ $arsip->rak ?: '-' }}
-                                                </p>
-                                            </td>
+
                                             <td>
                                                 @if($arsip->is_archived_to_jre)
                                                     <span class="badge badge-sm border border-info text-info bg-info">

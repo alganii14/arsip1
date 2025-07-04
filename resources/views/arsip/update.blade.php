@@ -713,19 +713,6 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
-                                            <label for="rak" class="form-control-label text-sm">Rak Penyimpanan</label>
-                                            <input type="text" class="form-control @error('rak') is-invalid @enderror" id="rak" name="rak" value="{{ old('rak', $arsip->rak) }}" placeholder="Contoh: Rak A-01">
-                                            @error('rak')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <small class="form-text text-muted">
-                                                Lokasi penyimpanan fisik arsip (opsional)
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-4">
                                             <label for="keterangan" class="form-control-label text-sm">Keterangan</label>
                                             <textarea class="form-control @error('keterangan') is-invalid @enderror" id="keterangan" name="keterangan" rows="3">{{ old('keterangan', $arsip->keterangan) }}</textarea>
                                             @error('keterangan')

@@ -18,7 +18,7 @@ class PeminjamanArsipController extends Controller
         foreach ($activeBorrowings as $peminjaman) {
             $peminjaman->updateStatus();
         }
-        
+
         // Jika user adalah peminjam, hanya tampilkan peminjaman miliknya
         if (Auth::user()->isPeminjam()) {
             $peminjamans = PeminjamanArsip::with('arsip')
@@ -29,7 +29,7 @@ class PeminjamanArsipController extends Controller
             // Jika admin atau petugas, tampilkan semua
             $peminjamans = PeminjamanArsip::with('arsip')->latest()->get();
         }
-        
+
         return view('peminjaman.index', compact('peminjamans'));
     }
 
@@ -41,13 +41,13 @@ class PeminjamanArsipController extends Controller
                 $query->whereIn('status', ['dipinjam', 'terlambat']);
             })
             ->get();
-        
+
         // Jika ada parameter arsip_id, ambil data arsip tersebut
         $selectedArsip = null;
         if (request()->has('arsip_id')) {
             $selectedArsip = Arsip::find(request('arsip_id'));
         }
-            
+
         return view('peminjaman.create', compact('arsips', 'selectedArsip'));
     }
 
@@ -72,22 +72,39 @@ class PeminjamanArsipController extends Controller
         }
 
         // Create new peminjaman
-        PeminjamanArsip::create([
+        $peminjamanData = [
             'arsip_id' => $request->arsip_id,
-            'peminjam_user_id' => Auth::id(), // Tambahkan user ID yang sedang login
+            'peminjam_user_id' => Auth::id(),
             'peminjam' => $request->peminjam,
             'jabatan' => $request->jabatan,
-            'departemen' => Auth::user()->isPeminjam() ? Auth::user()->department : $request->departemen, // Gunakan departemen user jika peminjam
+            'departemen' => Auth::user()->isPeminjam() ? Auth::user()->department : $request->departemen,
             'kontak' => $request->kontak,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'batas_waktu' => $request->batas_waktu,
             'tujuan_peminjaman' => $request->tujuan_peminjaman,
             'catatan' => $request->catatan,
-            'status' => 'dipinjam',
             'petugas_peminjaman' => Auth::user()->isPeminjam() ? 'Self-Service' : Auth::user()->name,
-        ]);
+        ];
 
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman arsip berhasil dicatat');
+        // Jika user adalah peminjam, status pending menunggu konfirmasi admin
+        if (Auth::user()->isPeminjam()) {
+            $peminjamanData['status'] = 'pending';
+            $peminjamanData['confirmation_status'] = 'pending';
+        } else {
+            // Jika admin/petugas langsung approve
+            $peminjamanData['status'] = 'dipinjam';
+            $peminjamanData['confirmation_status'] = 'approved';
+            $peminjamanData['approved_by'] = Auth::id();
+            $peminjamanData['approved_at'] = Carbon::now();
+        }
+
+        PeminjamanArsip::create($peminjamanData);
+
+        $message = Auth::user()->isPeminjam()
+            ? 'Permintaan peminjaman berhasil diajukan. Menunggu persetujuan admin.'
+            : 'Peminjaman arsip berhasil dicatat';
+
+        return redirect()->route('peminjaman.index')->with('success', $message);
     }
 
     public function show(PeminjamanArsip $peminjaman)
@@ -96,7 +113,7 @@ class PeminjamanArsipController extends Controller
         if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses ke data peminjaman ini.');
         }
-        
+
         $peminjaman->load('arsip');
         return view('peminjaman.show', compact('peminjaman'));
     }
@@ -166,7 +183,7 @@ class PeminjamanArsipController extends Controller
     {
         $count = 0;
         $peminjamans = PeminjamanArsip::where('status', 'dipinjam')->get();
-        
+
         foreach ($peminjamans as $peminjaman) {
             if ($peminjaman->isOverdue()) {
                 $peminjaman->status = 'terlambat';
@@ -174,7 +191,56 @@ class PeminjamanArsipController extends Controller
                 $count++;
             }
         }
-        
+
         return redirect()->back()->with('success', "$count peminjaman telah diperbarui statusnya menjadi terlambat");
+    }
+
+    public function pending()
+    {
+        // Hanya admin yang bisa melihat pending confirmations
+        if (!Auth::user()->isAdmin()) {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat melihat permintaan pending.');
+        }
+
+        $peminjamans = PeminjamanArsip::with(['arsip', 'user'])
+            ->where('confirmation_status', 'pending')
+            ->latest()
+            ->get();
+
+        return view('peminjaman.pending', compact('peminjamans'));
+    }
+
+    public function approve(PeminjamanArsip $peminjaman)
+    {
+        // Hanya admin yang bisa approve
+        if (!Auth::user()->isAdmin()) {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menyetujui peminjaman.');
+        }
+
+        // Cek apakah arsip masih tersedia
+        if ($peminjaman->arsip->isCurrentlyBorrowed()) {
+            return redirect()->back()->with('error', 'Arsip ini sudah dipinjam oleh orang lain.');
+        }
+
+        $peminjaman->approve(Auth::id());
+        $peminjaman->update(['status' => 'dipinjam']);
+
+        return redirect()->route('peminjaman.pending')->with('success', 'Permintaan peminjaman berhasil disetujui.');
+    }
+
+    public function reject(Request $request, PeminjamanArsip $peminjaman)
+    {
+        // Hanya admin yang bisa reject
+        if (!Auth::user()->isAdmin()) {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menolak peminjaman.');
+        }
+
+        $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        $peminjaman->reject(Auth::id(), $request->rejection_reason);
+
+        return redirect()->route('peminjaman.pending')->with('success', 'Permintaan peminjaman berhasil ditolak.');
     }
 }
