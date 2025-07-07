@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('peminjaman_arsips', function (Blueprint $table) {
-            //
+        Schema::table('jres', function (Blueprint $table) {
+            $table->longText('arsip_data')->nullable()->after('notes');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('peminjaman_arsips', function (Blueprint $table) {
-            //
+        Schema::table('jres', function (Blueprint $table) {
+            $table->dropColumn('arsip_data');
         });
     }
 };

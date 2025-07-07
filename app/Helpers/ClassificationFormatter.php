@@ -791,4 +791,134 @@ class ClassificationFormatter
 
         return 'border-secondary text-secondary bg-secondary';
     }
+
+    /**
+     * Get classification hierarchy information
+     *
+     * @param string $code
+     * @return array
+     */
+    public static function getClassificationInfo($code)
+    {
+        $info = [];
+
+        if (strpos($code, 'AR.') === 0) {
+            $parts = explode('.', $code);
+            $info['AR'] = 'Arsip';
+
+            if (isset($parts[1])) {
+                $mainCode = $parts[1];
+                $info['AR.' . $mainCode] = self::getMainCodeDescription($mainCode);
+
+                if (isset($parts[2])) {
+                    $subCode1 = $parts[2];
+                    $info['AR.' . $mainCode . '.' . $subCode1] = self::getSubCode1Description($mainCode, $subCode1);
+
+                    if (isset($parts[3])) {
+                        $subCode2 = $parts[3];
+                        $info['AR.' . $mainCode . '.' . $subCode1 . '.' . $subCode2] = self::getSubCode2Description($mainCode, $subCode1, $subCode2);
+                    }
+                }
+            }
+        } elseif (strpos($code, 'KU.') === 0) {
+            $parts = explode('.', $code);
+            $info['KU'] = 'Keuangan';
+
+            if (isset($parts[1])) {
+                $mainCode = $parts[1];
+                $info['KU.' . $mainCode] = self::getKuMainCodeDescription($mainCode);
+
+                if (isset($parts[2])) {
+                    $subCode1 = $parts[2];
+                    $info['KU.' . $mainCode . '.' . $subCode1] = self::getKuSubCode1Description($mainCode, $subCode1);
+                }
+            }
+        }
+
+        return $info;
+    }
+
+    /**
+     * Get main code description for AR codes
+     */
+    private static function getMainCodeDescription($mainCode)
+    {
+        $descriptions = [
+            '01' => 'Kebijakan',
+            '02' => 'Pembinaan Kearsipan',
+            '03' => 'Penyelenggaraan Kearsipan',
+            // Add more as needed
+        ];
+
+        return $descriptions[$mainCode] ?? 'Tidak diketahui';
+    }
+
+    /**
+     * Get sub code 1 description for AR codes
+     */
+    private static function getSubCode1Description($mainCode, $subCode1)
+    {
+        if ($mainCode == '01') {
+            $descriptions = [
+                '01' => 'Peraturan Daerah',
+                '02' => 'Peraturan Wali Kota',
+                '03' => 'Penetapan Organisasi Kearsipan',
+            ];
+        } elseif ($mainCode == '02') {
+            $descriptions = [
+                '01' => 'Bina Arsiparis',
+                '02' => 'Bina Kearsipan',
+                '03' => 'Akreditasi Lembaga Kearsipan',
+            ];
+        } elseif ($mainCode == '03') {
+            $descriptions = [
+                '01' => 'Penciptaan Arsip',
+                '02' => 'Pengelolaan Arsip',
+                '03' => 'Penggunaan Arsip',
+            ];
+        } else {
+            $descriptions = [];
+        }
+
+        return $descriptions[$subCode1] ?? 'Tidak diketahui';
+    }
+
+    /**
+     * Get sub code 2 description for AR codes
+     */
+    private static function getSubCode2Description($mainCode, $subCode1, $subCode2)
+    {
+        // This would be a more complex mapping based on the full classification
+        // For now, return a generic description
+        return 'Sub kategori ' . $subCode2;
+    }
+
+    /**
+     * Get main code description for KU codes
+     */
+    private static function getKuMainCodeDescription($mainCode)
+    {
+        $descriptions = [
+            '01' => 'Anggaran',
+            '02' => 'Akuntansi',
+            '03' => 'Perbendaharaan',
+            '04' => 'Pendapatan',
+            '05' => 'Belanja',
+            '06' => 'Pembiayaan',
+            '07' => 'Pelaksanaan Anggaran',
+            // Add more as needed
+        ];
+
+        return $descriptions[$mainCode] ?? 'Tidak diketahui';
+    }
+
+    /**
+     * Get sub code 1 description for KU codes
+     */
+    private static function getKuSubCode1Description($mainCode, $subCode1)
+    {
+        // This would be a more complex mapping
+        // For now, return a generic description
+        return 'Sub kategori ' . $subCode1;
+    }
 }

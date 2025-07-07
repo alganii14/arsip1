@@ -57,6 +57,37 @@
                             <form action="{{ route('arsip.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
 
+                                <!-- File Upload Section - Moved to top -->
+                                <div class="form-group mb-4">
+                                    <label for="file" class="form-control-label text-sm">Upload File</label>
+                                    <div class="input-group">
+                                        <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file">
+                                        <button type="button" class="btn btn-outline-primary" id="extractButton" style="display: none;">
+                                            <span id="extractButtonText">Ekstrak Data Dokumen</span>
+                                            <span id="extractButtonSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;"></span>
+                                        </button>
+                                        @error('file')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Format yang didukung: JPG, PNG, PDF, Excel (XLSX, XLS), Word (DOC, DOCX). Ukuran maksimal: 10MB<br>
+                                        <span class="text-info">💡 Sistem akan otomatis mengekstrak nomor dokumen, tanggal, dan nama dokumen dari file yang diupload</span>
+                                    </small>
+                                    <div id="extractionResult" class="mt-2" style="display: none;">
+                                        <div class="alert alert-success mb-0">
+                                            <strong>✅ Data dokumen berhasil diekstrak!</strong>
+                                            <div id="extractedInfo"></div>
+                                        </div>
+                                    </div>
+                                    <div id="extractionError" class="mt-2" style="display: none;">
+                                        <div class="alert alert-warning mb-0">
+                                            <strong>⚠️ Tidak dapat mengekstrak data dokumen secara otomatis</strong>
+                                            <div>Silakan masukkan data dokumen secara manual</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -707,9 +738,41 @@
                                             </small>
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4">
+                                            <label for="retention_type" class="form-control-label text-sm">Masa Retensi <span class="text-danger">*</span></label>
+                                            <select class="form-select @error('retention_type') is-invalid @enderror" id="retention_type" name="retention_type" required>
+                                                <option value="auto" {{ old('retention_type', 'auto') == 'auto' ? 'selected' : '' }}>Otomatis (5 Tahun)</option>
+                                                <option value="manual" {{ old('retention_type') == 'manual' ? 'selected' : '' }}>Manual</option>
+                                            </select>
+                                            @error('retention_type')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Pilih otomatis untuk masa retensi 5 tahun atau manual untuk menentukan sendiri
+                                            </small>
+                                        </div>
+                                    </div>
 
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4" id="manual_retention_section" style="display: none;">
+                                            <label for="retention_years" class="form-control-label text-sm">Masa Retensi (Tahun) <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control @error('retention_years') is-invalid @enderror" id="retention_years" name="retention_years" value="{{ old('retention_years', 5) }}" min="1" max="50">
+                                            @error('retention_years')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Masukkan jumlah tahun untuk masa retensi (1-50 tahun)
+                                            </small>
+                                        </div>
+                                    </div>
 
+                                </div>
+
+                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="keterangan" class="form-control-label text-sm">Keterangan</label>
@@ -719,35 +782,17 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- File Upload Section -->
-                                <div class="form-group mb-4">
-                                    <label for="file" class="form-control-label text-sm">Upload File</label>
-                                    <div class="input-group">
-                                        <input type="file" class="form-control @error('file') is-invalid @enderror" id="file" name="file">
-                                        <button type="button" class="btn btn-outline-primary" id="extractButton" style="display: none;">
-                                            <span id="extractButtonText">Ekstrak Data Dokumen</span>
-                                            <span id="extractButtonSpinner" class="spinner-border spinner-border-sm ms-2" role="status" style="display: none;"></span>
-                                        </button>
-                                        @error('file')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <small class="form-text text-muted">
-                                        Format yang didukung: JPG, PNG, PDF, Excel (XLSX, XLS), Word (DOC, DOCX). Ukuran maksimal: 10MB<br>
-                                        <span class="text-info">💡 Sistem akan otomatis mengekstrak nomor dokumen, tanggal, dan nama dokumen dari file yang diupload</span>
-                                    </small>
-                                    <div id="extractionResult" class="mt-2" style="display: none;">
-                                        <div class="alert alert-success mb-0">
-                                            <strong>✅ Data dokumen berhasil diekstrak!</strong>
-                                            <div id="extractedInfo"></div>
-                                        </div>
-                                    </div>
-                                    <div id="extractionError" class="mt-2" style="display: none;">
-                                        <div class="alert alert-warning mb-0">
-                                            <strong>⚠️ Tidak dapat mengekstrak data dokumen secara otomatis</strong>
-                                            <div>Silakan masukkan data dokumen secara manual</div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4">
+                                            <label for="rak" class="form-control-label text-sm">Rak Penyimpanan</label>
+                                            <input type="text" class="form-control @error('rak') is-invalid @enderror" id="rak" name="rak" value="{{ old('rak') }}">
+                                            @error('rak')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Informasi lokasi penyimpanan fisik arsip
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
@@ -788,6 +833,27 @@
         const extractionResult = document.getElementById('extractionResult');
         const extractionError = document.getElementById('extractionError');
         const extractedInfo = document.getElementById('extractedInfo');
+
+        // Handle retention type selection
+        const retentionTypeSelect = document.getElementById('retention_type');
+        const manualRetentionSection = document.getElementById('manual_retention_section');
+        const retentionYearsInput = document.getElementById('retention_years');
+
+        function handleRetentionTypeChange() {
+            if (retentionTypeSelect.value === 'manual') {
+                manualRetentionSection.style.display = 'block';
+                retentionYearsInput.required = true;
+            } else {
+                manualRetentionSection.style.display = 'none';
+                retentionYearsInput.required = false;
+            }
+        }
+
+        // Initialize retention type on page load
+        handleRetentionTypeChange();
+
+        // Handle retention type change
+        retentionTypeSelect.addEventListener('change', handleRetentionTypeChange);
 
         // Show extract button when file is selected
         fileInput.addEventListener('change', function() {

@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Alert Messages -->
             @if(session('error'))
             <div class="row">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             @endif
-            
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border shadow-xs mb-4">
@@ -52,7 +52,7 @@
                             <form action="{{ route('peminjaman.update', $peminjaman->id) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -70,7 +70,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="peminjam" class="form-control-label text-sm">Nama Peminjam <span class="text-danger">*</span></label>
@@ -81,7 +81,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
@@ -92,7 +92,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="departemen" class="form-control-label text-sm">Departemen</label>
@@ -102,7 +102,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="kontak" class="form-control-label text-sm">Kontak <span class="text-danger">*</span></label>
@@ -113,7 +113,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
@@ -124,7 +124,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="batas_waktu" class="form-control-label text-sm">Batas Waktu Pengembalian <span class="text-danger">*</span></label>
@@ -134,11 +134,12 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="status" class="form-control-label text-sm">Status <span class="text-danger">*</span></label>
                                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                                <option value="pending" {{ old('status', $peminjaman->status) == 'pending' ? 'selected' : '' }}>Pending</option>
                                                 <option value="dipinjam" {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
                                                 <option value="dikembalikan" {{ old('status', $peminjaman->status) == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
                                                 <option value="terlambat" {{ old('status', $peminjaman->status) == 'terlambat' ? 'selected' : '' }}>Terlambat</option>
@@ -149,7 +150,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group mb-4">
@@ -161,7 +162,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group mb-4">
                                     <label for="catatan" class="form-control-label text-sm">Catatan</label>
                                     <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="3">{{ old('catatan', $peminjaman->catatan) }}</textarea>
@@ -169,7 +170,7 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end mt-4">
                                     <a href="{{ route('peminjaman.index') }}" class="btn btn-light me-3">Batal</a>
                                     <button type="submit" class="btn btn-warning">
@@ -184,7 +185,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <x-app.footer />
         </div>
     </main>

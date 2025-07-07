@@ -40,5 +40,5 @@
 ## Catatan Teknis
 
 - Sistem menggunakan cache untuk menghindari pengecekan berlebihan
-- Arsip yang dipindahkan otomatis akan mendapat catatan "Automatically moved to JRE when retention date reached"
+- Arsip yang dipindahkan otomatis akan memiliki catatan kosong (tidak ada catatan otomatis)
 - Command `php artisan arsip:check-retention` dapat dijalankan manual jika diperlukan

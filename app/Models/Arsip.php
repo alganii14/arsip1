@@ -20,6 +20,7 @@ class Arsip extends Model
         'file_path',
         'file_type',
         'retention_date',
+        'retention_years',
         'is_archived_to_jre',
         'archived_to_jre_at',
         'has_retention_notification'
@@ -30,6 +31,22 @@ class Arsip extends Model
         'retention_date' => 'date',
         'archived_to_jre_at' => 'datetime',
     ];
+
+    // Scopes for filtering based on JRE status
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived_to_jre', false);
+    }
+
+    public function scopeArchivedToJre($query)
+    {
+        return $query->where('is_archived_to_jre', true);
+    }
+
+    public function scopeAvailableForBorrowing($query)
+    {
+        return $query->where('is_archived_to_jre', false);
+    }
 
     public function jre()
     {
@@ -57,22 +74,52 @@ class Arsip extends Model
             ->first();
     }
 
-    public function calculateRetentionDate()
+    public function calculateRetentionDate($manualYears = null)
     {
-        // Set retention date to 5 years after tanggal_arsip
-        if ($this->tanggal_arsip) {
-            $date = Carbon::parse($this->attributes['tanggal_arsip'])->addYears(5);
-            $this->attributes['retention_date'] = $date->format('Y-m-d');
-            $this->save();
+        // Only calculate if we have tanggal_arsip
+        if (!$this->tanggal_arsip) {
+            return;
+        }
+
+        // Determine years to add
+        $years = 5; // Default 5 years
+        if ($manualYears !== null) {
+            $years = intval($manualYears);
+        } elseif ($this->retention_years) {
+            $years = intval($this->retention_years);
+        }
+
+        try {
+            // Get tanggal_arsip as string
+            $tanggalArsipStr = $this->tanggal_arsip;
+            if ($this->tanggal_arsip instanceof Carbon) {
+                $tanggalArsipStr = $this->tanggal_arsip->format('Y-m-d');
+            }
+
+            // Parse tanggal_arsip and add years
+            $tanggalArsip = Carbon::createFromFormat('Y-m-d', $tanggalArsipStr);
+            $retentionDate = $tanggalArsip->addYears($years);
+
+            // Update the retention_date and retention_years
+            $this->update([
+                'retention_date' => $retentionDate->format('Y-m-d'),
+                'retention_years' => $years
+            ]);
+
+        } catch (\Exception $e) {
+            // Log error for debugging
+            \Log::error("Error calculating retention date for arsip {$this->id}: " . $e->getMessage());
+            throw new \Exception("Failed to calculate retention date: " . $e->getMessage());
         }
     }
 
     public function shouldMoveToJre()
     {
         if (!$this->is_archived_to_jre && $this->retention_date) {
-            $today = Carbon::today();
-            $retentionDate = Carbon::parse($this->attributes['retention_date']);
-            return $today->gte($retentionDate);
+            $today = Carbon::today()->format('Y-m-d');
+            // Get retention date from attributes array as string
+            $retentionDateStr = $this->attributes['retention_date'];
+            return $today >= $retentionDateStr;
         }
         return false;
     }
@@ -81,9 +128,9 @@ class Arsip extends Model
     {
         // Since we auto-move to JRE, this is only for display purposes
         if (!$this->is_archived_to_jre && $this->retention_date) {
-            $today = Carbon::today();
-            $retentionDate = Carbon::parse($this->attributes['retention_date']);
-            return $today->gte($retentionDate);
+            $today = Carbon::today()->format('Y-m-d');
+            $retentionDateStr = $this->attributes['retention_date'];
+            return $today >= $retentionDateStr;
         }
         return false;
     }
@@ -93,23 +140,30 @@ class Arsip extends Model
         if ($this->shouldMoveToJre()) {
             $this->has_retention_notification = true;
             $this->save();
-            return $this->moveToJre('Automatically moved to JRE when retention date reached');
+            return $this->moveToJre();
         }
         return null;
     }
 
     public function moveToJre($notes = null)
     {
+        // Store arsip data for JRE
+        $arsipData = $this->toArray();
+
+        // Create JRE record with full arsip data
+        $jre = Jre::create([
+            'arsip_id' => $this->id,
+            'status' => 'inactive',
+            'notes' => $notes,
+            'processed_at' => Carbon::now(),
+            'arsip_data' => json_encode($arsipData) // Store complete arsip data
+        ]);
+
+        // Mark as archived to JRE
         $this->is_archived_to_jre = true;
         $this->archived_to_jre_at = Carbon::now();
         $this->save();
 
-        // Create JRE record with inactive status
-        return Jre::create([
-            'arsip_id' => $this->id,
-            'status' => 'inactive', // Changed from 'active' to 'inactive' as requested
-            'notes' => $notes,
-            'processed_at' => Carbon::now()
-        ]);
+        return $jre;
     }
 }

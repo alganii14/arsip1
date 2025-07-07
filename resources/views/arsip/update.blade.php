@@ -713,6 +713,41 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
+                                            <label for="retention_type" class="form-control-label text-sm">Masa Retensi <span class="text-danger">*</span></label>
+                                            <select class="form-select @error('retention_type') is-invalid @enderror" id="retention_type" name="retention_type" required>
+                                                @php
+                                                    $currentRetentionType = ($arsip->retention_years == 5) ? 'auto' : 'manual';
+                                                    $selectedType = old('retention_type', $currentRetentionType);
+                                                @endphp
+                                                <option value="auto" {{ $selectedType == 'auto' ? 'selected' : '' }}>Otomatis (5 Tahun)</option>
+                                                <option value="manual" {{ $selectedType == 'manual' ? 'selected' : '' }}>Manual</option>
+                                            </select>
+                                            @error('retention_type')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Pilih otomatis untuk masa retensi 5 tahun atau manual untuk menentukan sendiri
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4" id="manual_retention_section" style="display: {{ $selectedType == 'manual' ? 'block' : 'none' }};">
+                                            <label for="retention_years" class="form-control-label text-sm">Masa Retensi (Tahun) <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control @error('retention_years') is-invalid @enderror" id="retention_years" name="retention_years" value="{{ old('retention_years', $arsip->retention_years ?? 5) }}" min="1" max="50">
+                                            @error('retention_years')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Masukkan jumlah tahun untuk masa retensi (1-50 tahun)
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4">
                                             <label for="keterangan" class="form-control-label text-sm">Keterangan</label>
                                             <textarea class="form-control @error('keterangan') is-invalid @enderror" id="keterangan" name="keterangan" rows="3">{{ old('keterangan', $arsip->keterangan) }}</textarea>
                                             @error('keterangan')
@@ -720,7 +755,17 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-4">
+                                            <label for="rak" class="form-control-label text-sm">Rak Penyimpanan</label>
+                                            <input type="text" class="form-control @error('rak') is-invalid @enderror" id="rak" name="rak" value="{{ old('rak', $arsip->rak) }}">
+                                            @error('rak')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Informasi lokasi penyimpanan fisik arsip
+                                            </small>
 
                                 <!-- File Upload Section -->
                                 <div class="form-group mb-4">
@@ -797,4 +842,30 @@
             <x-app.footer />
         </div>
     </div>
+
+    <!-- JavaScript for Retention Type -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle retention type selection
+        const retentionTypeSelect = document.getElementById('retention_type');
+        const manualRetentionSection = document.getElementById('manual_retention_section');
+        const retentionYearsInput = document.getElementById('retention_years');
+
+        function handleRetentionTypeChange() {
+            if (retentionTypeSelect.value === 'manual') {
+                manualRetentionSection.style.display = 'block';
+                retentionYearsInput.required = true;
+            } else {
+                manualRetentionSection.style.display = 'none';
+                retentionYearsInput.required = false;
+            }
+        }
+
+        // Initialize retention type on page load
+        handleRetentionTypeChange();
+
+        // Handle retention type change
+        retentionTypeSelect.addEventListener('change', handleRetentionTypeChange);
+    });
+    </script>
 </x-app-layout>

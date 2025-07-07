@@ -7,6 +7,7 @@ use App\Models\Arsip;
 use App\Models\User;
 use App\Models\PeminjamanArsip;
 use App\Models\Jre;
+use App\Models\ArchiveDestruction;
 
 class DashboardController extends Controller
 {
@@ -22,8 +23,11 @@ class DashboardController extends Controller
             // Total Peminjam (user yang pernah meminjam)
             $totalPeminjam = PeminjamanArsip::distinct('peminjam_user_id')->count('peminjam_user_id');
 
-            // Total Arsip di JRE
-            $totalArsipJre = Jre::count();
+            // Total Arsip di JRE (tidak termasuk yang sudah dimusnahkan)
+            $totalArsipJre = Jre::active()->count();
+
+            // Total Arsip yang Dimusnahkan
+            $totalArsipMusnahkan = ArchiveDestruction::count();
 
         } catch (\Exception $e) {
             // Fallback values in case of error
@@ -31,13 +35,15 @@ class DashboardController extends Controller
             $totalPengguna = 0;
             $totalPeminjam = 0;
             $totalArsipJre = 0;
+            $totalArsipMusnahkan = 0;
         }
 
         return view('dashboard', compact(
             'totalArsip',
             'totalPengguna',
             'totalPeminjam',
-            'totalArsipJre'
+            'totalArsipJre',
+            'totalArsipMusnahkan'
         ));
     }
 }

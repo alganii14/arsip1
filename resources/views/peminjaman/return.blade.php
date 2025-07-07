@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border shadow-xs mb-4">
@@ -58,7 +58,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="border rounded p-3">
                                         <h6 class="text-sm font-weight-semibold mb-3">Informasi Peminjaman</h6>
@@ -79,7 +79,7 @@
                                             @php
                                                 $statusClass = 'primary';
                                                 $statusText = 'Dipinjam';
-                                                
+
                                                 if($peminjaman->status === 'dipinjam') {
                                                     $statusClass = 'primary';
                                                     $statusText = 'Dipinjam';
@@ -98,10 +98,10 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <form action="{{ route('peminjaman.process-return', $peminjaman->id) }}" method="POST">
                                 @csrf
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -112,18 +112,18 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="durasi" class="form-control-label text-sm">Durasi Peminjaman</label>
-                                            <input type="text" class="form-control" id="durasi" value="{{ $peminjaman->tanggal_pinjam->diffInDays(now()) + 1 }} hari" disabled>
+                                            <input type="text" class="form-control" id="durasi" value="{{ $peminjaman->getDurasiPinjam() }} hari" disabled>
                                             <small class="form-text text-muted">
                                                 Dihitung dari tanggal peminjaman hingga hari ini
                                             </small>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group mb-4">
                                     <label for="catatan" class="form-control-label text-sm">Catatan Pengembalian</label>
                                     <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="3">{{ old('catatan') }}</textarea>
@@ -134,14 +134,14 @@
                                         Tambahkan catatan tentang kondisi arsip saat dikembalikan atau informasi lainnya
                                     </small>
                                 </div>
-                                
+
                                 <div class="alert alert-info" role="alert">
                                     <span class="alert-icon"><i class="fas fa-info-circle"></i></span>
                                     <span class="alert-text">
                                         <strong>Informasi!</strong> Setelah dikembalikan, status peminjaman akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
                                     </span>
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end mt-4">
                                     <a href="{{ route('peminjaman.index') }}" class="btn btn-light me-3">Batal</a>
                                     <button type="submit" class="btn btn-success">

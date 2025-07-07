@@ -134,7 +134,7 @@ class PeminjamanArsipController extends Controller
             'kontak' => 'required|string|max:255',
             'tanggal_pinjam' => 'required|date',
             'batas_waktu' => 'required|date|after_or_equal:tanggal_pinjam',
-            'status' => 'required|in:dipinjam,dikembalikan,terlambat',
+            'status' => 'required|in:pending,dipinjam,dikembalikan,terlambat',
             'tujuan_peminjaman' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
@@ -160,11 +160,39 @@ class PeminjamanArsipController extends Controller
 
     public function returnForm(PeminjamanArsip $peminjaman)
     {
+        // Check if user has permission to return this loan
+        if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
+            return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
+        }
+
+        // Check if the loan can be returned
+        if ($peminjaman->status === 'dikembalikan') {
+            return redirect()->route('peminjaman.show', $peminjaman->id)->with('error', 'Arsip ini sudah dikembalikan.');
+        }
+
+        if ($peminjaman->status === 'pending') {
+            return redirect()->route('peminjaman.show', $peminjaman->id)->with('error', 'Peminjaman masih dalam status pending, tidak bisa dikembalikan.');
+        }
+
         return view('peminjaman.return', compact('peminjaman'));
     }
 
     public function processReturn(Request $request, PeminjamanArsip $peminjaman)
     {
+        // Check if user has permission to return this loan
+        if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
+            return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
+        }
+
+        // Check if the loan can be returned
+        if ($peminjaman->status === 'dikembalikan') {
+            return redirect()->route('peminjaman.show', $peminjaman->id)->with('error', 'Arsip ini sudah dikembalikan.');
+        }
+
+        if ($peminjaman->status === 'pending') {
+            return redirect()->route('peminjaman.show', $peminjaman->id)->with('error', 'Peminjaman masih dalam status pending, tidak bisa dikembalikan.');
+        }
+
         $request->validate([
             'tanggal_kembali' => 'required|date',
             'catatan' => 'nullable|string',

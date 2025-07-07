@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\JreController;
 use App\Http\Controllers\PeminjamanArsipController;
+use App\Http\Controllers\ArchiveDestructionController;
 use App\Http\Controllers\DashboardController;
 
 /*
@@ -78,6 +79,10 @@ Route::middleware('auth')->group(function () {
     Route::post('peminjaman', [PeminjamanArsipController::class, 'store'])->name('peminjaman.store');
     Route::get('peminjaman/{peminjaman}', [PeminjamanArsipController::class, 'show'])->name('peminjaman.show');
 
+    // Peminjaman - Return functionality (accessible by all authenticated users)
+    Route::get('peminjaman/{peminjaman}/return', [PeminjamanArsipController::class, 'returnForm'])->name('peminjaman.return-form');
+    Route::post('peminjaman/{peminjaman}/process-return', [PeminjamanArsipController::class, 'processReturn'])->name('peminjaman.process-return');
+
     // Routes accessible only by petugas and admin
     Route::middleware('role:petugas,admin')->group(function () {
         // Tables
@@ -101,22 +106,27 @@ Route::middleware('auth')->group(function () {
         Route::delete('arsip/{arsip}', [ArsipController::class, 'destroy'])->name('arsip.destroy');
         Route::post('arsip/check-notifications', [ArsipController::class, 'checkNotifications'])->name('arsip.check-notifications');
         Route::post('arsip/extract-number', [ArsipController::class, 'extractDocumentNumber'])->name('arsip.extract-number');
-        // Tambahkan route ini di bagian routes yang dapat diakses oleh semua user
-        Route::get('arsip/{arsip}/detail', [ArsipController::class, 'detail'])->name('arsip.detail');
 
         // JRE - Full access
         Route::resource('jre', JreController::class);
         Route::post('jre/check-retention', [JreController::class, 'checkRetention'])->name('jre.check-retention');
         Route::post('jre/{jre}/recover', [JreController::class, 'recover'])->name('jre.recover');
+        Route::post('jre/{jre}/recover-with-years', [JreController::class, 'recoverWithYears'])->name('jre.recover-with-years');
         Route::post('jre/{jre}/destroy-archive', [JreController::class, 'destroyArchive'])->name('jre.destroy-archive');
         Route::post('jre/{jre}/transfer', [JreController::class, 'transfer'])->name('jre.transfer');
+        Route::get('jre-destructions', [JreController::class, 'destructions'])->name('jre.destructions');
+
+        // Archive Destructions - Full access
+        Route::resource('archive-destructions', ArchiveDestructionController::class)->only(['index', 'show']);
+
+        // Archive Destruction - Full access
+        Route::get('archive-destructions', [ArchiveDestructionController::class, 'index'])->name('archive-destructions.index');
+        Route::get('archive-destructions/{archiveDestruction}', [ArchiveDestructionController::class, 'show'])->name('archive-destructions.show');
 
         // Peminjaman - Additional functionality
         Route::get('peminjaman/{peminjaman}/edit', [PeminjamanArsipController::class, 'edit'])->name('peminjaman.edit');
         Route::put('peminjaman/{peminjaman}', [PeminjamanArsipController::class, 'update'])->name('peminjaman.update');
         Route::delete('peminjaman/{peminjaman}', [PeminjamanArsipController::class, 'destroy'])->name('peminjaman.destroy');
-        Route::get('peminjaman/{peminjaman}/return', [PeminjamanArsipController::class, 'returnForm'])->name('peminjaman.return-form');
-        Route::post('peminjaman/{peminjaman}/process-return', [PeminjamanArsipController::class, 'processReturn'])->name('peminjaman.process-return');
         Route::post('peminjaman/check-overdue', [PeminjamanArsipController::class, 'checkOverdue'])->name('peminjaman.check-overdue');
 
         // Peminjaman - Admin Confirmation

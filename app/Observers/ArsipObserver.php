@@ -12,8 +12,8 @@ class ArsipObserver
      */
     public function created(Arsip $arsip): void
     {
-        // Calculate retention date when arsip is created
-        $arsip->calculateRetentionDate();
+        // Retention date calculation is now handled in the controller
+        // to avoid conflicts with manual retention settings
     }
 
     /**
@@ -21,10 +21,9 @@ class ArsipObserver
      */
     public function updated(Arsip $arsip): void
     {
-        // Check if retention date has changed and recalculate
-        if ($arsip->wasChanged('tanggal_arsip') && !$arsip->is_archived_to_jre) {
-            $arsip->calculateRetentionDate();
-        }
+        // Observer now only handles auto-move to JRE
+        // Retention date calculation is handled in the controller
+        // to avoid conflicts with manual retention settings
     }
 
     /**

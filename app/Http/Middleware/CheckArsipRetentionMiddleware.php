@@ -53,7 +53,7 @@ class CheckArsipRetentionMiddleware
                 $arsip->save();
 
                 // Then automatically move to JRE
-                $arsip->moveToJre('Automatically moved to JRE when retention date reached');
+                $arsip->moveToJre();
             }
         }
     }

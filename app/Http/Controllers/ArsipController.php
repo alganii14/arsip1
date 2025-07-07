@@ -7,13 +7,28 @@ use App\Helpers\DocumentNumberExtractor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class ArsipController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $arsips = Arsip::all();
+        // Base query - only show active arsips (not archived to JRE)
+        $query = Arsip::active();
+
+        // Handle search
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('kode', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('nama_dokumen', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('kategori', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('rak', 'LIKE', "%{$searchTerm}%");
+            });
+        }
+
+        $arsips = $query->get();
 
         // Check for notifications
         foreach ($arsips as $arsip) {
@@ -39,6 +54,8 @@ class ArsipController extends Controller
         'kategori' => 'required',
         'tanggal_arsip' => 'required|date', // This allows any valid date
         'rak' => 'nullable|string',
+        'retention_type' => 'required|in:auto,manual',
+        'retention_years' => 'required_if:retention_type,manual|integer|min:1|max:50',
         'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls,doc,docx|max:10240',
     ]);
 
@@ -54,11 +71,22 @@ class ArsipController extends Controller
         $data['file_type'] = $file->getClientOriginalExtension();
     }
 
+    // Set retention years based on type
+    if ($request->retention_type === 'manual') {
+        $data['retention_years'] = $request->retention_years;
+    } else {
+        $data['retention_years'] = 5; // Default auto retention
+    }
+
     // Create the arsip
     $arsip = Arsip::create($data);
 
-    // Calculate retention date (5 years from tanggal_arsip)
-    $arsip->calculateRetentionDate();
+    // Calculate retention date based on retention type
+    if ($request->retention_type === 'manual') {
+        $arsip->calculateRetentionDate($request->retention_years);
+    } else {
+        $arsip->calculateRetentionDate(); // Default 5 years
+    }
 
     return redirect()->route('arsip.index')->with('success', 'Data berhasil disimpan');
 }
@@ -76,6 +104,8 @@ class ArsipController extends Controller
             'kategori' => 'required',
             'tanggal_arsip' => 'required|date',
             'rak' => 'nullable|string',
+            'retention_type' => 'required|in:auto,manual',
+            'retention_years' => 'required_if:retention_type,manual|integer|min:1|max:50',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls,doc,docx|max:10240',
         ]);
 
@@ -96,12 +126,25 @@ class ArsipController extends Controller
             $data['file_type'] = $file->getClientOriginalExtension();
         }
 
+        // Set retention years based on type
+        if ($request->retention_type === 'manual') {
+            $data['retention_years'] = $request->retention_years;
+        } else {
+            $data['retention_years'] = 5; // Default auto retention
+        }
+
         $oldTanggalArsip = $arsip->tanggal_arsip;
+        $oldRetentionYears = $arsip->retention_years;
+
         $arsip->update($data);
 
-        // Recalculate retention date if tanggal_arsip changed
-        if ($oldTanggalArsip != $arsip->tanggal_arsip) {
-            $arsip->calculateRetentionDate();
+        // Recalculate retention date if tanggal_arsip or retention_years changed
+        if ($oldTanggalArsip != $arsip->tanggal_arsip || $oldRetentionYears != $arsip->retention_years) {
+            if ($request->retention_type === 'manual') {
+                $arsip->calculateRetentionDate($request->retention_years);
+            } else {
+                $arsip->calculateRetentionDate(); // Default 5 years
+            }
         }
 
         return redirect()->route('arsip.index')->with('success', 'Data berhasil diperbarui');
@@ -120,8 +163,25 @@ class ArsipController extends Controller
 
     public function download(Arsip $arsip)
     {
+        $user = Auth::user();
+
+        // Check if user is trying to download via peminjaman
+        if ($user && $user->role === 'peminjam') {
+            // Check if user has approved peminjaman for this arsip
+            $approvedPeminjaman = $arsip->peminjaman()
+                ->where('peminjam_user_id', $user->id)
+                ->where('confirmation_status', 'approved')
+                ->whereIn('status', ['dipinjam', 'terlambat']) // Only active loans
+                ->first();
+
+            if (!$approvedPeminjaman) {
+                return back()->with('error', 'Akses ditolak. Anda hanya dapat mengunduh file arsip yang telah disetujui untuk dipinjam.');
+            }
+        }
+
         if ($arsip->file_path && Storage::disk('public')->exists($arsip->file_path)) {
-            return Storage::disk('public')->download($arsip->file_path);
+            $filePath = storage_path('app/public/' . $arsip->file_path);
+            return response()->download($filePath);
         }
 
         return back()->with('error', 'File tidak ditemukan');

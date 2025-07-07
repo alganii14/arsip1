@@ -109,6 +109,17 @@
                                                 <div class="col-7 text-sm">{{ $arsip->rak ?: 'Tidak ada informasi rak' }}</div>
                                             </div>
                                             <div class="row mb-2">
+                                                <div class="col-5 text-sm font-weight-semibold">Masa Retensi:</div>
+                                                <div class="col-7 text-sm">
+                                                    {{ $arsip->retention_years ?? 5 }} tahun
+                                                    @if($arsip->retention_date)
+                                                        <small class="d-block text-muted">
+                                                            Berakhir: {{ $arsip->retention_date->format('d/m/Y') }}
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
                                                 <div class="col-5 text-sm font-weight-semibold">Status:</div>
                                                 <div class="col-7 text-sm">
                                                     @if($arsip->is_archived_to_jre)
@@ -212,62 +223,6 @@
                                                     - <a href="https://jdih.bandung.go.id/home/" target="_blank" class="text-primary">jdih.bandung.go.id</a>
                                                 </small>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-12">
-                                    <h6 class="text-sm font-weight-semibold mb-1">Isi Dokumen</h6>
-                                    <div class="card border shadow-xs mb-4">
-                                        <div class="card-body p-3">
-                                            @if($arsip->file_path)
-                                                @php
-                                                    $fileType = $arsip->file_type ?? pathinfo($arsip->file_path, PATHINFO_EXTENSION);
-                                                    $isPdf = in_array(strtolower($fileType), ['pdf']);
-                                                    $isImage = in_array(strtolower($fileType), ['jpg', 'jpeg', 'png', 'gif']);
-                                                    $isText = in_array(strtolower($fileType), ['txt', 'csv', 'md']);
-                                                    $isOffice = in_array(strtolower($fileType), ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']);
-                                                @endphp
-
-                                                @if($isPdf)
-                                                    <div class="embed-responsive" style="height: 600px;">
-                                                        <iframe class="embed-responsive-item w-100 h-100" src="{{ asset('storage/' . $arsip->file_path) }}" allowfullscreen></iframe>
-                                                    </div>
-                                                @elseif($isImage)
-                                                    <div class="text-center">
-                                                        <img src="{{ asset('storage/' . $arsip->file_path) }}" class="img-fluid" alt="{{ $arsip->nama_dokumen }}" style="max-height: 600px;">
-                                                    </div>
-                                                @elseif($isText)
-                                                    <div class="bg-light p-3 rounded" style="max-height: 600px; overflow-y: auto;">
-                                                        <pre class="mb-0">{{ Storage::disk('public')->exists($arsip->file_path) ? Storage::disk('public')->get($arsip->file_path) : 'Konten file tidak dapat dibaca.' }}</pre>
-                                                    </div>
-                                                @elseif($isOffice)
-                                                    <div class="text-center mb-3">
-                                                        <div class="document-preview p-4 border rounded bg-light text-center">
-                                                            <i class="fas fa-file-{{ $fileType == 'doc' || $fileType == 'docx' ? 'word' : ($fileType == 'xls' || $fileType == 'xlsx' ? 'excel' : 'powerpoint') }} fa-5x text-primary mb-3"></i>
-                                                            <h5>{{ $arsip->nama_dokumen }}.{{ $fileType }}</h5>
-                                                            <p class="mb-3">File {{ strtoupper($fileType) }} tidak dapat ditampilkan secara langsung di browser.</p>
-                                                            <p>Untuk melihat isi dokumen, silakan pinjam arsip ini dengan mengklik tombol "Pinjam Arsip" di bawah.</p>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <div class="text-center mb-3">
-                                                        <div class="document-preview p-4 border rounded bg-light text-center">
-                                                            <i class="fas fa-file fa-5x text-secondary mb-3"></i>
-                                                            <h5>{{ $arsip->nama_dokumen }}.{{ $fileType }}</h5>
-                                                            <p class="mb-3">File ini tidak dapat ditampilkan secara langsung di browser.</p>
-                                                            <p>Untuk melihat isi dokumen, silakan pinjam arsip ini dengan mengklik tombol "Pinjam Arsip" di bawah.</p>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @else
-                                                <div class="alert alert-warning">
-                                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                                    Tidak ada file yang tersedia untuk arsip ini.
-                                                </div>
-                                            @endif
                                         </div>
                                     </div>
                                 </div>

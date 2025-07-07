@@ -76,22 +76,54 @@
                             <div class="d-sm-flex align-items-center">
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">Daftar Arsip</h6>
-                                    <p class="text-sm">Informasi tentang semua arsip dokumen. Arsip yang sudah masa retensi akan otomatis dipindahkan ke JRE.</p>
+                                    @if(request('search'))
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-search me-1"></i>
+                                            Hasil pencarian untuk "<strong>{{ request('search') }}</strong>" - {{ count($arsips) }} arsip ditemukan
+                                        </small>
+                                    @else
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-archive me-1"></i>
+                                            Informasi tentang semua arsip dokumen - Total: {{ count($arsips) }} arsip
+                                        </small>
+                                    @endif
                                 </div>
-                                <div class="ms-auto d-flex">
-                                    <div class="input-group w-sm-25 ms-auto">
-                                        <span class="input-group-text text-body">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
-                                            </svg>
-                                        </span>
-                                        <input type="text" class="form-control" placeholder="Cari arsip...">
-                                    </div>
+                                <div class="ms-auto d-flex align-items-center">
+                                    <form method="GET" action="{{ route('arsip.index') }}" class="d-flex align-items-center">
+                                        <div class="input-group" style="width: 350px;">
+                                            <span class="input-group-text bg-white border-end-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="text-muted">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+                                                </svg>
+                                            </span>
+                                            <input type="text" name="search" class="form-control border-start-0 border-end-0" placeholder="Cari berdasarkan kode, nama dokumen, kategori, atau rak..." value="{{ request('search') }}" style="box-shadow: none;">
+                                            @if(request('search'))
+                                                <a href="{{ route('arsip.index') }}" class="input-group-text bg-white border-start-0 text-decoration-none" title="Hapus pencarian">
+                                                    <i class="fas fa-times text-danger"></i>
+                                                </a>
+                                            @else
+                                                <button type="submit" class="input-group-text bg-primary border-start-0 text-white" title="Cari">
+                                                    <i class="fas fa-search"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body px-0 py-0">
-                            <div class="table-responsive p-0">
+                            @if(request('search'))
+                                <div class="alert alert-info mx-3 mt-3 mb-0">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-filter me-2"></i>
+                                        <span>Menampilkan hasil pencarian untuk: <strong>"{{ request('search') }}"</strong></span>
+                                        <a href="{{ route('arsip.index') }}" class="btn btn-sm btn-outline-info ms-auto">
+                                            <i class="fas fa-times me-1"></i> Hapus Filter
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="table-responsive p-0 {{ request('search') ? 'search-active' : '' }}">
                                 <table class="table align-items-center mb-0">
                                     <thead class="bg-gray-100">
                                         <tr>
@@ -148,6 +180,11 @@
                                                 <p class="text-sm font-weight-normal mb-0">
                                                     {{ $arsip->retention_date ? $arsip->retention_date->format('d/m/Y') : '-' }}
                                                 </p>
+                                                @if($arsip->retention_years && $arsip->retention_years != 5)
+                                                    <small class="d-block text-muted">
+                                                        ({{ $arsip->retention_years }} tahun)
+                                                    </small>
+                                                @endif
                                             </td>
                                             @endif
 
@@ -231,13 +268,45 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="border-top py-3 px-3 d-flex align-items-center">
-                                <p class="font-weight-semibold mb-0 text-dark text-sm">Halaman 1 dari 1</p>
-                                <div class="ms-auto">
-                                    <button class="btn btn-sm btn-white mb-0">Sebelumnya</button>
-                                    <button class="btn btn-sm btn-white mb-0">Selanjutnya</button>
+                            @if(count($arsips) == 0)
+                                <div class="text-center p-5">
+                                    @if(request('search'))
+                                        <div class="mb-3">
+                                            <i class="fas fa-search-minus text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-3">Tidak ada hasil untuk pencarian "{{ request('search') }}"</h6>
+                                        <p class="text-muted mb-3">Coba gunakan kata kunci yang berbeda atau pastikan ejaan sudah benar</p>
+                                        <a href="{{ route('arsip.index') }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-arrow-left me-1"></i> Kembali ke semua arsip
+                                        </a>
+                                    @else
+                                        <div class="mb-3">
+                                            <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h6 class="text-muted mb-3">Belum ada arsip yang tersedia</h6>
+                                        <p class="text-muted mb-3">Mulai dengan menambahkan arsip dokumen pertama Anda</p>
+                                        @if(!Auth::user()->isPeminjam())
+                                            <a href="{{ route('arsip.create') }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-plus me-1"></i> Tambah Arsip
+                                            </a>
+                                        @endif
+                                    @endif
                                 </div>
-                            </div>
+                            @else
+                                <div class="border-top py-3 px-3 d-flex align-items-center">
+                                    <p class="font-weight-semibold mb-0 text-dark text-sm">
+                                        @if(request('search'))
+                                            Menampilkan {{ count($arsips) }} dari hasil pencarian
+                                        @else
+                                            Halaman 1 dari 1 - Total {{ count($arsips) }} arsip
+                                        @endif
+                                    </p>
+                                    <div class="ms-auto">
+                                        <button class="btn btn-sm btn-white mb-0" disabled>Sebelumnya</button>
+                                        <button class="btn btn-sm btn-white mb-0" disabled>Selanjutnya</button>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -245,4 +314,120 @@
             <x-app.footer />
         </div>
     </main>
+
+    <script>
+        // Enhanced search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[name="search"]');
+            const searchForm = searchInput.closest('form');
+            let searchTimeout;
+
+            // Auto-submit on typing
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (this.value.length >= 2 || this.value.length === 0) {
+                        searchForm.submit();
+                    }
+                }, 800);
+            });
+
+            // Allow search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    searchForm.submit();
+                }
+            });
+
+            // Focus on search input when pressing '/' key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
+            // Add visual feedback for search
+            if (searchInput.value.length > 0) {
+                searchInput.classList.add('border-primary');
+            }
+
+            // Highlight search terms in results
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm.length > 0) {
+                const cells = document.querySelectorAll('.table tbody td');
+                cells.forEach(cell => {
+                    const text = cell.textContent;
+                    if (text.toLowerCase().includes(searchTerm)) {
+                        const highlightedText = text.replace(
+                            new RegExp(`(${searchTerm})`, 'gi'),
+                            '<mark class="bg-warning text-dark">$1</mark>'
+                        );
+                        cell.innerHTML = highlightedText;
+                    }
+                });
+            }
+        });
+    </script>
+
+    <style>
+        /* Custom search styling */
+        .input-group .form-control:focus {
+            border-color: #5e72e4;
+            box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+        }
+
+        .input-group-text {
+            border-color: #dee2e6;
+        }
+
+        .input-group .form-control:focus + .input-group-text,
+        .input-group .input-group-text:focus {
+            border-color: #5e72e4;
+        }
+
+        /* Search results highlighting */
+        .search-active .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .search-active .table tbody tr:hover {
+            background-color: rgba(94, 114, 228, 0.1);
+        }
+
+        /* Retention notification styling */
+        .bg-warning-subtle {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Search highlight */
+        mark {
+            padding: 0.1em 0.2em;
+            border-radius: 0.2em;
+        }
+
+        /* Custom badge improvements */
+        .badge {
+            font-size: 0.75em;
+            padding: 0.35em 0.65em;
+        }
+
+        /* Status indicators */
+        .text-success { color: #28a745 !important; }
+        .text-warning { color: #ffc107 !important; }
+        .text-info { color: #17a2b8 !important; }
+        .text-danger { color: #dc3545 !important; }
+
+        /* Animation for new elements */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </x-app-layout>

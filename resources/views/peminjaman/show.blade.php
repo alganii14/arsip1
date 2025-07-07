@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border shadow-xs mb-4">
@@ -34,16 +34,22 @@
                                     <p class="text-sm mb-sm-0">Detail peminjaman arsip</p>
                                 </div>
                                 <div class="ms-auto d-flex">
+                                    @if($peminjaman->confirmation_status === 'approved' && $peminjaman->arsip->file_path)
+                                        <a href="{{ route('arsip.download', $peminjaman->arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                            <i class="fas fa-download me-1"></i> Download File
+                                        </a>
+                                    @endif
+
                                     @if($peminjaman->status !== 'dikembalikan')
                                         <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success me-2">
                                             <i class="fas fa-undo me-1"></i> Kembalikan Arsip
                                         </a>
                                     @endif
-                                    
+
                                     <a href="{{ route('peminjaman.edit', $peminjaman->id) }}" class="btn btn-sm btn-warning me-2">
                                         <i class="fas fa-edit me-1"></i> Edit
                                     </a>
-                                    
+
                                     <form action="{{ route('peminjaman.destroy', $peminjaman->id) }}" method="POST" style="display:inline;">
                                         @csrf @method('DELETE')
                                         <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data peminjaman ini?')">
@@ -74,13 +80,37 @@
                                             <p class="text-xs text-secondary mb-1">Tanggal Arsip</p>
                                             <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->tanggal_arsip->format('d/m/Y') }}</p>
                                         </div>
-                                        <div class="mb-0">
+                                        <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Rak Penyimpanan</p>
                                             <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->rak ?: 'Tidak ada informasi rak' }}</p>
                                         </div>
+                                        <div class="mb-0">
+                                            <p class="text-xs text-secondary mb-1">File Arsip</p>
+                                            @if($peminjaman->arsip->file_path)
+                                                @if($peminjaman->confirmation_status === 'approved')
+                                                    <a href="{{ route('arsip.download', $peminjaman->arsip->id) }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-download me-1"></i> Download File
+                                                    </a>
+                                                @elseif($peminjaman->confirmation_status === 'pending')
+                                                    <p class="font-weight-semibold mb-0 text-warning">
+                                                        <i class="fas fa-clock me-1"></i> Menunggu Persetujuan
+                                                    </p>
+                                                    <small class="text-muted">File akan tersedia setelah peminjaman disetujui</small>
+                                                @elseif($peminjaman->confirmation_status === 'rejected')
+                                                    <p class="font-weight-semibold mb-0 text-danger">
+                                                        <i class="fas fa-times me-1"></i> Peminjaman Ditolak
+                                                    </p>
+                                                    <small class="text-muted">File tidak dapat didownload</small>
+                                                @else
+                                                    <p class="font-weight-semibold mb-0">File tersedia</p>
+                                                @endif
+                                            @else
+                                                <p class="font-weight-semibold mb-0 text-muted">Tidak ada file</p>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6">
                                     <div class="border rounded p-3 mb-4">
                                         <h6 class="text-sm font-weight-semibold mb-3">Informasi Peminjam</h6>
@@ -103,7 +133,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="border rounded p-3 mb-4">
@@ -126,7 +156,7 @@
                                                 @php
                                                     $statusClass = 'primary';
                                                     $statusText = 'Dipinjam';
-                                                    
+
                                                     if($peminjaman->status === 'dipinjam') {
                                                         $statusClass = 'primary';
                                                         $statusText = 'Dipinjam';
@@ -136,6 +166,9 @@
                                                     } elseif($peminjaman->status === 'terlambat') {
                                                         $statusClass = 'danger';
                                                         $statusText = 'Terlambat';
+                                                    } elseif($peminjaman->status === 'pending') {
+                                                        $statusClass = 'warning';
+                                                        $statusText = 'Pending';
                                                     }
                                                 @endphp
                                                 <span class="badge badge-sm border border-{{ $statusClass }} text-{{ $statusClass }} bg-{{ $statusClass }}">
@@ -143,7 +176,7 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <p class="text-xs text-secondary mb-1">Petugas Peminjaman</p>
@@ -154,14 +187,14 @@
                                                 <p class="font-weight-semibold mb-0">{{ $peminjaman->petugas_pengembalian ?: 'Belum dikembalikan' }}</p>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
                                                 <p class="text-xs text-secondary mb-1">Tujuan Peminjaman</p>
                                                 <p class="font-weight-semibold mb-0">{{ $peminjaman->tujuan_peminjaman ?: 'Tidak ada informasi tujuan' }}</p>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <p class="text-xs text-secondary mb-1">Catatan</p>
@@ -171,9 +204,94 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <!-- Status Persetujuan Section -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="border rounded p-3 mb-4">
+                                        <h6 class="text-sm font-weight-semibold mb-3">Status Persetujuan Peminjaman</h6>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <p class="text-xs text-secondary mb-1">Status Konfirmasi</p>
+                                                @php
+                                                    $confirmationClass = 'secondary';
+                                                    $confirmationText = 'Tidak Diketahui';
+                                                    $confirmationIcon = 'question';
+
+                                                    if($peminjaman->confirmation_status === 'pending') {
+                                                        $confirmationClass = 'warning';
+                                                        $confirmationText = 'Menunggu Persetujuan';
+                                                        $confirmationIcon = 'clock';
+                                                    } elseif($peminjaman->confirmation_status === 'approved') {
+                                                        $confirmationClass = 'success';
+                                                        $confirmationText = 'Disetujui';
+                                                        $confirmationIcon = 'check';
+                                                    } elseif($peminjaman->confirmation_status === 'rejected') {
+                                                        $confirmationClass = 'danger';
+                                                        $confirmationText = 'Ditolak';
+                                                        $confirmationIcon = 'times';
+                                                    }
+                                                @endphp
+                                                <span class="badge badge-sm border border-{{ $confirmationClass }} text-{{ $confirmationClass }} bg-{{ $confirmationClass }}">
+                                                    <i class="fas fa-{{ $confirmationIcon }} me-1"></i> {{ $confirmationText }}
+                                                </span>
+                                            </div>
+
+                                            @if($peminjaman->approved_by)
+                                            <div class="col-md-6 mb-3">
+                                                <p class="text-xs text-secondary mb-1">Disetujui/Ditolak Oleh</p>
+                                                <p class="font-weight-semibold mb-0">{{ $peminjaman->adminApprover->name ?? 'Admin' }}</p>
+                                                @if($peminjaman->approved_at)
+                                                    <small class="text-muted">{{ $peminjaman->approved_at->format('d/m/Y H:i') }}</small>
+                                                @endif
+                                            </div>
+                                            @endif
+                                        </div>
+
+                                        @if($peminjaman->confirmation_status === 'rejected' && $peminjaman->rejection_reason)
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <p class="text-xs text-secondary mb-1">Alasan Penolakan</p>
+                                                <div class="alert alert-danger py-2 mb-0">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    {{ $peminjaman->rejection_reason }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        @if($peminjaman->confirmation_status === 'approved')
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-success py-2 mb-0">
+                                                    <i class="fas fa-check-circle me-2"></i>
+                                                    Peminjaman telah disetujui. Anda dapat mengunduh file arsip.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @elseif($peminjaman->confirmation_status === 'pending')
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="alert alert-warning py-2 mb-0">
+                                                    <i class="fas fa-clock me-2"></i>
+                                                    Peminjaman sedang menunggu persetujuan admin. File akan tersedia setelah disetujui.
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="d-flex justify-content-end mt-4">
                                 <a href="{{ route('peminjaman.index') }}" class="btn btn-light me-3">Kembali ke Daftar</a>
+
+                                @if($peminjaman->confirmation_status === 'approved' && $peminjaman->arsip->file_path)
+                                    <a href="{{ route('arsip.download', $peminjaman->arsip->id) }}" class="btn btn-info me-3">
+                                        <i class="fas fa-download me-2"></i> Download File
+                                    </a>
+                                @endif
+
                                 @if($peminjaman->status !== 'dikembalikan')
                                     <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-success">
                                         <i class="fas fa-undo me-2"></i> Kembalikan Arsip
@@ -184,7 +302,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <x-app.footer />
         </div>
     </main>

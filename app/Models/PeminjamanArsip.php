@@ -80,11 +80,15 @@ class PeminjamanArsip extends Model
     public function getDurasiPinjam()
     {
         if ($this->tanggal_kembali) {
-            return Carbon::parse($this->attributes['tanggal_pinjam'])->diffInDays(Carbon::parse($this->attributes['tanggal_kembali'])) + 1;
+            $start = Carbon::parse($this->attributes['tanggal_pinjam'])->startOfDay();
+            $end = Carbon::parse($this->attributes['tanggal_kembali'])->startOfDay();
+            return $start->diffInDays($end) + 1;
         }
 
         if ($this->status === 'dipinjam') {
-            return Carbon::parse($this->attributes['tanggal_pinjam'])->diffInDays(Carbon::now()) + 1;
+            $start = Carbon::parse($this->attributes['tanggal_pinjam'])->startOfDay();
+            $now = Carbon::now()->startOfDay();
+            return $start->diffInDays($now) + 1;
         }
 
         return null;
