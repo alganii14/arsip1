@@ -36,7 +36,10 @@ class Arsip extends Model
     // Scopes for filtering based on JRE status
     public function scopeActive($query)
     {
-        return $query->where('is_archived_to_jre', false);
+        return $query->where('is_archived_to_jre', false)
+                    ->whereDoesntHave('pemindahan', function($q) {
+                        $q->whereIn('status', ['approved', 'completed']);
+                    });
     }
 
     public function scopeArchivedToJre($query)
@@ -70,12 +73,24 @@ class Arsip extends Model
 
     public function jre()
     {
-        return $this->hasOne(Jre::class);
+        return $this->hasOne(Jre::class, 'arsip_id');
     }
 
     public function peminjaman()
     {
         return $this->hasMany(PeminjamanArsip::class);
+    }
+
+    public function pemindahan()
+    {
+        return $this->hasMany(Pemindahan::class);
+    }
+
+    public function isAlreadyMoved()
+    {
+        return $this->pemindahan()
+            ->whereIn('status', ['approved', 'completed'])
+            ->exists();
     }
 
     public function isCurrentlyBorrowed()
@@ -135,7 +150,18 @@ class Arsip extends Model
 
     public function shouldMoveToJre()
     {
-        if (!$this->is_archived_to_jre && $this->retention_date) {
+        // Don't move if already archived to JRE
+        if ($this->is_archived_to_jre) {
+            return false;
+        }
+
+        // Check if JRE already exists for this arsip (safe check)
+        $jreExists = Jre::where('arsip_id', $this->id)->exists();
+        if ($jreExists) {
+            return false;
+        }
+
+        if ($this->retention_date) {
             $today = Carbon::today()->format('Y-m-d');
             // Get retention date from attributes array as string
             $retentionDateStr = $this->attributes['retention_date'];
@@ -167,6 +193,19 @@ class Arsip extends Model
 
     public function moveToJre($notes = null)
     {
+        // Check if JRE already exists for this arsip (safe check without loading relation)
+        $existingJre = Jre::where('arsip_id', $this->id)->first();
+        if ($existingJre) {
+            // If JRE already exists, just return it instead of creating a new one
+            // Update arsip status if needed
+            if (!$this->is_archived_to_jre) {
+                $this->is_archived_to_jre = true;
+                $this->archived_to_jre_at = Carbon::now();
+                $this->save();
+            }
+            return $existingJre;
+        }
+
         // Store arsip data for JRE
         $arsipData = $this->toArray();
 

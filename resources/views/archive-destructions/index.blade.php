@@ -26,6 +26,93 @@
                 </div>
             </div>
 
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-dark text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-fire text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Total Dimusnahkan</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $destructions->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-danger text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-calendar text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Bulan Ini</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $destructions->where('destroyed_at', '>=', now()->startOfMonth())->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-warning text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Tahun Ini</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $destructions->where('destroyed_at', '>=', now()->startOfYear())->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-success text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-clock text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Terakhir</p>
+                                        <h5 class="font-weight-bolder text-sm">
+                                            @if($destructions->count() > 0)
+                                                {{ $destructions->first()->destroyed_at->diffForHumans() }}
+                                            @else
+                                                -
+                                            @endif
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border shadow-xs">
@@ -36,13 +123,32 @@
                                     <p class="text-sm">Arsip yang telah dimusnahkan secara permanen dan tidak dapat dipulihkan</p>
                                 </div>
                                 <div class="ms-auto d-flex">
+                                    <!-- Export Buttons -->
+                                    <div class="btn-group me-3">
+                                        <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-download me-1"></i> Export Laporan
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('archive-destructions.export.excel') }}">
+                                                    <i class="fas fa-file-excel me-2 text-success"></i> Export Excel
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('archive-destructions.export.pdf') }}">
+                                                    <i class="fas fa-file-pdf me-2 text-danger"></i> Export PDF
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
                                     <div class="input-group w-sm-25 ms-auto">
                                         <span class="input-group-text text-body">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
                                             </svg>
                                         </span>
-                                        <input type="text" class="form-control" placeholder="Cari arsip yang dimusnahkan...">
+                                        <input type="text" class="form-control" id="searchInput" placeholder="Cari arsip yang dimusnahkan...">
                                     </div>
                                 </div>
                             </div>
@@ -110,4 +216,61 @@
             <x-app.footer />
         </div>
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const tableBody = document.querySelector('table tbody');
+            const tableRows = tableBody.querySelectorAll('tr');
+
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if no rows are visible
+                const visibleRows = Array.from(tableRows).filter(row => row.style.display !== 'none');
+                const noResultsRow = document.getElementById('noResultsRow');
+
+                if (visibleRows.length === 0 && searchTerm !== '') {
+                    if (!noResultsRow) {
+                        const newRow = document.createElement('tr');
+                        newRow.id = 'noResultsRow';
+                        newRow.innerHTML = `
+                            <td colspan="6" class="text-center py-4">
+                                <div class="text-center">
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">Tidak ditemukan arsip yang cocok dengan pencarian "${searchTerm}"</p>
+                                </div>
+                            </td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    }
+                } else if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            });
+
+            // Export button loading state
+            const exportButtons = document.querySelectorAll('.dropdown-item');
+            exportButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Mengunduh...';
+
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+        });
+    </script>
 </x-app-layout>

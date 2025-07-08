@@ -31,6 +31,16 @@ class ArsipObserver
      */
     public function retrieved(Arsip $arsip): void
     {
+        // Don't auto-move to JRE if we're in a pemindahan context
+        // Check if current request is related to pemindahan
+        $currentRoute = request()->route();
+        if ($currentRoute) {
+            $routeName = $currentRoute->getName();
+            if (str_contains($routeName ?? '', 'pemindahan')) {
+                return; // Don't auto-move when handling pemindahan
+            }
+        }
+
         // Auto-move to JRE if expired when arsip is retrieved
         if (!$arsip->is_archived_to_jre && $arsip->shouldMoveToJre()) {
             $arsip->autoMoveToJreIfExpired();

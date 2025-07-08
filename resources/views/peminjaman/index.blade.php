@@ -71,6 +71,89 @@
             </div>
             @endif
 
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-primary text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-download text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Total Peminjaman</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $peminjamans->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-warning text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-clock text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Sedang Dipinjam</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $peminjamans->where('status', 'dipinjam')->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-success text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-check text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Dikembalikan</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $peminjamans->where('status', 'dikembalikan')->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card border shadow-xs">
+                        <div class="card-body text-start p-3">
+                            <div class="d-flex">
+                                <div class="icon icon-shape icon-sm bg-danger text-white text-center border-radius-sm d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-exclamation-triangle text-white"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <div class="numbers">
+                                        <p class="text-sm mb-0 text-uppercase font-weight-bold opacity-7">Terlambat</p>
+                                        <h5 class="font-weight-bolder">
+                                            {{ $peminjamans->where('status', 'terlambat')->count() }}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-4">
                 <div class="col-12">
                     <div class="card border shadow-xs">
@@ -196,6 +279,25 @@
                                     </p>
                                 </div>
                                 <div class="ms-auto d-flex">
+                                    <!-- Export Buttons -->
+                                    <div class="btn-group me-3">
+                                        <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-download me-1"></i> Export Laporan
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('peminjaman.export.excel') }}">
+                                                    <i class="fas fa-file-excel me-2 text-success"></i> Export Excel
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('peminjaman.export.pdf') }}">
+                                                    <i class="fas fa-file-pdf me-2 text-danger"></i> Export PDF
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
                                     @if(!Auth::user()->isPeminjam())
                                     <form action="{{ route('peminjaman.check-overdue') }}" method="POST" class="me-3">
                                         @csrf
@@ -353,33 +455,105 @@
     </main>
 
     <script>
-        // Search functionality for available archives
-        document.getElementById('searchAvailableArsip').addEventListener('keyup', function() {
-            const searchValue = this.value.toLowerCase();
-            const tableRows = document.querySelectorAll('#availableArsipTable tbody tr');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality for available archives
+            const searchAvailableInput = document.getElementById('searchAvailableArsip');
+            const availableTableRows = document.querySelectorAll('#availableArsipTable tbody tr');
 
-            tableRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchValue)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+            searchAvailableInput.addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                let visibleCount = 0;
+
+                availableTableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchValue)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if no rows are visible
+                handleNoResults('availableArsipTable', visibleCount, searchValue, 'arsip tersedia');
             });
-        });
 
-        // Search functionality for borrowing records
-        document.getElementById('searchPeminjaman').addEventListener('keyup', function() {
-            const searchValue = this.value.toLowerCase();
-            const tableRows = document.querySelectorAll('#peminjamanTable tbody tr');
+            // Search functionality for borrowing records
+            const searchPeminjamanInput = document.getElementById('searchPeminjaman');
+            const peminjamanTableRows = document.querySelectorAll('#peminjamanTable tbody tr');
 
-            tableRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchValue)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+            searchPeminjamanInput.addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                let visibleCount = 0;
+
+                peminjamanTableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchValue)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show "no results" message if no rows are visible
+                handleNoResults('peminjamanTable', visibleCount, searchValue, 'riwayat peminjaman');
+            });
+
+            // Function to handle no results message
+            function handleNoResults(tableId, visibleCount, searchTerm, itemType) {
+                const table = document.getElementById(tableId);
+                const tbody = table.querySelector('tbody');
+                const noResultsRow = tbody.querySelector('.no-results-row');
+
+                if (visibleCount === 0 && searchTerm !== '') {
+                    if (!noResultsRow) {
+                        const newRow = document.createElement('tr');
+                        newRow.className = 'no-results-row';
+                        newRow.innerHTML = `
+                            <td colspan="100%" class="text-center py-4">
+                                <div class="text-center">
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted mb-2">Tidak ditemukan ${itemType}</h6>
+                                    <p class="text-muted text-sm mb-0">Tidak ada data yang cocok dengan pencarian "${searchTerm}"</p>
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(newRow);
+                    }
+                } else if (noResultsRow) {
+                    noResultsRow.remove();
                 }
+            }
+
+            // Export button loading state
+            const exportButtons = document.querySelectorAll('.dropdown-item');
+            exportButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.href && this.href.includes('export')) {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Mengunduh...';
+                        this.style.pointerEvents = 'none';
+
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.style.pointerEvents = 'auto';
+                        }, 3000);
+                    }
+                });
+            });
+
+            // Add hover effects to summary cards
+            const summaryCards = document.querySelectorAll('.card');
+            summaryCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
             });
         });
     </script>

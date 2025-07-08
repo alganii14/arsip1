@@ -797,10 +797,9 @@
                                                 <p class="mb-0 text-sm text-secondary">{{ basename($arsip->file_path) }}</p>
                                             </div>
                                             <div class="file-actions">
-                                                <!-- Download feature removed as per requirement -->
-                                                <span class="text-muted small">
-                                                    <i class="fas fa-file me-1"></i> File tersedia
-                                                </span>
+                                                <a href="{{ route('arsip.download', $arsip->id) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-download me-1"></i> Download
+                                                </a>
                                             </div>
                                         </div>
                                         <small class="form-text text-muted mt-1">

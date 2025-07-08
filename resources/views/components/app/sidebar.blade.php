@@ -50,6 +50,16 @@
                     <span class="nav-link-text ms-1">Riwayat Pemusnahan</span>
                 </a>
             </li>
+
+            {{-- Pemindahan menu - Only visible to admin and petugas --}}
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('pemindahan.*') ? 'active' : '' }}" href="{{ route('pemindahan.index') }}">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-truck-moving text-dark"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Pemindahan</span>
+                </a>
+            </li>
             @endif
 
             {{-- Peminjaman menu - Visible to all users --}}

@@ -36,6 +36,11 @@ class ArchiveDestruction extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function destroyer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function getDestructionMethodTextAttribute()
     {
         $methods = [

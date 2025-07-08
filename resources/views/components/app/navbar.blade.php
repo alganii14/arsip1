@@ -15,6 +15,17 @@
                 @elseif(request()->routeIs('arsip.edit'))
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('arsip.index') }}">Arsip</a></li>
                     <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Arsip</li>
+                @elseif(request()->routeIs('pemindahan.index'))
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Pemindahan</li>
+                @elseif(request()->routeIs('pemindahan.create'))
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('pemindahan.index') }}">Pemindahan</a></li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Tambah Pemindahan</li>
+                @elseif(request()->routeIs('pemindahan.edit'))
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('pemindahan.index') }}">Pemindahan</a></li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Edit Pemindahan</li>
+                @elseif(request()->routeIs('pemindahan.show'))
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="{{ route('pemindahan.index') }}">Pemindahan</a></li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Detail Pemindahan</li>
                 @endif
             </ol>
             <h6 class="font-weight-bolder mb-0">
@@ -28,6 +39,14 @@
                     Tambah Arsip
                 @elseif(request()->routeIs('arsip.edit'))
                     Edit Arsip
+                @elseif(request()->routeIs('pemindahan.index'))
+                    Daftar Pemindahan
+                @elseif(request()->routeIs('pemindahan.create'))
+                    Tambah Pemindahan
+                @elseif(request()->routeIs('pemindahan.edit'))
+                    Edit Pemindahan
+                @elseif(request()->routeIs('pemindahan.show'))
+                    Detail Pemindahan
                 @endif
             </h6>
         </nav>

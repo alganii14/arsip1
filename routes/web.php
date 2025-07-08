@@ -11,6 +11,7 @@ use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\JreController;
 use App\Http\Controllers\PeminjamanArsipController;
 use App\Http\Controllers\ArchiveDestructionController;
+use App\Http\Controllers\PemindahanController;
 use App\Http\Controllers\DashboardController;
 
 /*
@@ -80,6 +81,10 @@ Route::middleware('auth')->group(function () {
     Route::post('peminjaman', [PeminjamanArsipController::class, 'store'])->name('peminjaman.store');
     Route::get('peminjaman/{peminjaman}', [PeminjamanArsipController::class, 'show'])->name('peminjaman.show');
 
+    // Peminjaman - Export functionality (accessible by all authenticated users)
+    Route::get('peminjaman-export-excel', [PeminjamanArsipController::class, 'exportExcel'])->name('peminjaman.export.excel');
+    Route::get('peminjaman-export-pdf', [PeminjamanArsipController::class, 'exportPdf'])->name('peminjaman.export.pdf');
+
     // Peminjaman - Return functionality (accessible by all authenticated users)
     Route::get('peminjaman/{peminjaman}/return', [PeminjamanArsipController::class, 'returnForm'])->name('peminjaman.return-form');
     Route::post('peminjaman/{peminjaman}/process-return', [PeminjamanArsipController::class, 'processReturn'])->name('peminjaman.process-return');
@@ -125,10 +130,21 @@ Route::middleware('auth')->group(function () {
 
         // Archive Destructions - Full access
         Route::resource('archive-destructions', ArchiveDestructionController::class)->only(['index', 'show']);
+        Route::get('archive-destructions-export-excel', [ArchiveDestructionController::class, 'exportExcel'])->name('archive-destructions.export.excel');
+        Route::get('archive-destructions-export-pdf', [ArchiveDestructionController::class, 'exportPdf'])->name('archive-destructions.export.pdf');
 
         // Archive Destruction - Full access
         Route::get('archive-destructions', [ArchiveDestructionController::class, 'index'])->name('archive-destructions.index');
         Route::get('archive-destructions/{archiveDestruction}', [ArchiveDestructionController::class, 'show'])->name('archive-destructions.show');
+
+        // Pemindahan - Full access
+        Route::resource('pemindahan', PemindahanController::class);
+        Route::get('pemindahan-export-excel', [PemindahanController::class, 'exportExcel'])->name('pemindahan.export.excel');
+        Route::get('pemindahan-export-pdf', [PemindahanController::class, 'exportPdf'])->name('pemindahan.export.pdf');
+        Route::post('pemindahan/{pemindahan}/approve', [PemindahanController::class, 'approve'])->name('pemindahan.approve');
+        Route::post('pemindahan/{pemindahan}/reject', [PemindahanController::class, 'reject'])->name('pemindahan.reject');
+        Route::post('pemindahan/{pemindahan}/complete', [PemindahanController::class, 'complete'])->name('pemindahan.complete');
+        Route::get('pemindahan-get-arsip-data', [PemindahanController::class, 'getArsipData'])->name('pemindahan.get-arsip-data');
 
         // Peminjaman - Additional functionality
         Route::get('peminjaman/{peminjaman}/edit', [PeminjamanArsipController::class, 'edit'])->name('peminjaman.edit');

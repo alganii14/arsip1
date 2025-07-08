@@ -47,6 +47,11 @@ class CheckArsipRetentionMiddleware
                       ->get();
 
         foreach ($arsips as $arsip) {
+            // Skip if arsip doesn't have an ID (shouldn't happen in this context but safety first)
+            if (!$arsip->id) {
+                continue;
+            }
+
             if ($arsip->shouldMoveToJre()) {
                 // Mark retention notification first
                 $arsip->has_retention_notification = true;

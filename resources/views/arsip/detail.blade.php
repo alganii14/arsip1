@@ -268,16 +268,30 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-between mt-4">
-                                <a href="{{ route('arsip.index') }}" class="btn btn-light">
-                                    <i class="fas fa-arrow-left me-2"></i> Kembali ke Daftar
-                                </a>
+                <div class="d-flex justify-content-between mt-4">
+                <a href="{{ route('arsip.index') }}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i> Kembali ke Daftar
+                </a>
 
-                                @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed() && Auth::user()->role !== 'admin' && $arsip->created_by !== Auth::id())
-                                <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-primary">
-                                    <i class="fas fa-download me-2"></i> Pinjam Arsip
-                                </a>
-                                @elseif($arsip->isCurrentlyBorrowed())
+                <div class="d-flex gap-2">
+                    {{-- Tombol Pemindahan - Hanya untuk admin dan petugas --}}
+                    @if(Auth::user()->role !== 'peminjam' && !$arsip->is_archived_to_jre)
+                    <a href="{{ route('pemindahan.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-warning">
+                        <i class="fas fa-truck-moving me-2"></i> Ajukan Pemindahan
+                    </a>
+                    @endif
+
+                    {{-- Tombol Peminjaman --}}
+                    @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed() && Auth::user()->role !== 'admin' && $arsip->created_by !== Auth::id())
+                    <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i> Pinjam Arsip
+                    </a>
+                    @endif
+                </div>
+            </div>
+
+            <div class="mt-3">
+                @if($arsip->isCurrentlyBorrowed())
                                 <button class="btn btn-secondary" disabled>
                                     <i class="fas fa-ban me-2"></i> Arsip Sedang Dipinjam
                                 </button>

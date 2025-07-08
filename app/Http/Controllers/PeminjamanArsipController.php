@@ -8,6 +8,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PeminjamanArsipExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PeminjamanArsipController extends Controller
 {
@@ -35,7 +38,8 @@ class PeminjamanArsipController extends Controller
         $availableArsipsQuery = Arsip::where('is_archived_to_jre', false)
             ->whereDoesntHave('peminjaman', function($query) {
                 $query->whereIn('status', ['dipinjam', 'terlambat']);
-            });
+            })
+            ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
         // Exclude user's own archives for all users
         // Admin can view all archives directly without borrowing
@@ -62,7 +66,8 @@ class PeminjamanArsipController extends Controller
         $arsipsQuery = Arsip::where('is_archived_to_jre', false)
             ->whereDoesntHave('peminjaman', function($query) {
                 $query->whereIn('status', ['dipinjam', 'terlambat']);
-            });
+            })
+            ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
         // Untuk peminjam, hanya tampilkan arsip dari seksi lain (bukan milik sendiri)
         if ($user->role === 'peminjam') {
@@ -314,5 +319,52 @@ class PeminjamanArsipController extends Controller
         $peminjaman->reject(Auth::id(), $request->rejection_reason);
 
         return redirect()->route('peminjaman.pending')->with('success', 'Permintaan peminjaman berhasil ditolak.');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $user = Auth::user();
+
+        // Get borrowing records based on user role
+        if ($user->role === 'peminjam') {
+            $peminjamans = PeminjamanArsip::with(['arsip', 'user'])
+                ->where('peminjam_user_id', $user->id)
+                ->latest()
+                ->get();
+        } else {
+            $peminjamans = PeminjamanArsip::with(['arsip', 'user'])->latest()->get();
+        }
+
+        return Excel::download(
+            new PeminjamanArsipExport($peminjamans),
+            'laporan-peminjaman-arsip-' . date('Y-m-d') . '.xlsx'
+        );
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $user = Auth::user();
+
+        // Get borrowing records based on user role
+        if ($user->role === 'peminjam') {
+            $peminjamans = PeminjamanArsip::with(['arsip', 'user'])
+                ->where('peminjam_user_id', $user->id)
+                ->latest()
+                ->get();
+        } else {
+            $peminjamans = PeminjamanArsip::with(['arsip', 'user'])->latest()->get();
+        }
+
+        $data = [
+            'peminjamans' => $peminjamans,
+            'title' => 'Laporan Riwayat Peminjaman Arsip',
+            'date' => date('d/m/Y'),
+            'user' => $user
+        ];
+
+        $pdf = Pdf::loadView('reports.peminjaman-arsip', $data);
+        $pdf->setPaper('A4', 'landscape');
+
+        return $pdf->download('laporan-peminjaman-arsip-' . date('Y-m-d') . '.pdf');
     }
 }
