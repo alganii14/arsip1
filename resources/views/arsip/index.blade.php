@@ -9,14 +9,13 @@
                         <div class="card-body text-start p-4 w-100">
                             <h3 class="text-white mb-2">Daftar Arsip</h3>
                             <p class="mb-4 font-weight-semibold text-white">
-                                @if(Auth::user()->isPeminjam())
-                                    Lihat dan pinjam arsip dokumen yang tersedia
+                                @if(Auth::user()->role === 'peminjam')
+                                    Kelola arsip milik seksi Anda dan pinjam arsip dari seksi lain
                                 @else
                                     Kelola semua arsip dokumen Anda di satu tempat
                                 @endif
                             </p>
                             <div class="d-flex">
-                                @if(!Auth::user()->isPeminjam())
                                 <a href="{{ route('arsip.create') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
                                     <span class="btn-inner--icon">
                                         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -25,6 +24,7 @@
                                     </span>
                                     <span class="btn-inner--text">Tambah Arsip</span>
                                 </a>
+                                @if(Auth::user()->role !== 'peminjam')
                                 <a href="{{ route('jre.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
                                     <span class="btn-inner--icon">
                                         <i class="fas fa-archive me-2"></i>
@@ -130,11 +130,11 @@
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">Kode</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Nama Dokumen</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Kategori</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Dibuat oleh</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Arsip</th>
-                                            @if(!Auth::user()->isPeminjam())
+                                            @if(Auth::user()->role !== 'peminjam')
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Retensi</th>
                                             @endif
-
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Status</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
                                         </tr>
@@ -173,20 +173,30 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <p class="text-sm font-weight-normal mb-0">{{ $arsip->tanggal_arsip->format('d/m/Y') }}</p>
-                                            </td>
-                                            @if(!Auth::user()->isPeminjam())
-                                            <td>
                                                 <p class="text-sm font-weight-normal mb-0">
-                                                    {{ $arsip->retention_date ? $arsip->retention_date->format('d/m/Y') : '-' }}
+                                                    {{ $arsip->creator ? $arsip->creator->name : 'Unknown' }}
+                                                    @if($arsip->creator && $arsip->creator->department)
+                                                        <small class="d-block text-muted">{{ $arsip->creator->department }}</small>
+                                                    @endif
+                                                    @if($arsip->created_by === Auth::id())
+                                                        <span class="badge bg-primary text-white badge-sm">Milik Anda</span>
+                                                    @endif
                                                 </p>
-                                                @if($arsip->retention_years && $arsip->retention_years != 5)
-                                                    <small class="d-block text-muted">
-                                                        ({{ $arsip->retention_years }} tahun)
-                                                    </small>
-                                                @endif
-                                            </td>
-                                            @endif
+                                            </td>                            <td>
+                                <p class="text-sm font-weight-normal mb-0">{{ $arsip->tanggal_arsip->format('d/m/Y') }}</p>
+                            </td>
+                            @if(Auth::user()->role !== 'peminjam')
+                            <td>
+                                <p class="text-sm font-weight-normal mb-0">
+                                    {{ $arsip->retention_date ? $arsip->retention_date->format('d/m/Y') : '-' }}
+                                </p>
+                                @if($arsip->retention_years && $arsip->retention_years != 5)
+                                    <small class="d-block text-muted">
+                                        ({{ $arsip->retention_years }} tahun)
+                                    </small>
+                                @endif
+                            </td>
+                            @endif
 
                                             <td>
                                                 @if($arsip->is_archived_to_jre)
@@ -205,30 +215,84 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @if(Auth::user()->isPeminjam())
+                                                    @if(Auth::user()->role === 'peminjam')
                                                         <!-- Tombol untuk Peminjam -->
-                                                        @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed())
-                                                            <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
-                                                                <i class="fas fa-eye me-1"></i> Detail
-                                                            </a>
-                                                            <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-sm btn-primary">
-                                                                <i class="fas fa-download me-1"></i> Pinjam
-                                                            </a>
-                                                        @elseif($arsip->isCurrentlyBorrowed())
-                                                            <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
-                                                                <i class="fas fa-eye me-1"></i> Detail
-                                                            </a>
-                                                            <button class="btn btn-sm btn-secondary" disabled>
-                                                                <i class="fas fa-ban me-1"></i> Sedang Dipinjam
-                                                            </button>
+                                                        @if($arsip->created_by === Auth::id())
+                                                            <!-- Arsip milik sendiri - bisa edit/delete -->
+                                                            @if(!$arsip->is_archived_to_jre)
+                                                                <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                                                    <i class="fas fa-eye me-1"></i> Detail
+                                                                </a>
+                                                                @if($arsip->file_path)
+                                                                    <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                                                        <i class="fas fa-file-pdf me-1"></i> Lihat Digital
+                                                                    </a>
+                                                                @endif
+                                                                <a href="{{ route('arsip.edit', $arsip->id) }}" class="btn btn-sm btn-warning me-2">
+                                                                    <i class="fas fa-edit me-1"></i> Edit
+                                                                </a>
+                                                                @if(!$arsip->isCurrentlyBorrowed())
+                                                                    <form action="{{ route('arsip.destroy', $arsip->id) }}" method="POST" style="display:inline;">
+                                                                        @csrf @method('DELETE')
+                                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus?')">
+                                                                            <i class="fas fa-trash me-1"></i> Hapus
+                                                                        </button>
+                                                                    </form>
+                                                                @else
+                                                                    <button class="btn btn-sm btn-secondary" disabled>
+                                                                        <i class="fas fa-ban me-1"></i> Sedang Dipinjam
+                                                                    </button>
+                                                                @endif
+                                                            @else
+                                                                <button class="btn btn-sm btn-secondary" disabled>
+                                                                    <i class="fas fa-archive me-1"></i> Di Arsip JRE
+                                                                </button>
+                                                            @endif
                                                         @else
-                                                            <button class="btn btn-sm btn-secondary" disabled>
-                                                                <i class="fas fa-archive me-1"></i> Di Arsip JRE
-                                                            </button>
+                                                            <!-- Arsip bukan milik sendiri - hanya bisa pinjam -->
+                                                            @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed())
+                                                                <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                                                    <i class="fas fa-eye me-1"></i> Detail
+                                                                </a>
+                                                                @if($arsip->file_path && Auth::user()->role === 'admin')
+                                                                    <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                                                        <i class="fas fa-file-pdf me-1"></i> Lihat Digital
+                                                                    </a>
+                                                                @endif
+                                                                @if(Auth::user()->role !== 'admin')
+                                                                    <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-sm btn-primary">
+                                                                        <i class="fas fa-download me-1"></i> Pinjam
+                                                                    </a>
+                                                                @endif
+                                                            @elseif($arsip->isCurrentlyBorrowed())
+                                                                <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                                                    <i class="fas fa-eye me-1"></i> Detail
+                                                                </a>
+                                                                @if($arsip->file_path && Auth::user()->role === 'admin')
+                                                                    <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                                                        <i class="fas fa-file-pdf me-1"></i> Lihat Digital
+                                                                    </a>
+                                                                @endif
+                                                                <button class="btn btn-sm btn-secondary" disabled>
+                                                                    <i class="fas fa-ban me-1"></i> Sedang Dipinjam
+                                                                </button>
+                                                            @else
+                                                                <button class="btn btn-sm btn-secondary" disabled>
+                                                                    <i class="fas fa-archive me-1"></i> Di Arsip JRE
+                                                                </button>
+                                                            @endif
                                                         @endif
                                                     @else
                                                         <!-- Tombol untuk Admin/Petugas -->
                                                         @if(!$arsip->is_archived_to_jre)
+                                                            <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                                                <i class="fas fa-eye me-1"></i> Detail
+                                                            </a>
+                                                            @if($arsip->file_path && Auth::user()->role === 'admin')
+                                                                <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                                                    <i class="fas fa-file-pdf me-1"></i> Lihat Digital
+                                                                </a>
+                                                            @endif
                                                             <a href="{{ route('arsip.edit', $arsip->id) }}" class="btn btn-sm btn-warning me-2">
                                                                 <svg width="14" height="14" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                     <path d="M11.2201 2.02495C10.8292 1.63482 10.196 1.63545 9.80585 2.02636C9.41572 2.41727 9.41635 3.05044 9.80726 3.44057L11.2201 2.02495ZM12.5572 6.18502C12.9481 6.57516 13.5813 6.57453 13.9714 6.18362C14.3615 5.79271 14.3609 5.15954 13.97 4.7694L12.5572 6.18502ZM11.6803 1.56839L12.3867 2.2762L12.3867 2.27619L11.6803 1.56839ZM14.4302 4.31284L15.1367 5.02065L15.1367 5.02064L14.4302 4.31284ZM3.72198 15V16C3.98686 16 4.24091 15.8949 4.42839 15.7078L3.72198 15ZM0.999756 15H-0.000244141C-0.000244141 15.5523 0.447471 16 0.999756 16L0.999756 15ZM0.999756 12.2279L0.293346 11.5201C0.105383 11.7077 -0.000244141 11.9624 -0.000244141 12.2279H0.999756ZM9.80726 3.44057L12.5572 6.18502L13.97 4.7694L11.2201 2.02495L9.80726 3.44057ZM12.3867 2.27619C12.7557 1.90794 13.3549 1.90794 13.7238 2.27619L15.1367 0.860593C13.9869 -0.286864 12.1236 -0.286864 10.9739 0.860593L12.3867 2.27619ZM13.7238 2.27619C14.0917 2.64337 14.0917 3.23787 13.7238 3.60504L15.1367 5.02064C16.2875 3.8721 16.2875 2.00913 15.1367 0.860593L13.7238 2.27619ZM13.7238 3.60504L3.01557 14.2922L4.42839 15.7078L15.1367 5.02065L13.7238 3.60504ZM3.72198 14H0.999756V16H3.72198V14ZM1.99976 15V12.2279H-0.000244141V15H1.99976ZM1.70617 12.9357L12.3867 2.2762L10.9739 0.86059L0.293346 11.5201L1.70617 12.9357Z" fill="currentColor" />
@@ -236,11 +300,11 @@
                                                                 Edit
                                                             </a>
 
-                                                            @if(!$arsip->isCurrentlyBorrowed())
+                                                            @if(!$arsip->isCurrentlyBorrowed() && Auth::user()->role !== 'admin')
                                                                 <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-sm btn-primary me-2">
                                                                     <i class="fas fa-exchange-alt me-1"></i> Pinjam
                                                                 </a>
-                                                            @else
+                                                            @elseif($arsip->isCurrentlyBorrowed())
                                                                 <a href="{{ route('peminjaman.show', $arsip->getCurrentBorrower()->id) }}" class="btn btn-sm btn-info me-2">
                                                                     <i class="fas fa-info-circle me-1"></i> Info Peminjam
                                                                 </a>

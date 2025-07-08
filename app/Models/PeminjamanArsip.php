@@ -32,9 +32,9 @@ class PeminjamanArsip extends Model
     ];
 
     protected $casts = [
-        'tanggal_pinjam' => 'date',
-        'tanggal_kembali' => 'date',
-        'batas_waktu' => 'date',
+        'tanggal_pinjam' => 'datetime',
+        'tanggal_kembali' => 'datetime',
+        'batas_waktu' => 'datetime',
         'approved_at' => 'datetime',
     ];
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Arsip;
+use App\Models\User;
 use App\Helpers\DocumentNumberExtractor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -14,8 +15,17 @@ class ArsipController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+
         // Base query - only show active arsips (not archived to JRE)
         $query = Arsip::active();
+
+        // Filter berdasarkan role user
+        if ($user->role === 'peminjam') {
+            // Peminjam hanya bisa lihat arsip milik sendiri atau yang sedang dipinjam
+            $query->accessibleBy($user->id);
+        }
+        // Admin dan petugas bisa lihat semua arsip
 
         // Handle search
         if ($request->has('search') && !empty($request->search)) {
@@ -28,7 +38,7 @@ class ArsipController extends Controller
             });
         }
 
-        $arsips = $query->get();
+        $arsips = $query->with('creator')->get();
 
         // Check for notifications
         foreach ($arsips as $arsip) {
@@ -78,6 +88,9 @@ class ArsipController extends Controller
         $data['retention_years'] = 5; // Default auto retention
     }
 
+    // Add created_by field
+    $data['created_by'] = Auth::id();
+
     // Create the arsip
     $arsip = Arsip::create($data);
 
@@ -93,6 +106,13 @@ class ArsipController extends Controller
 
     public function edit(Arsip $arsip)
     {
+        $user = Auth::user();
+
+        // Check authorization - hanya pemilik, admin, atau petugas yang bisa edit
+        if ($user->role === 'peminjam' && $arsip->created_by !== $user->id) {
+            return redirect()->route('arsip.index')->with('error', 'Anda tidak memiliki akses untuk mengedit arsip ini.');
+        }
+
         return view('arsip.update', compact('arsip'));
     }
 
@@ -152,6 +172,13 @@ class ArsipController extends Controller
 
     public function destroy(Arsip $arsip)
     {
+        $user = Auth::user();
+
+        // Check authorization - hanya pemilik, admin, atau petugas yang bisa delete
+        if ($user->role === 'peminjam' && $arsip->created_by !== $user->id) {
+            return redirect()->route('arsip.index')->with('error', 'Anda tidak memiliki akses untuk menghapus arsip ini.');
+        }
+
         // Delete file if exists
         if ($arsip->file_path) {
             Storage::disk('public')->delete($arsip->file_path);
@@ -167,15 +194,20 @@ class ArsipController extends Controller
 
         // Check if user is trying to download via peminjaman
         if ($user && $user->role === 'peminjam') {
-            // Check if user has approved peminjaman for this arsip
-            $approvedPeminjaman = $arsip->peminjaman()
-                ->where('peminjam_user_id', $user->id)
-                ->where('confirmation_status', 'approved')
-                ->whereIn('status', ['dipinjam', 'terlambat']) // Only active loans
-                ->first();
+            // Check if this is user's own archive (no need to borrow)
+            if ($arsip->created_by === $user->id) {
+                // User can download their own archive
+            } else {
+                // For other archives, check if user has approved peminjaman
+                $approvedPeminjaman = $arsip->peminjaman()
+                    ->where('peminjam_user_id', $user->id)
+                    ->where('confirmation_status', 'approved')
+                    ->whereIn('status', ['dipinjam', 'terlambat']) // Only active loans
+                    ->first();
 
-            if (!$approvedPeminjaman) {
-                return back()->with('error', 'Akses ditolak. Anda hanya dapat mengunduh file arsip yang telah disetujui untuk dipinjam.');
+                if (!$approvedPeminjaman) {
+                    return back()->with('error', 'Akses ditolak. Anda hanya dapat mengunduh file arsip yang telah disetujui untuk dipinjam atau arsip milik sendiri.');
+                }
             }
         }
 
@@ -185,6 +217,74 @@ class ArsipController extends Controller
         }
 
         return back()->with('error', 'File tidak ditemukan');
+    }    public function viewFile($id)
+    {
+        try {
+            Log::info("ViewFile: Requested ID: " . $id);
+
+            $user = Auth::user();
+            Log::info("ViewFile: User role: " . ($user ? $user->role : 'guest'));
+
+            // Find arsip by ID - use where instead of find to get better debugging
+            $arsip = Arsip::where('id', $id)->first();
+
+            if (!$arsip) {
+                Log::warning("ViewFile: Arsip not found with ID: " . $id);
+                // Let's check if there are any arsips at all
+                $allArsips = Arsip::select('id', 'nama_dokumen', 'is_archived_to_jre')->get();
+                Log::info("ViewFile: Available arsips: " . $allArsips->toJson());
+                return redirect()->route('peminjaman.index')->with('error', 'Arsip tidak ditemukan.');
+            }
+
+            Log::info("ViewFile: Found arsip: " . $arsip->nama_dokumen . " (JRE: " . ($arsip->is_archived_to_jre ? 'Yes' : 'No') . ")");
+
+            // Periksa apakah arsip ada di JRE
+            if ($arsip->is_archived_to_jre) {
+                Log::warning("ViewFile: Arsip is archived to JRE");
+                return redirect()->route('peminjaman.index')->with('error', 'Arsip ini telah dipindahkan ke JRE dan tidak dapat diakses.');
+            }
+
+            // Check if user is peminjam
+            if ($user && $user->role === 'peminjam') {
+                // Check if this is user's own archive (no need to borrow)
+                if ($arsip->created_by === $user->id) {
+                    Log::info("ViewFile: User accessing their own archive");
+                } else {
+                    // For other archives, check if user has approved peminjaman
+                    $approvedPeminjaman = $arsip->peminjaman()
+                        ->where('peminjam_user_id', $user->id)
+                        ->where('confirmation_status', 'approved')
+                        ->whereIn('status', ['dipinjam', 'terlambat']) // Only active loans
+                        ->first();
+
+                    if (!$approvedPeminjaman) {
+                        Log::warning("ViewFile: No approved peminjaman found for user " . $user->id . " and arsip " . $id);
+                        return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Anda hanya dapat melihat file arsip yang telah disetujui untuk dipinjam atau arsip milik sendiri.');
+                    }
+
+                    Log::info("ViewFile: Approved peminjaman found: " . $approvedPeminjaman->id);
+                }
+            }
+            // Admin and petugas can view all archives without borrowing
+
+            if ($arsip->file_path && Storage::disk('public')->exists($arsip->file_path)) {
+                $filePath = storage_path('app/public/' . $arsip->file_path);
+                $fileExtension = strtolower(pathinfo($arsip->file_path, PATHINFO_EXTENSION));
+
+                Log::info("ViewFile: File found at: " . $filePath . " (Extension: " . $fileExtension . ")");
+
+                // Return view with file information
+                return view('arsip.view', compact('arsip', 'filePath', 'fileExtension'));
+            }
+
+            Log::warning("ViewFile: File not found at: " . ($arsip->file_path ?: 'no file path'));
+            return redirect()->route('peminjaman.index')->with('error', 'File tidak ditemukan');
+
+        } catch (\Exception $e) {
+            Log::error("ViewFile: Exception occurred: " . $e->getMessage());
+            Log::error("ViewFile: Stack trace: " . $e->getTraceAsString());
+            return redirect()->route('peminjaman.index')->with('error', 'Terjadi kesalahan saat mengakses arsip: ' . $e->getMessage());
+        }
     }
 
     // Check for archives that need notification (now automatically moves to JRE)
@@ -205,9 +305,26 @@ class ArsipController extends Controller
     }
     public function detail(Arsip $arsip)
     {
+        $user = Auth::user();
+
         // Periksa apakah arsip ada di JRE
         if ($arsip->is_archived_to_jre) {
             return redirect()->route('arsip.index')->with('error', 'Arsip ini telah dipindahkan ke JRE dan tidak dapat diakses.');
+        }
+
+        // Check authorization untuk peminjam
+        if ($user->role === 'peminjam') {
+            // Peminjam hanya bisa lihat detail arsip milik sendiri atau yang sedang dipinjam
+            $hasAccess = ($arsip->created_by === $user->id) ||
+                        $arsip->peminjaman()
+                              ->where('peminjam_user_id', $user->id)
+                              ->where('confirmation_status', 'approved')
+                              ->whereIn('status', ['dipinjam', 'terlambat'])
+                              ->exists();
+
+            if (!$hasAccess) {
+                return redirect()->route('arsip.index')->with('error', 'Anda tidak memiliki akses untuk melihat detail arsip ini.');
+            }
         }
 
         // Periksa apakah file ada

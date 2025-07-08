@@ -76,7 +76,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <p class="text-sm font-weight-normal mb-0">{{ $destruction->destroyed_at->format('d/m/Y H:i') }}</p>
+                                                <p class="text-sm font-weight-normal mb-0">{{ $destruction->destroyed_at->format('d/m/Y H:i') }} WIB</p>
                                             </td>
                                             <td>
                                                 <p class="text-sm font-weight-normal mb-0">{{ $destruction->user->name }}</p>

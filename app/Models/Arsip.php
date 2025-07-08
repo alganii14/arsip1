@@ -23,12 +23,13 @@ class Arsip extends Model
         'retention_years',
         'is_archived_to_jre',
         'archived_to_jre_at',
-        'has_retention_notification'
+        'has_retention_notification',
+        'created_by'
     ];
 
     protected $casts = [
-        'tanggal_arsip' => 'date',
-        'retention_date' => 'date',
+        'tanggal_arsip' => 'datetime',
+        'retention_date' => 'datetime',
         'archived_to_jre_at' => 'datetime',
     ];
 
@@ -46,6 +47,25 @@ class Arsip extends Model
     public function scopeAvailableForBorrowing($query)
     {
         return $query->where('is_archived_to_jre', false);
+    }
+
+    // Scope untuk filter arsip milik user tertentu
+    public function scopeOwnedBy($query, $userId)
+    {
+        return $query->where('created_by', $userId);
+    }
+
+    // Scope untuk filter arsip yang bisa diakses user (milik sendiri atau yang dipinjam)
+    public function scopeAccessibleBy($query, $userId)
+    {
+        return $query->where(function($q) use ($userId) {
+            $q->where('created_by', $userId) // Arsip milik sendiri
+              ->orWhereHas('peminjaman', function($peminjamanQuery) use ($userId) {
+                  $peminjamanQuery->where('peminjam_user_id', $userId)
+                                 ->where('confirmation_status', 'approved')
+                                 ->whereIn('status', ['dipinjam', 'terlambat']);
+              });
+        });
     }
 
     public function jre()
@@ -165,5 +185,11 @@ class Arsip extends Model
         $this->save();
 
         return $jre;
+    }
+
+    // Relasi
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

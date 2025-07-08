@@ -61,7 +61,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Tanggal Proses</p>
-                                            <p class="font-weight-semibold mb-0">{{ $jre->processed_at->format('d/m/Y H:i') }}</p>
+                                            <p class="font-weight-semibold mb-0">{{ $jre->processed_at->format('d/m/Y H:i') }} WIB</p>
                                         </div>
                                         @if($jre->recovery_years)
                                         <div class="mb-3">
@@ -143,7 +143,7 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Arsip Dibuat</h6>
-                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ $jre->arsip->created_at->format('d M Y, H:i') }}</p>
+                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ $jre->arsip->created_at->format('d M Y, H:i') }} WIB</p>
                                         <p class="text-sm mt-3 mb-2">
                                             Arsip <strong>{{ $jre->arsip->nama_dokumen }}</strong> dibuat dengan kode <strong>{{ $jre->arsip->kode }}</strong>
                                         </p>
@@ -171,7 +171,7 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Masuk ke JRE</h6>
-                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ $jre->processed_at->format('d M Y, H:i') }}</p>
+                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ $jre->processed_at->format('d M Y, H:i') }} WIB</p>
                                         <p class="text-sm mt-3 mb-2">
                                             Arsip otomatis masuk ke Jadwal Retensi Elektronik (JRE) karena telah melewati masa retensi
                                         </p>
@@ -195,7 +195,7 @@
                                     </span>
                                     <div class="timeline-content">
                                         <h6 class="text-dark text-sm font-weight-bold mb-0">Status Saat Ini</h6>
-                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ \Carbon\Carbon::now()->format('d M Y, H:i') }}</p>
+                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{ \Carbon\Carbon::now()->format('d M Y, H:i') }} WIB</p>
                                         <p class="text-sm mt-3 mb-2">
                                             @if($jre->status == 'inactive')
                                                 Arsip dalam status <span class="badge badge-sm bg-warning text-dark">Inaktif</span> - menunggu tindakan lebih lanjut

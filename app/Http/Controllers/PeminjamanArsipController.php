@@ -19,33 +19,67 @@ class PeminjamanArsipController extends Controller
             $peminjaman->updateStatus();
         }
 
-        // Jika user adalah peminjam, hanya tampilkan peminjaman miliknya
-        if (Auth::user()->isPeminjam()) {
+        $user = Auth::user();
+
+        // Get borrowing records
+        if ($user->role === 'peminjam') {
             $peminjamans = PeminjamanArsip::with('arsip')
-                ->where('peminjam_user_id', Auth::id())
+                ->where('peminjam_user_id', $user->id)
                 ->latest()
                 ->get();
         } else {
-            // Jika admin atau petugas, tampilkan semua
             $peminjamans = PeminjamanArsip::with('arsip')->latest()->get();
         }
 
-        return view('peminjaman.index', compact('peminjamans'));
+        // Get available archives for borrowing
+        $availableArsipsQuery = Arsip::where('is_archived_to_jre', false)
+            ->whereDoesntHave('peminjaman', function($query) {
+                $query->whereIn('status', ['dipinjam', 'terlambat']);
+            });
+
+        // Exclude user's own archives for all users
+        // Admin can view all archives directly without borrowing
+        if ($user->role === 'admin') {
+            // For admin, show all available archives (they can view without borrowing)
+            $availableArsips = $availableArsipsQuery->with('creator')->latest()->get();
+        } else {
+            // For other roles, exclude their own archives
+            $availableArsips = $availableArsipsQuery
+                ->where('created_by', '!=', $user->id)
+                ->with('creator')
+                ->latest()
+                ->get();
+        }
+
+        return view('peminjaman.index', compact('peminjamans', 'availableArsips'));
     }
 
     public function create()
     {
+        $user = Auth::user();
+
         // Get arsips that are not in JRE and not currently borrowed
-        $arsips = Arsip::where('is_archived_to_jre', false)
+        $arsipsQuery = Arsip::where('is_archived_to_jre', false)
             ->whereDoesntHave('peminjaman', function($query) {
                 $query->whereIn('status', ['dipinjam', 'terlambat']);
-            })
-            ->get();
+            });
+
+        // Untuk peminjam, hanya tampilkan arsip dari seksi lain (bukan milik sendiri)
+        if ($user->role === 'peminjam') {
+            $arsipsQuery->where('created_by', '!=', $user->id);
+        }
+
+        $arsips = $arsipsQuery->with('creator')->get();
 
         // Jika ada parameter arsip_id, ambil data arsip tersebut
         $selectedArsip = null;
         if (request()->has('arsip_id')) {
             $selectedArsip = Arsip::find(request('arsip_id'));
+
+            // Check if peminjam can borrow this arsip
+            if ($user->role === 'peminjam' && $selectedArsip && $selectedArsip->created_by === $user->id) {
+                return redirect()->route('peminjaman.create')->with('error', 'Anda tidak dapat meminjam arsip milik sendiri.');
+            }
         }
 
         return view('peminjaman.create', compact('arsips', 'selectedArsip'));
@@ -77,17 +111,17 @@ class PeminjamanArsipController extends Controller
             'peminjam_user_id' => Auth::id(),
             'peminjam' => $request->peminjam,
             'jabatan' => $request->jabatan,
-            'departemen' => Auth::user()->isPeminjam() ? Auth::user()->department : $request->departemen,
+            'departemen' => Auth::user()->role === 'peminjam' ? Auth::user()->department : $request->departemen,
             'kontak' => $request->kontak,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'batas_waktu' => $request->batas_waktu,
             'tujuan_peminjaman' => $request->tujuan_peminjaman,
             'catatan' => $request->catatan,
-            'petugas_peminjaman' => Auth::user()->isPeminjam() ? 'Self-Service' : Auth::user()->name,
+            'petugas_peminjaman' => Auth::user()->role === 'peminjam' ? 'Self-Service' : Auth::user()->name,
         ];
 
         // Jika user adalah peminjam, status pending menunggu konfirmasi admin
-        if (Auth::user()->isPeminjam()) {
+        if (Auth::user()->role === 'peminjam') {
             $peminjamanData['status'] = 'pending';
             $peminjamanData['confirmation_status'] = 'pending';
         } else {
@@ -100,7 +134,7 @@ class PeminjamanArsipController extends Controller
 
         PeminjamanArsip::create($peminjamanData);
 
-        $message = Auth::user()->isPeminjam()
+        $message = Auth::user()->role === 'peminjam'
             ? 'Permintaan peminjaman berhasil diajukan. Menunggu persetujuan admin.'
             : 'Peminjaman arsip berhasil dicatat';
 
@@ -110,7 +144,7 @@ class PeminjamanArsipController extends Controller
     public function show(PeminjamanArsip $peminjaman)
     {
         // Jika user adalah peminjam, cek apakah peminjaman ini miliknya
-        if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
+        if (Auth::user()->role === 'peminjam' && $peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses ke data peminjaman ini.');
         }
 
@@ -160,8 +194,13 @@ class PeminjamanArsipController extends Controller
 
     public function returnForm(PeminjamanArsip $peminjaman)
     {
+        // Hanya peminjam yang bisa mengembalikan arsip mereka sendiri
+        if (Auth::user()->role !== 'peminjam') {
+            return redirect()->route('peminjaman.index')->with('error', 'Hanya peminjam yang dapat mengembalikan arsip mereka sendiri.');
+        }
+
         // Check if user has permission to return this loan
-        if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
+        if ($peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
         }
 
@@ -179,8 +218,13 @@ class PeminjamanArsipController extends Controller
 
     public function processReturn(Request $request, PeminjamanArsip $peminjaman)
     {
+        // Hanya peminjam yang bisa mengembalikan arsip mereka sendiri
+        if (Auth::user()->role !== 'peminjam') {
+            return redirect()->route('peminjaman.index')->with('error', 'Hanya peminjam yang dapat mengembalikan arsip mereka sendiri.');
+        }
+
         // Check if user has permission to return this loan
-        if (Auth::user()->isPeminjam() && $peminjaman->peminjam_user_id != Auth::id()) {
+        if ($peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
         }
 
@@ -226,7 +270,7 @@ class PeminjamanArsipController extends Controller
     public function pending()
     {
         // Hanya admin yang bisa melihat pending confirmations
-        if (!Auth::user()->isAdmin()) {
+        if (Auth::user()->role !== 'admin') {
             return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat melihat permintaan pending.');
         }
 
@@ -241,7 +285,7 @@ class PeminjamanArsipController extends Controller
     public function approve(PeminjamanArsip $peminjaman)
     {
         // Hanya admin yang bisa approve
-        if (!Auth::user()->isAdmin()) {
+        if (Auth::user()->role !== 'admin') {
             return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menyetujui peminjaman.');
         }
 
@@ -259,7 +303,7 @@ class PeminjamanArsipController extends Controller
     public function reject(Request $request, PeminjamanArsip $peminjaman)
     {
         // Hanya admin yang bisa reject
-        if (!Auth::user()->isAdmin()) {
+        if (Auth::user()->role !== 'admin') {
             return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menolak peminjaman.');
         }
 

@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::get('arsip', [ArsipController::class, 'index'])->name('arsip.index');
     Route::get('arsip/{arsip}/detail', [ArsipController::class, 'detail'])->name('arsip.detail');
     Route::get('arsip/{arsip}/download', [ArsipController::class, 'download'])->name('arsip.download');
+    Route::get('arsip/{arsip}/view', [ArsipController::class, 'viewFile'])->name('arsip.view');
 
     // Peminjaman - Limited access for peminjam
     Route::get('peminjaman', [PeminjamanArsipController::class, 'index'])->name('peminjaman.index');
@@ -82,6 +83,18 @@ Route::middleware('auth')->group(function () {
     // Peminjaman - Return functionality (accessible by all authenticated users)
     Route::get('peminjaman/{peminjaman}/return', [PeminjamanArsipController::class, 'returnForm'])->name('peminjaman.return-form');
     Route::post('peminjaman/{peminjaman}/process-return', [PeminjamanArsipController::class, 'processReturn'])->name('peminjaman.process-return');
+
+    // Arsip - Create/Store accessible by all authenticated users (including peminjam)
+    Route::get('arsip/create', [ArsipController::class, 'create'])->name('arsip.create');
+    Route::post('arsip', [ArsipController::class, 'store'])->name('arsip.store');
+
+    // Arsip - Edit/Update/Delete (accessible by all, but with ownership check in controller)
+    Route::get('arsip/{arsip}/edit', [ArsipController::class, 'edit'])->name('arsip.edit');
+    Route::put('arsip/{arsip}', [ArsipController::class, 'update'])->name('arsip.update');
+    Route::delete('arsip/{arsip}', [ArsipController::class, 'destroy'])->name('arsip.destroy');
+
+    // Arsip - Extract document data (accessible by all authenticated users)
+    Route::post('arsip/extract-number', [ArsipController::class, 'extractDocumentNumber'])->name('arsip.extract-number');
 
     // Routes accessible only by petugas and admin
     Route::middleware('role:petugas,admin')->group(function () {
@@ -98,14 +111,8 @@ Route::middleware('auth')->group(function () {
             return view('RTL');
         })->name('RTL');
 
-        // Arsip - Full CRUD
-        Route::get('arsip/create', [ArsipController::class, 'create'])->name('arsip.create');
-        Route::post('arsip', [ArsipController::class, 'store'])->name('arsip.store');
-        Route::get('arsip/{arsip}/edit', [ArsipController::class, 'edit'])->name('arsip.edit');
-        Route::put('arsip/{arsip}', [ArsipController::class, 'update'])->name('arsip.update');
-        Route::delete('arsip/{arsip}', [ArsipController::class, 'destroy'])->name('arsip.destroy');
+        // Arsip - Admin only routes
         Route::post('arsip/check-notifications', [ArsipController::class, 'checkNotifications'])->name('arsip.check-notifications');
-        Route::post('arsip/extract-number', [ArsipController::class, 'extractDocumentNumber'])->name('arsip.extract-number');
 
         // JRE - Full access
         Route::resource('jre', JreController::class);

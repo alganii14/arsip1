@@ -95,8 +95,8 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-sm">{{ $peminjaman->arsip->judul ?? 'N/A' }}</h6>
-                                                    <p class="text-xs text-secondary mb-0">{{ $peminjaman->arsip->nomor_berkas ?? 'N/A' }}</p>
+                                                    <h6 class="mb-0 text-sm">{{ $peminjaman->arsip->nama_dokumen ?? 'N/A' }}</h6>
+                                                    <p class="text-xs text-secondary mb-0">{{ $peminjaman->arsip->kode ?? 'N/A' }}</p>
                                                 </div>
                                             </td>
                                             <td>

@@ -16,6 +16,7 @@
                                 @endif
                             </p>
                             <div class="d-flex">
+                                @if(Auth::user()->role !== 'admin')
                                 <a href="{{ route('peminjaman.create') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
                                     <span class="btn-inner--icon">
                                         <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
@@ -24,6 +25,7 @@
                                     </span>
                                     <span class="btn-inner--text">Tambah Peminjaman</span>
                                 </a>
+                                @endif
                                 @if(Auth::user()->isAdmin())
                                     <a href="{{ route('peminjaman.pending') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
                                         <span class="btn-inner--icon">
@@ -75,7 +77,116 @@
                         <div class="card-header border-bottom pb-0">
                             <div class="d-sm-flex align-items-center">
                                 <div>
-                                    <h6 class="font-weight-semibold text-lg mb-0">Daftar Peminjaman Arsip</h6>
+                                    <h6 class="font-weight-semibold text-lg mb-0">
+                                        @if(Auth::user()->role === 'admin')
+                                            Semua Arsip Tersedia
+                                        @else
+                                            Arsip Tersedia untuk Dipinjam
+                                        @endif
+                                    </h6>
+                                    <p class="text-sm">
+                                        @if(Auth::user()->role === 'admin')
+                                            Daftar semua arsip yang dapat Anda akses langsung
+                                        @else
+                                            Daftar arsip yang dapat Anda pinjam (kecuali milik sendiri)
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="ms-auto d-flex">
+                                    <div class="input-group w-sm-25 ms-auto">
+                                        <span class="input-group-text text-body">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+                                            </svg>
+                                        </span>
+                                        <input type="text" class="form-control" placeholder="Cari arsip tersedia..." id="searchAvailableArsip">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body px-0 py-0">
+                            <div class="table-responsive p-0">
+                                <table class="table align-items-center mb-0" id="availableArsipTable">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7">Kode Arsip</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Nama Dokumen</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Kategori</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Arsip</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Pemilik</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Status</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($availableArsips as $arsip)
+                                        <tr>
+                                            <td class="ps-2">
+                                                <p class="text-sm font-weight-semibold mb-0">{{ $arsip->kode }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="text-sm font-weight-semibold mb-0">{{ $arsip->nama_dokumen }}</p>
+                                                <p class="text-xs text-secondary mb-0">{{ strlen($arsip->keterangan) > 50 ? substr($arsip->keterangan, 0, 50) . '...' : $arsip->keterangan }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="text-sm font-weight-normal mb-0">{{ $arsip->kategori }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="text-sm font-weight-normal mb-0">{{ $arsip->tanggal_arsip->format('d/m/Y') }}</p>
+                                            </td>
+                                            <td>
+                                                <p class="text-sm font-weight-normal mb-0">{{ $arsip->creator->name ?? 'N/A' }}</p>
+                                                <p class="text-xs text-secondary mb-0">{{ $arsip->creator->department ?? '' }}</p>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-sm border border-success text-success bg-success">
+                                                    Tersedia
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
+                                                        <i class="fas fa-eye me-1"></i> Detail
+                                                    </a>
+                                                    @if($arsip->file_path && Auth::user()->role === 'admin')
+                                                        <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                                            <i class="fas fa-file me-1"></i> Lihat Arsip
+                                                        </a>
+                                                    @endif
+                                                    @if(Auth::user()->role !== 'admin')
+                                                        <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-download me-1"></i> Pinjam
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center p-4">
+                                                <div class="mb-3">
+                                                    <i class="fas fa-inbox text-muted" style="font-size: 2rem;"></i>
+                                                </div>
+                                                <h6 class="text-muted mb-2">Tidak ada arsip yang tersedia untuk dipinjam</h6>
+                                                <p class="text-muted text-sm mb-0">Semua arsip sedang dipinjam atau tidak ada arsip dari seksi lain</p>
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border shadow-xs">
+                        <div class="card-header border-bottom pb-0">
+                            <div class="d-sm-flex align-items-center">
+                                <div>
+                                    <h6 class="font-weight-semibold text-lg mb-0">Riwayat Peminjaman Arsip</h6>
                                     <p class="text-sm">
                                         @if(Auth::user()->isPeminjam())
                                             Informasi tentang peminjaman arsip Anda
@@ -99,14 +210,14 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
                                             </svg>
                                         </span>
-                                        <input type="text" class="form-control" placeholder="Cari peminjaman...">
+                                        <input type="text" class="form-control" placeholder="Cari riwayat peminjaman..." id="searchPeminjaman">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body px-0 py-0">
                             <div class="table-responsive p-0">
-                                <table class="table align-items-center mb-0">
+                                <table class="table align-items-center mb-0" id="peminjamanTable">
                                     <thead class="bg-gray-100">
                                         <tr>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">Arsip</th>
@@ -199,13 +310,17 @@
                                                         <i class="fas fa-eye me-1"></i> Detail
                                                     </a>
 
-                                                    @if(!Auth::user()->isPeminjam())
-                                                        @if($peminjaman->status !== 'dikembalikan')
+                                                    @if(Auth::user()->role === 'peminjam')
+                                                        {{-- Peminjam hanya bisa mengembalikan arsip miliknya sendiri yang sudah disetujui --}}
+                                                        @if($peminjaman->peminjam_user_id == Auth::id() &&
+                                                            $peminjaman->status !== 'dikembalikan' &&
+                                                            $peminjaman->confirmation_status === 'approved')
                                                             <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success me-2">
                                                                 <i class="fas fa-undo me-1"></i> Kembalikan
                                                             </a>
                                                         @endif
-
+                                                    @else
+                                                        {{-- Admin tidak bisa mengembalikan arsip, hanya edit dan hapus --}}
                                                         <a href="{{ route('peminjaman.edit', $peminjaman->id) }}" class="btn btn-sm btn-warning me-2">
                                                             <i class="fas fa-edit me-1"></i> Edit
                                                         </a>
@@ -236,4 +351,36 @@
             <x-app.footer />
         </div>
     </main>
+
+    <script>
+        // Search functionality for available archives
+        document.getElementById('searchAvailableArsip').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#availableArsipTable tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Search functionality for borrowing records
+        document.getElementById('searchPeminjaman').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('#peminjamanTable tbody tr');
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchValue)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </x-app-layout>

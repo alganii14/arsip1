@@ -79,7 +79,7 @@
                                     <div class="border rounded p-3 mb-4">
                                         <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Tanggal Pemusnahan</p>
-                                            <p class="font-weight-semibold mb-0">{{ $archiveDestruction->destroyed_at->format('d/m/Y H:i') }}</p>
+                                            <p class="font-weight-semibold mb-0">{{ $archiveDestruction->destroyed_at->format('d/m/Y H:i') }} WIB</p>
                                         </div>
                                         <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Metode Pemusnahan</p>
@@ -136,7 +136,7 @@
                                     </div>
                                     <div class="timeline-content">
                                         <h6 class="text-sm font-weight-semibold mb-1">Arsip Dibuat</h6>
-                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->arsip->created_at->format('d/m/Y H:i') }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->arsip->created_at->format('d/m/Y H:i') }} WIB</p>
                                     </div>
                                 </div>
 
@@ -156,7 +156,7 @@
                                     </div>
                                     <div class="timeline-content">
                                         <h6 class="text-sm font-weight-semibold mb-1">Dipindahkan ke JRE</h6>
-                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->arsip->archived_to_jre_at ? $archiveDestruction->arsip->archived_to_jre_at->format('d/m/Y H:i') : 'Tidak ada' }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->arsip->archived_to_jre_at ? $archiveDestruction->arsip->archived_to_jre_at->format('d/m/Y H:i') . ' WIB' : 'Tidak ada' }}</p>
                                     </div>
                                 </div>
 
@@ -166,7 +166,7 @@
                                     </div>
                                     <div class="timeline-content">
                                         <h6 class="text-sm font-weight-semibold mb-1">Arsip Dimusnahkan</h6>
-                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->destroyed_at->format('d/m/Y H:i') }}</p>
+                                        <p class="text-xs text-secondary mb-0">{{ $archiveDestruction->destroyed_at->format('d/m/Y H:i') }} WIB</p>
                                     </div>
                                 </div>
                             </div>

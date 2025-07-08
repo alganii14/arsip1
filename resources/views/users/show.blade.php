@@ -79,14 +79,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-control-label">Tanggal Dibuat</label>
-                                        <p class="form-control-static">{{ $user->created_at->format('d F Y, H:i') }}</p>
+                                        <p class="form-control-static">{{ $user->created_at->format('d F Y, H:i') }} WIB</p>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-control-label">Terakhir Diupdate</label>
-                                        <p class="form-control-static">{{ $user->updated_at->format('d F Y, H:i') }}</p>
+                                        <p class="form-control-static">{{ $user->updated_at->format('d F Y, H:i') }} WIB</p>
                                     </div>
                                 </div>
                             </div>

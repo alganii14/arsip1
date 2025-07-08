@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Alert Messages -->
             @if(session('error'))
             <div class="row">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             @endif
-            
+
             <div class="row">
                 <div class="col-12">
                     <div class="card border shadow-xs mb-4">
@@ -51,7 +51,7 @@
                         <div class="card-body">
                             <form action="{{ route('peminjaman.store') }}" method="POST">
                                 @csrf
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -68,11 +68,15 @@
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                             <small class="form-text text-muted">
-                                                Hanya menampilkan arsip yang tersedia (tidak sedang dipinjam)
+                                                @if(Auth::user()->role === 'peminjam')
+                                                    Hanya menampilkan arsip dari seksi lain yang tersedia untuk dipinjam
+                                                @else
+                                                    Hanya menampilkan arsip yang tersedia (tidak sedang dipinjam)
+                                                @endif
                                             </small>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="peminjam" class="form-control-label text-sm">Nama Peminjam <span class="text-danger">*</span></label>
@@ -83,7 +87,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
@@ -94,7 +98,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="departemen" class="form-control-label text-sm">Departemen</label>
@@ -114,7 +118,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-4">
                                         <div class="form-group mb-4">
                                             <label for="kontak" class="form-control-label text-sm">Kontak <span class="text-danger">*</span></label>
@@ -125,7 +129,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -136,7 +140,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="batas_waktu" class="form-control-label text-sm">Batas Waktu Pengembalian <span class="text-danger">*</span></label>
@@ -147,7 +151,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group mb-4">
@@ -159,7 +163,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group mb-4">
                                     <label for="catatan" class="form-control-label text-sm">Catatan</label>
                                     <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="3">{{ old('catatan') }}</textarea>
@@ -167,7 +171,7 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-end mt-4">
                                     <a href="{{ route('peminjaman.index') }}" class="btn btn-light me-3">Batal</a>
                                     <button type="submit" class="btn btn-dark">
@@ -182,7 +186,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <x-app.footer />
         </div>
     </main>

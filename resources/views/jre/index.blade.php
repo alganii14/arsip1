@@ -181,7 +181,7 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <p class="text-sm font-weight-normal mb-0">{{ $jre->processed_at->format('d/m/Y H:i') }}</p>
+                                                <p class="text-sm font-weight-normal mb-0">{{ $jre->processed_at->format('d/m/Y H:i') }} WIB</p>
                                             </td>
                                             <td>
                                                 <div class="d-flex">
