@@ -68,19 +68,15 @@
 
                             <div class="mt-4 p-3 bg-light rounded">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <small class="text-muted">Tanggal Arsip:</small>
                                         <p class="mb-0 font-weight-semibold">{{ $arsip->tanggal_arsip }}</p>
                                     </div>
-                                    <div class="col-md-3">
-                                        <small class="text-muted">Rak Penyimpanan:</small>
-                                        <p class="mb-0 font-weight-semibold">{{ $arsip->rak ?: 'Tidak ada info' }}</p>
-                                    </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <small class="text-muted">Format File:</small>
                                         <p class="mb-0 font-weight-semibold">{{ strtoupper($fileExtension) }}</p>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <small class="text-muted">Status:</small>
                                         <span class="badge bg-success">Dapat Diakses</span>
                                     </div>

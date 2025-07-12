@@ -7,10 +7,27 @@
                     <div class="card card-background card-background-after-none align-items-start mt-4 mb-5">
                         <div class="full-background" style="background-image: url('../assets/img/header-blue-purple.jpg')"></div>
                         <div class="card-body text-start p-4 w-100">
-                            <h3 class="text-white mb-2">Tambah Peminjaman Arsip</h3>
+                            <h3 class="text-white mb-2">
+                                @if(request('type') === 'fisik')
+                                    <i class="fas fa-file-alt me-2"></i>
+                                    Tambah Peminjaman Fisik
+                                @else
+                                    Tambah Peminjaman Arsip
+                                @endif
+                            </h3>
                             <p class="mb-4 font-weight-semibold text-white">
-                                Isi formulir berikut untuk mencatat peminjaman arsip
+                                @if(request('type') === 'fisik')
+                                    Isi formulir berikut untuk mencatat peminjaman arsip secara fisik
+                                @else
+                                    Isi formulir berikut untuk mencatat peminjaman arsip
+                                @endif
                             </p>
+                            @if(request('type') === 'fisik')
+                                <div class="alert alert-info mb-3" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Peminjaman Fisik:</strong> Arsip fisik akan diserahkan kepada peminjam setelah formulir disetujui.
+                                </div>
+                            @endif
                             <a href="{{ route('peminjaman.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                 <span class="btn-inner--icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block me-2">
@@ -52,6 +69,9 @@
                             <form action="{{ route('peminjaman.store') }}" method="POST">
                                 @csrf
 
+                                <!-- Hidden field untuk tipe peminjaman -->
+                                <input type="hidden" name="jenis_peminjaman" value="{{ request('type', 'umum') }}">
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
@@ -60,7 +80,7 @@
                                                 <option value="" selected disabled>Pilih Arsip</option>
                                                 @foreach($arsips as $arsip)
                                                 <option value="{{ $arsip->id }}" {{ old('arsip_id') == $arsip->id || (isset($selectedArsip) && $selectedArsip->id == $arsip->id) ? 'selected' : '' }}>
-                                                    {{ $arsip->kode }} - {{ $arsip->nama_dokumen }} ({{ $arsip->rak ?: 'Rak tidak diketahui' }})
+                                                    {{ $arsip->kode }} - {{ $arsip->nama_dokumen }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -89,17 +109,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group mb-4">
-                                            <label for="jabatan" class="form-control-label text-sm">Jabatan</label>
-                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}">
-                                            @error('jabatan')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="departemen" class="form-control-label text-sm">Departemen</label>
                                             @if(Auth::user()->isPeminjam())
@@ -119,7 +129,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="kontak" class="form-control-label text-sm">Kontak <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('kontak') is-invalid @enderror" id="kontak" name="kontak" value="{{ old('kontak') ?? Auth::user()->phone }}" required placeholder="No. HP/Email">
@@ -162,14 +172,6 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="form-group mb-4">
-                                    <label for="catatan" class="form-control-label text-sm">Catatan</label>
-                                    <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="3">{{ old('catatan') }}</textarea>
-                                    @error('catatan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-4">

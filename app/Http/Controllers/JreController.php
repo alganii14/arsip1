@@ -21,8 +21,7 @@ class JreController extends Controller
             $searchTerm = $request->search;
             $query->whereHas('arsip', function($q) use ($searchTerm) {
                 $q->where('kode', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('nama_dokumen', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('rak', 'LIKE', "%{$searchTerm}%");
+                  ->orWhere('nama_dokumen', 'LIKE', "%{$searchTerm}%");
             });
         }
 
@@ -234,10 +233,7 @@ class JreController extends Controller
     public function destroyArchive(Request $request, $id)
     {
         $request->validate([
-            'destruction_notes' => 'required|string|min:10',
-            'destruction_method' => 'required|string',
-            'destruction_location' => 'nullable|string',
-            'destruction_witnesses' => 'nullable|string'
+            'destruction_notes' => 'required|string|min:10'
         ]);
 
         $jre = Jre::findOrFail($id);
@@ -254,9 +250,6 @@ class JreController extends Controller
                 'arsip_id' => $jre->arsip_id,
                 'jre_id' => $jre->id,
                 'destruction_notes' => $request->destruction_notes,
-                'destruction_method' => $request->destruction_method,
-                'destruction_location' => $request->destruction_location,
-                'destruction_witnesses' => $request->destruction_witnesses,
                 'user_id' => Auth::id(),
                 'destroyed_at' => Carbon::now()
             ]);

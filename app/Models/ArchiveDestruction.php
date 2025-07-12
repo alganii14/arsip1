@@ -11,9 +11,6 @@ class ArchiveDestruction extends Model
         'jre_id',
         'user_id',
         'destruction_notes',
-        'destruction_method',
-        'destruction_location',
-        'destruction_witnesses',
         'destroyed_at'
     ];
 
@@ -39,18 +36,5 @@ class ArchiveDestruction extends Model
     public function destroyer()
     {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function getDestructionMethodTextAttribute()
-    {
-        $methods = [
-            'shredding' => 'Penghancuran Fisik (Shredding)',
-            'burning' => 'Pembakaran',
-            'digital_deletion' => 'Penghapusan Digital',
-            'chemical_treatment' => 'Perlakuan Kimia',
-            'other' => 'Lainnya'
-        ];
-
-        return $methods[$this->destruction_method] ?? $this->destruction_method;
     }
 }

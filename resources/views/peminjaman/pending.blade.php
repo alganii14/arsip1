@@ -88,7 +88,7 @@
                                                         </div>
                                                         <div class="d-flex flex-column justify-content-center">
                                                             <h6 class="mb-0 text-sm font-weight-semibold">{{ $peminjaman->peminjam }}</h6>
-                                                            <p class="text-xs text-secondary mb-0">{{ $peminjaman->jabatan }}</p>
+                                                            <p class="text-xs text-secondary mb-0">{{ $peminjaman->departemen }}</p>
                                                         </div>
                                                     </div>
                                                 </div>

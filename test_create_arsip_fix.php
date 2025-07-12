@@ -21,7 +21,6 @@ try {
         'kategori' => 'Test',
         'tanggal_arsip' => Carbon::now(),
         'keterangan' => 'Test create arsip after fix',
-        'rak' => 'A1',
         'retention_date' => Carbon::now()->subDays(1), // Expired
         'retention_years' => 5,
         'created_by' => 1

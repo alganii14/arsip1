@@ -34,13 +34,9 @@ class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithSty
             'Nama Dokumen',
             'Kategori',
             'Tanggal Arsip',
-            'Sifat',
-            'Rak',
-            'Metode Pemusnahan',
+            'Dibuat oleh',
             'Tanggal Pemusnahan',
             'Petugas',
-            'Lokasi Pemusnahan',
-            'Saksi',
             'Catatan Pemusnahan'
         ];
     }
@@ -56,13 +52,9 @@ class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithSty
             $destruction->arsip->nama_dokumen,
             $destruction->arsip->kategori,
             $destruction->arsip->tanggal_arsip ? $destruction->arsip->tanggal_arsip->format('d/m/Y') : '-',
-            ucfirst($destruction->arsip->sifat),
-            $destruction->arsip->rak ?: '-',
-            $destruction->destruction_method_text,
+            $destruction->arsip->creator->name ?? '-',
             $destruction->destroyed_at->format('d/m/Y H:i'),
             $destruction->user->name,
-            $destruction->destruction_location ?: '-',
-            $destruction->destruction_witnesses ?: '-',
             $destruction->destruction_notes
         ];
     }
@@ -82,7 +74,7 @@ class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithSty
                 ]
             ],
             // Add borders to all cells
-            'A1:M' . ($this->destructions->count() + 1) => [
+            'A1:I' . ($this->destructions->count() + 1) => [
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,

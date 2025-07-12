@@ -7,9 +7,12 @@
                     <div class="card card-background card-background-after-none align-items-start mt-4 mb-5">
                         <div class="full-background" style="background-image: url('../assets/img/header-blue-purple.jpg')"></div>
                         <div class="card-body text-start p-4 w-100">
-                            <h3 class="text-white mb-2">Detail Peminjaman Arsip</h3>
+                            <h3 class="text-white mb-2">
+                                <i class="fas fa-download me-2"></i>
+                                Detail Peminjaman Digital
+                            </h3>
                             <p class="mb-4 font-weight-semibold text-white">
-                                Informasi lengkap peminjaman arsip
+                                Informasi lengkap peminjaman arsip digital - Anda dapat melihat dan mengunduh arsip
                             </p>
                             <a href="{{ route('peminjaman.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                 <span class="btn-inner--icon">
@@ -30,18 +33,27 @@
                         <div class="card-header border-bottom pb-0">
                             <div class="d-sm-flex align-items-center mb-3">
                                 <div>
-                                    <h6 class="font-weight-semibold text-lg mb-0">Informasi Peminjaman</h6>
-                                    <p class="text-sm mb-sm-0">Detail peminjaman arsip</p>
+                                    <h6 class="font-weight-semibold text-lg mb-0">Informasi Peminjaman Digital</h6>
+                                    <p class="text-sm mb-sm-0">Detail peminjaman arsip digital</p>
                                 </div>
-                                <div class="ms-auto d-flex">
+                                <div class="ms-auto d-flex align-items-center">
+                                    <span class="badge bg-success me-2">
+                                        <i class="fas fa-download me-1"></i>
+                                        Peminjaman Digital
+                                    </span>
+
                                     @if($peminjaman->confirmation_status === 'approved' && $peminjaman->arsip->file_path)
                                         <a href="{{ route('arsip.view', $peminjaman->arsip->id) }}" class="btn btn-sm btn-info me-2">
                                             <i class="fas fa-eye me-1"></i> Lihat Arsip
                                         </a>
+                                        <a href="{{ route('arsip.download', $peminjaman->arsip->id) }}" class="btn btn-sm btn-success me-2">
+                                            <i class="fas fa-download me-1"></i> Unduh Arsip
+                                        </a>
                                     @endif
 
-                                    {{-- Hanya peminjam yang bisa mengembalikan arsip miliknya sendiri yang sudah disetujui --}}
-                                    @if(Auth::user()->role === 'peminjam' &&
+                                    {{-- Untuk peminjaman digital, peminjam dapat mengembalikan sendiri --}}
+                                    @if($peminjaman->jenis_peminjaman === 'digital' &&
+                                        Auth::user()->role === 'peminjam' &&
                                         $peminjaman->peminjam_user_id == Auth::id() &&
                                         $peminjaman->status !== 'dikembalikan' &&
                                         $peminjaman->confirmation_status === 'approved')
@@ -67,6 +79,11 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Peminjaman Digital Berhasil!</strong> Anda sekarang dapat melihat dan mengunduh arsip ini kapan saja selama masa peminjaman.
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="border rounded p-3 mb-4">
@@ -88,8 +105,8 @@
                                             <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->tanggal_arsip->format('d/m/Y') }}</p>
                                         </div>
                                         <div class="mb-3">
-                                            <p class="text-xs text-secondary mb-1">Rak Penyimpanan</p>
-                                            <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->rak ?: 'Tidak ada informasi rak' }}</p>
+                                            <p class="text-xs text-secondary mb-1">Dibuat oleh</p>
+                                            <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->creator->name ?? 'N/A' }}</p>
                                         </div>
                                         <div class="mb-0">
                                             <p class="text-xs text-secondary mb-1">File Arsip</p>
@@ -124,10 +141,6 @@
                                         <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Nama Peminjam</p>
                                             <p class="font-weight-semibold mb-0">{{ $peminjaman->peminjam }}</p>
-                                        </div>
-                                        <div class="mb-3">
-                                            <p class="text-xs text-secondary mb-1">Jabatan</p>
-                                            <p class="font-weight-semibold mb-0">{{ $peminjaman->jabatan ?: 'Tidak ada informasi jabatan' }}</p>
                                         </div>
                                         <div class="mb-3">
                                             <p class="text-xs text-secondary mb-1">Departemen</p>
@@ -199,13 +212,6 @@
                                             <div class="col-md-12 mb-3">
                                                 <p class="text-xs text-secondary mb-1">Tujuan Peminjaman</p>
                                                 <p class="font-weight-semibold mb-0">{{ $peminjaman->tujuan_peminjaman ?: 'Tidak ada informasi tujuan' }}</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <p class="text-xs text-secondary mb-1">Catatan</p>
-                                                <p class="font-weight-semibold mb-0">{{ $peminjaman->catatan ?: 'Tidak ada catatan' }}</p>
                                             </div>
                                         </div>
                                     </div>

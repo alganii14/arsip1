@@ -153,7 +153,7 @@
                                     <strong>Peringatan:</strong> Arsip <strong>{{ $jre->arsip->nama_dokumen }}</strong> akan dimusnahkan secara permanen. Tindakan ini tidak dapat dibatalkan.
                                 </div>
 
-                                <div class="form-group mb-3">
+                                <div class="form-group">
                                     <label for="destruction_notes" class="form-control-label text-sm">Catatan Pemusnahan <span class="text-danger">*</span></label>
                                     <textarea class="form-control @error('destruction_notes') is-invalid @enderror" id="destruction_notes" name="destruction_notes" rows="3" required placeholder="Masukkan alasan dan detail proses pemusnahan..." minlength="10">{{ old('destruction_notes') }}</textarea>
                                     @error('destruction_notes')
@@ -163,37 +163,6 @@
                                         <i class="fas fa-info-circle me-1"></i>
                                         Catatan ini akan tersimpan dalam riwayat pemusnahan dan tidak dapat diubah.
                                     </div>
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label for="destruction_method" class="form-control-label text-sm">Metode Pemusnahan <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('destruction_method') is-invalid @enderror" id="destruction_method" name="destruction_method" required>
-                                        <option value="">Pilih Metode Pemusnahan</option>
-                                        <option value="shredding" {{ old('destruction_method') == 'shredding' ? 'selected' : '' }}>Penghancuran Fisik (Shredding)</option>
-                                        <option value="burning" {{ old('destruction_method') == 'burning' ? 'selected' : '' }}>Pembakaran</option>
-                                        <option value="digital_deletion" {{ old('destruction_method') == 'digital_deletion' ? 'selected' : '' }}>Penghapusan Digital</option>
-                                        <option value="chemical_treatment" {{ old('destruction_method') == 'chemical_treatment' ? 'selected' : '' }}>Perlakuan Kimia</option>
-                                        <option value="other" {{ old('destruction_method') == 'other' ? 'selected' : '' }}>Lainnya</option>
-                                    </select>
-                                    @error('destruction_method')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group mb-3">
-                                    <label for="destruction_location" class="form-control-label text-sm">Lokasi Pemusnahan</label>
-                                    <input type="text" class="form-control @error('destruction_location') is-invalid @enderror" id="destruction_location" name="destruction_location" value="{{ old('destruction_location') }}" placeholder="Contoh: Ruang Pemusnahan, Gedung A">
-                                    @error('destruction_location')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="destruction_witnesses" class="form-control-label text-sm">Saksi Pemusnahan</label>
-                                    <input type="text" class="form-control @error('destruction_witnesses') is-invalid @enderror" id="destruction_witnesses" name="destruction_witnesses" value="{{ old('destruction_witnesses') }}" placeholder="Nama saksi yang menyaksikan proses pemusnahan">
-                                    @error('destruction_witnesses')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
                             </div>
                             <div class="modal-footer">

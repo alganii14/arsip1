@@ -7,99 +7,132 @@
         body {
             font-family: Arial, sans-serif;
             font-size: 12px;
+            margin: 20px;
         }
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4F46E5;
+            padding-bottom: 15px;
         }
-        .title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .header h1 {
+            margin: 0;
+            color: #4F46E5;
+            font-size: 18px;
         }
-        .subtitle {
-            font-size: 12px;
+        .header h2 {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        .meta-info {
             margin-bottom: 20px;
+            text-align: right;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 10px;
         }
         th {
-            background-color: #f2f2f2;
-            font-weight: bold;
+            background-color: #4F46E5;
+            color: white;
+            padding: 8px 5px;
             text-align: center;
-            padding: 8px;
-            font-size: 11px;
+            border: 1px solid #ddd;
+            font-weight: bold;
         }
         td {
-            padding: 6px;
-            font-size: 10px;
+            padding: 6px 5px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .text-center {
+            text-align: center;
         }
         .footer {
             margin-top: 30px;
-            text-align: right;
-            font-size: 11px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
         }
-        .page-break {
-            page-break-after: always;
+        .summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #4F46E5;
         }
         .no-data {
             text-align: center;
-            padding: 30px;
-            font-style: italic;
+            padding: 50px;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="title">LAPORAN PEMINDAHAN ARSIP</div>
-        <div class="subtitle">
-            Tanggal Export: {{ now()->format('d-m-Y H:i:s') }}
-            @if($search)
-                - Filter: "{{ $search }}"
-            @endif
-        </div>
+        <h1>LAPORAN PEMINDAHAN ARSIP</h1>
+        <h2>Sistem Manajemen Arsip Elektronik</h2>
     </div>
 
+    <div class="meta-info">
+        <strong>Tanggal Laporan:</strong> {{ date('d/m/Y H:i') }} WIB<br>
+        <strong>Total Pemindahan:</strong> {{ $pemindahans->count() }} arsip
+        @if($search)
+            <br><strong>Filter Pencarian:</strong> "{{ $search }}"
+        @endif
+    </div>
+
+    <div class="summary">
+        <h3 style="margin-top: 0;">Ringkasan Laporan</h3>
+        <p>Laporan ini berisi daftar lengkap arsip yang telah dipindahkan dalam sistem manajemen arsip.
+        Setiap pemindahan arsip telah melalui proses sesuai dengan ketentuan dan prosedur yang berlaku.</p>
+    </div>
+
+    @if($pemindahans->count() > 0)
     <table>
         <thead>
             <tr>
-                <th width="5%">No</th>
-                <th width="10%">Kode Arsip</th>
-                <th width="25%">Nama Arsip</th>
-                <th width="7%">Tahun</th>
-                <th width="8%">Jumlah</th>
-                <th width="15%">Tingkat Perkembangan</th>
-                <th width="20%">Keterangan</th>
-                <th width="10%">Tanggal</th>
+                <th style="width: 6%">No</th>
+                <th style="width: 12%">Kode Arsip</th>
+                <th style="width: 25%">Nama Arsip</th>
+                <th style="width: 8%">Tahun</th>
+                <th style="width: 10%">Jumlah</th>
+                <th style="width: 15%">Tingkat Perkembangan</th>
+                <th style="width: 14%">Tanggal</th>
+                <th style="width: 10%">Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($pemindahans as $index => $pemindahan)
+            @foreach($pemindahans as $index => $pemindahan)
             <tr>
-                <td style="text-align: center;">{{ $index + 1 }}</td>
+                <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen ?? 'N/A' }}</td>
                 <td>{{ $pemindahan->arsip->nama_dokumen }}</td>
-                <td style="text-align: center;">{{ $pemindahan->arsip->tanggal_arsip ? \Carbon\Carbon::parse($pemindahan->arsip->tanggal_arsip)->format('Y') : 'N/A' }}</td>
-                <td style="text-align: center;">{{ $pemindahan->jumlah_folder }} folder</td>
+                <td class="text-center">{{ $pemindahan->arsip->tanggal_arsip ? \Carbon\Carbon::parse($pemindahan->arsip->tanggal_arsip)->format('Y') : 'N/A' }}</td>
+                <td class="text-center">{{ $pemindahan->jumlah_folder }} folder</td>
                 <td>{{ $pemindahan->tingkat_perkembangan_text }}</td>
-                <td>{{ $pemindahan->keterangan }}</td>
-                <td style="text-align: center;">{{ $pemindahan->created_at->format('d-m-Y') }}</td>
+                <td class="text-center">{{ $pemindahan->created_at->format('d/m/Y') }}</td>
+                <td>{{ $pemindahan->keterangan ?: '-' }}</td>
             </tr>
-            @empty
-            <tr>
-                <td colspan="8" class="no-data">Tidak ada data pemindahan arsip</td>
-            </tr>
-            @endforelse
+            @endforeach
         </tbody>
     </table>
+    @else
+    <div class="text-center no-data">
+        <h3>Tidak Ada Data</h3>
+        <p>Belum ada pemindahan arsip dalam sistem.</p>
+    </div>
+    @endif
 
     <div class="footer">
-        <p>Dokumen ini dicetak pada {{ now()->format('d-m-Y H:i:s') }}</p>
+        <p>Laporan ini dihasilkan secara otomatis oleh Sistem Manajemen Arsip Elektronik pada {{ date('d/m/Y H:i') }} WIB</p>
+        <p>Dokumen ini bersifat rahasia dan hanya untuk keperluan internal organisasi</p>
     </div>
 </body>
 </html>

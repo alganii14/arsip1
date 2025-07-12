@@ -29,9 +29,15 @@
                     <div class="card border shadow-xs mb-4">
                         <div class="card-header border-bottom pb-0">
                             <div class="d-sm-flex align-items-center mb-3">
-                                <div>
-                                    <h6 class="font-weight-semibold text-lg mb-0">Form Pengembalian Arsip</h6>
-                                    <p class="text-sm mb-sm-0">Proses pengembalian arsip: <span class="font-weight-bold">{{ $peminjaman->arsip->nama_dokumen }}</span></p>
+                                <div>                            <h6 class="font-weight-semibold text-lg mb-0">Form Pengembalian Arsip</h6>
+                            <p class="text-sm mb-sm-0">
+                                Proses pengembalian arsip: <span class="font-weight-bold">{{ $peminjaman->arsip->nama_dokumen }}</span>
+                                @if($peminjaman->jenis_peminjaman === 'fisik')
+                                    <span class="badge bg-warning ms-2">Peminjaman Fisik</span>
+                                @else
+                                    <span class="badge bg-info ms-2">Peminjaman Digital</span>
+                                @endif
+                            </p>
                                 </div>
                             </div>
                         </div>
@@ -53,8 +59,8 @@
                                             <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->kategori }}</p>
                                         </div>
                                         <div class="mb-0">
-                                            <p class="text-xs text-secondary mb-1">Rak Penyimpanan</p>
-                                            <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->rak ?: 'Tidak ada informasi rak' }}</p>
+                                            <p class="text-xs text-secondary mb-1">Dibuat oleh</p>
+                                            <p class="font-weight-semibold mb-0">{{ $peminjaman->arsip->creator->name ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +144,13 @@
                                 <div class="alert alert-info" role="alert">
                                     <span class="alert-icon"><i class="fas fa-info-circle"></i></span>
                                     <span class="alert-text">
-                                        <strong>Informasi!</strong> Setelah dikembalikan, status peminjaman akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
+                                        <strong>Informasi!</strong>
+                                        @if($peminjaman->jenis_peminjaman === 'fisik')
+                                            Setelah dikembalikan, status peminjaman fisik akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
+                                            <br><strong>Catatan:</strong> Pengembalian arsip fisik hanya dapat dilakukan oleh admin.
+                                        @else
+                                            Setelah dikembalikan, status peminjaman digital akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
+                                        @endif
                                     </span>
                                 </div>
 

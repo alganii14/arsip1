@@ -61,7 +61,7 @@
                                                 <option value="" disabled>Pilih Arsip</option>
                                                 @foreach($arsips as $arsip)
                                                 <option value="{{ $arsip->id }}" {{ old('arsip_id', $peminjaman->arsip_id) == $arsip->id ? 'selected' : '' }}>
-                                                    {{ $arsip->kode }} - {{ $arsip->nama_dokumen }} ({{ $arsip->rak ?: 'Rak tidak diketahui' }})
+                                                    {{ $arsip->kode }} - {{ $arsip->nama_dokumen }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -83,17 +83,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group mb-4">
-                                            <label for="jabatan" class="form-control-label text-sm">Jabatan</label>
-                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan', $peminjaman->jabatan) }}">
-                                            @error('jabatan')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="departemen" class="form-control-label text-sm">Departemen</label>
                                             <input type="text" class="form-control @error('departemen') is-invalid @enderror" id="departemen" name="departemen" value="{{ old('departemen', $peminjaman->departemen) }}">
@@ -103,7 +93,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="kontak" class="form-control-label text-sm">Kontak <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('kontak') is-invalid @enderror" id="kontak" name="kontak" value="{{ old('kontak', $peminjaman->kontak) }}" required placeholder="No. HP/Email">
@@ -161,14 +151,6 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="form-group mb-4">
-                                    <label for="catatan" class="form-control-label text-sm">Catatan</label>
-                                    <textarea class="form-control @error('catatan') is-invalid @enderror" id="catatan" name="catatan" rows="3">{{ old('catatan', $peminjaman->catatan) }}</textarea>
-                                    @error('catatan')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-4">

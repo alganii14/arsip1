@@ -766,6 +766,45 @@ class ClassificationFormatter
                 }
                 elseif ($subCode1 == '03') $description .= ' - Laporan Pengadaan Barang/Jasa';
             }
+        } elseif (strpos($code, 'KU.') === 0) {
+            $parts = explode('.', $code);
+            $mainCode = isset($parts[1]) ? $parts[1] : null;
+            $subCode1 = isset($parts[2]) ? $parts[2] : null;
+            $subCode2 = isset($parts[3]) ? $parts[3] : null;
+
+            if ($mainCode == '01') {
+                $description = 'Anggaran';
+                if ($subCode1 == '01') $description .= ' - Rencana Kerja dan Anggaran (RKA)';
+                elseif ($subCode1 == '02') $description .= ' - Dokumen Pelaksanaan Anggaran (DPA)';
+                elseif ($subCode1 == '03') $description .= ' - Anggaran Pendapatan dan Belanja Daerah (APBD)';
+                elseif ($subCode1 == '04') $description .= ' - Perubahan APBD';
+                elseif ($subCode1 == '05') $description .= ' - Perhitungan APBD';
+                elseif ($subCode1 == '06') $description .= ' - Rencana Strategis (Renstra)';
+                elseif ($subCode1 == '07') $description .= ' - Rencana Kerja (Renja)';
+            }
+            elseif ($mainCode == '02') {
+                $description = 'Akuntansi';
+                if ($subCode1 == '01') $description .= ' - Sistem Akuntansi Pemerintah Daerah';
+                elseif ($subCode1 == '02') $description .= ' - Jurnal';
+                elseif ($subCode1 == '03') $description .= ' - Buku Besar';
+                elseif ($subCode1 == '04') $description .= ' - Neraca';
+                elseif ($subCode1 == '05') $description .= ' - Laporan Realisasi Anggaran';
+                elseif ($subCode1 == '06') $description .= ' - Laporan Arus Kas';
+                elseif ($subCode1 == '07') $description .= ' - Catatan atas Laporan Keuangan';
+            }
+            elseif ($mainCode == '03') {
+                $description = 'Pelaksanaan Anggaran';
+                if ($subCode1 == '01') $description .= ' - Surat Penyedia Dana (SPP, SPM, dan SP2D): UP, GU, TU, LS';
+                elseif ($subCode1 == '02') $description .= ' - Pendapatan Asli Daerah';
+                elseif ($subCode1 == '03') $description .= ' - Dana Perimbangan';
+                elseif ($subCode1 == '04') $description .= ' - Lain-lain Pendapatan Daerah yang Sah';
+                elseif ($subCode1 == '05') $description .= ' - Belanja Tidak Langsung';
+                elseif ($subCode1 == '06') $description .= ' - Belanja Langsung';
+                elseif ($subCode1 == '07') $description .= ' - Dokumen Pengelolaan Barang Milik Negara/Daerah';
+                elseif ($subCode1 == '08') $description .= ' - Dokumen Investasi';
+                elseif ($subCode1 == '09') $description .= ' - Penerimaan Pembiayaan';
+                elseif ($subCode1 == '10') $description .= ' - Pengeluaran Pembiayaan';
+            }
         }
 
         return $description;

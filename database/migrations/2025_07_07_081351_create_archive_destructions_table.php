@@ -17,9 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('jre_id');
             $table->unsignedBigInteger('user_id');
             $table->text('destruction_notes');
-            $table->string('destruction_method');
-            $table->string('destruction_location')->nullable();
-            $table->string('destruction_witnesses')->nullable();
             $table->timestamp('destroyed_at');
             $table->timestamps();
 

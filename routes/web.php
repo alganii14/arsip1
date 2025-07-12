@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::get('peminjaman', [PeminjamanArsipController::class, 'index'])->name('peminjaman.index');
     Route::get('peminjaman/create', [PeminjamanArsipController::class, 'create'])->name('peminjaman.create');
     Route::post('peminjaman', [PeminjamanArsipController::class, 'store'])->name('peminjaman.store');
+    Route::post('peminjaman/digital', [PeminjamanArsipController::class, 'storeDigital'])->name('peminjaman.digital.store');
     Route::get('peminjaman/{peminjaman}', [PeminjamanArsipController::class, 'show'])->name('peminjaman.show');
 
     // Peminjaman - Export functionality (accessible by all authenticated users)

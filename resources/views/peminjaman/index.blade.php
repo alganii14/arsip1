@@ -176,13 +176,11 @@
                                     </p>
                                 </div>
                                 <div class="ms-auto d-flex">
-                                    <div class="input-group w-sm-25 ms-auto">
+                                    <div class="input-group input-group-sm input-group-dynamic me-3 w-auto">
                                         <span class="input-group-text text-body">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
-                                            </svg>
+                                            <i class="fas fa-search"></i>
                                         </span>
-                                        <input type="text" class="form-control" placeholder="Cari arsip tersedia..." id="searchAvailableArsip">
+                                        <input type="text" class="form-control form-control-sm ps-3" placeholder="Cari arsip tersedia..." id="searchAvailableArsip">
                                     </div>
                                 </div>
                             </div>
@@ -306,13 +304,11 @@
                                         </button>
                                     </form>
                                     @endif
-                                    <div class="input-group w-sm-25 ms-auto">
+                                    <div class="input-group input-group-sm input-group-dynamic w-auto">
                                         <span class="input-group-text text-body">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
-                                            </svg>
+                                            <i class="fas fa-search"></i>
                                         </span>
-                                        <input type="text" class="form-control" placeholder="Cari riwayat peminjaman..." id="searchPeminjaman">
+                                        <input type="text" class="form-control form-control-sm ps-3" placeholder="Cari riwayat peminjaman..." id="searchPeminjaman">
                                     </div>
                                 </div>
                             </div>
@@ -553,6 +549,129 @@
 
                 card.addEventListener('mouseleave', function() {
                     this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Search functionality for Available Arsip
+            document.getElementById('searchAvailableArsip').addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const availableTable = document.getElementById('availableArsipTable');
+                const rows = availableTable.querySelectorAll('tbody tr');
+
+                rows.forEach(function(row) {
+                    const kodeArsip = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+                    const namaDokumen = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                    const kategori = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+                    const tanggal = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+                    const pemilik = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
+
+                    if (kodeArsip.includes(searchValue) ||
+                        namaDokumen.includes(searchValue) ||
+                        kategori.includes(searchValue) ||
+                        tanggal.includes(searchValue) ||
+                        pemilik.includes(searchValue)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show or hide empty state message
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                const emptyMessage = availableTable.querySelector('tbody tr[data-empty-message]');
+
+                if (visibleRows.length === 0 && !emptyMessage) {
+                    // Create and insert empty message if not exists
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.setAttribute('data-empty-message', 'true');
+                    emptyRow.innerHTML = `
+                        <td colspan="7" class="text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-search text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="text-muted mb-2">Tidak ditemukan hasil untuk pencarian "${searchValue}"</h6>
+                            <p class="text-muted text-sm mb-0">Coba dengan kata kunci lain atau reset pencarian</p>
+                        </td>
+                    `;
+                    availableTable.querySelector('tbody').appendChild(emptyRow);
+                } else if (visibleRows.length > 0 && emptyMessage) {
+                    // Remove empty message if results found
+                    emptyMessage.remove();
+                }
+            });
+
+            // Search functionality for Peminjaman History
+            document.getElementById('searchPeminjaman').addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const peminjamanTable = document.getElementById('peminjamanTable');
+                const rows = peminjamanTable.querySelectorAll('tbody tr');
+
+                rows.forEach(function(row) {
+                    const arsip = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+                    const peminjam = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                    const tglPinjam = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+                    const batasWaktu = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+                    const tglKembali = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
+                    const status = row.querySelector('td:nth-child(6)')?.textContent.toLowerCase() || '';
+
+                    if (arsip.includes(searchValue) ||
+                        peminjam.includes(searchValue) ||
+                        tglPinjam.includes(searchValue) ||
+                        batasWaktu.includes(searchValue) ||
+                        tglKembali.includes(searchValue) ||
+                        status.includes(searchValue)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show or hide empty state message
+                const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+                const emptyMessage = peminjamanTable.querySelector('tbody tr[data-empty-message]');
+
+                if (visibleRows.length === 0 && !emptyMessage) {
+                    // Create and insert empty message if not exists
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.setAttribute('data-empty-message', 'true');
+                    emptyRow.innerHTML = `
+                        <td colspan="9" class="text-center p-4">
+                            <div class="mb-3">
+                                <i class="fas fa-search text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="text-muted mb-2">Tidak ditemukan hasil untuk pencarian "${searchValue}"</h6>
+                            <p class="text-muted text-sm mb-0">Coba dengan kata kunci lain atau reset pencarian</p>
+                        </td>
+                    `;
+                    peminjamanTable.querySelector('tbody').appendChild(emptyRow);
+                } else if (visibleRows.length > 0 && emptyMessage) {
+                    // Remove empty message if results found
+                    emptyMessage.remove();
+                }
+            });
+
+            // Add clear button to search inputs
+            document.querySelectorAll('#searchAvailableArsip, #searchPeminjaman').forEach(input => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'position-relative';
+                input.parentNode.insertBefore(wrapper, input);
+                wrapper.appendChild(input);
+
+                const clearButton = document.createElement('button');
+                clearButton.className = 'btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted p-1';
+                clearButton.innerHTML = '<i class="fas fa-times"></i>';
+                clearButton.style.display = 'none';
+                wrapper.appendChild(clearButton);
+
+                input.addEventListener('input', function() {
+                    clearButton.style.display = this.value ? 'block' : 'none';
+                });
+
+                clearButton.addEventListener('click', function() {
+                    input.value = '';
+                    input.dispatchEvent(new Event('keyup'));
+                    this.style.display = 'none';
+                    input.focus();
                 });
             });
         });

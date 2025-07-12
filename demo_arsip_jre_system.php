@@ -23,7 +23,6 @@ try {
         'kategori' => 'Testing',
         'tanggal_arsip' => Carbon::now()->subYears(6)->format('Y-m-d'), // 6 years ago
         'keterangan' => 'Arsip test untuk demonstrasi sistem JRE',
-        'rak' => 'A1',
         'retention_years' => 5,
         'retention_date' => Carbon::now()->subDays(30)->format('Y-m-d'), // Already expired
         'is_archived_to_jre' => false

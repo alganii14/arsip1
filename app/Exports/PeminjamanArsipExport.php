@@ -33,7 +33,6 @@ class PeminjamanArsipExport implements FromCollection, WithHeadings, WithMapping
             'Kode Arsip',
             'Nama Dokumen',
             'Peminjam',
-            'Jabatan',
             'Departemen',
             'Kontak',
             'Tanggal Pinjam',
@@ -44,8 +43,7 @@ class PeminjamanArsipExport implements FromCollection, WithHeadings, WithMapping
             'Durasi (Hari)',
             'Tujuan Peminjaman',
             'Petugas Peminjaman',
-            'Petugas Pengembalian',
-            'Catatan'
+            'Petugas Pengembalian'
         ];
     }
 
@@ -91,7 +89,6 @@ class PeminjamanArsipExport implements FromCollection, WithHeadings, WithMapping
             $peminjaman->arsip->kode ?? 'N/A',
             $peminjaman->arsip->nama_dokumen ?? 'N/A',
             $peminjaman->peminjam,
-            $peminjaman->jabatan ?? '-',
             $peminjaman->departemen ?? '-',
             $peminjaman->kontak,
             $peminjaman->tanggal_pinjam->format('d/m/Y'),
@@ -102,8 +99,7 @@ class PeminjamanArsipExport implements FromCollection, WithHeadings, WithMapping
             $peminjaman->getDurasiPinjam() ?? '-',
             $peminjaman->tujuan_peminjaman ?? '-',
             $peminjaman->petugas_peminjaman ?? '-',
-            $peminjaman->petugas_pengembalian ?? '-',
-            $peminjaman->catatan ?? '-'
+            $peminjaman->petugas_pengembalian ?? '-'
         ];
     }
 

@@ -80,7 +80,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
                                                 </svg>
                                             </span>
-                                            <input type="text" name="search" class="form-control border-start-0 border-end-0" placeholder="Cari berdasarkan kode, nama dokumen, atau rak..." value="{{ request('search') }}" style="box-shadow: none;">
+                                            <input type="text" name="search" class="form-control border-start-0 border-end-0" placeholder="Cari berdasarkan kode atau nama dokumen..." value="{{ request('search') }}" style="box-shadow: none;">
                                             @if(request('search'))
                                                 <a href="{{ route('jre.index') }}" class="input-group-text bg-white border-start-0 text-decoration-none" title="Hapus pencarian">
                                                     <i class="fas fa-times text-danger"></i>
@@ -115,7 +115,6 @@
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Nama Dokumen</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Arsip</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Retensi</th>
-                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Rak</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Status JRE</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Masa Pemulihan</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Proses</th>
@@ -136,9 +135,6 @@
                                             </td>
                                             <td>
                                                 <p class="text-sm font-weight-normal mb-0">{{ $jre->arsip->retention_date->format('d/m/Y') }}</p>
-                                            </td>
-                                            <td>
-                                                <p class="text-sm font-weight-normal mb-0">{{ $jre->arsip->rak ?: '-' }}</p>
                                             </td>
                                             <td>
                                                 @php

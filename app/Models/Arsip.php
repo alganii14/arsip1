@@ -16,7 +16,6 @@ class Arsip extends Model
         'kategori',
         'tanggal_arsip',
         'keterangan',
-        'rak',
         'file_path',
         'file_type',
         'retention_date',

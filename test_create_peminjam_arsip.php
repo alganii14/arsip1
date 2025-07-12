@@ -30,7 +30,6 @@ try {
         'kategori' => 'Testing',
         'tanggal_arsip' => Carbon::now()->format('Y-m-d'),
         'keterangan' => 'Arsip test untuk menguji fitur multi-seksi',
-        'rak' => 'A1-TEST',
         'retention_years' => 5,
         'retention_date' => Carbon::now()->addYears(5)->format('Y-m-d'),
         'created_by' => $peminjamUser->id

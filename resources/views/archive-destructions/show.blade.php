@@ -68,8 +68,8 @@
                                             </span>
                                         </div>
                                         <div class="mb-0">
-                                            <p class="text-xs text-secondary mb-1">Rak Penyimpanan</p>
-                                            <p class="font-weight-semibold mb-0">{{ $archiveDestruction->arsip->rak ?: 'Tidak ada' }}</p>
+                                            <p class="text-xs text-secondary mb-1">Dibuat oleh</p>
+                                            <p class="font-weight-semibold mb-0">{{ $archiveDestruction->arsip->creator->name ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>

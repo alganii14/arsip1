@@ -102,17 +102,13 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 4%">No</th>
-                <th style="width: 10%">Kode Arsip</th>
-                <th style="width: 20%">Nama Dokumen</th>
-                <th style="width: 8%">Kategori</th>
-                <th style="width: 8%">Tgl Arsip</th>
-                <th style="width: 6%">Sifat</th>
-                <th style="width: 6%">Rak</th>
-                <th style="width: 12%">Metode Pemusnahan</th>
-                <th style="width: 10%">Tgl Pemusnahan</th>
-                <th style="width: 10%">Petugas</th>
-                <th style="width: 6%">Lokasi</th>
+                <th style="width: 6%">No</th>
+                <th style="width: 15%">Kode Arsip</th>
+                <th style="width: 30%">Nama Dokumen</th>
+                <th style="width: 12%">Kategori</th>
+                <th style="width: 12%">Tgl Arsip</th>
+                <th style="width: 15%">Dibuat oleh</th>
+                <th style="width: 15%">Tgl Pemusnahan</th>
             </tr>
         </thead>
         <tbody>
@@ -123,34 +119,12 @@
                 <td>{{ $destruction->arsip->nama_dokumen }}</td>
                 <td>{{ $destruction->arsip->kategori }}</td>
                 <td class="text-center">{{ $destruction->arsip->tanggal_arsip ? $destruction->arsip->tanggal_arsip->format('d/m/Y') : '-' }}</td>
-                <td class="text-center">
-                    <span class="badge badge-info">{{ ucfirst($destruction->arsip->sifat) }}</span>
-                </td>
-                <td class="text-center">{{ $destruction->arsip->rak ?: '-' }}</td>
-                <td>
-                    <span class="badge badge-danger">{{ $destruction->destruction_method_text }}</span>
-                </td>
+                <td class="text-center">{{ $destruction->arsip->creator->name ?? '-' }}</td>
                 <td class="text-center">{{ $destruction->destroyed_at->format('d/m/Y H:i') }}</td>
-                <td>{{ $destruction->user->name }}</td>
-                <td>{{ $destruction->destruction_location ?: '-' }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
-
-    <div style="margin-top: 30px;">
-        <h3>Catatan Pemusnahan</h3>
-        @foreach($destructions as $index => $destruction)
-        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-            <strong>{{ $index + 1 }}. {{ $destruction->arsip->kode }} - {{ $destruction->arsip->nama_dokumen }}</strong><br>
-            <em>Pemusnahan oleh: {{ $destruction->user->name }} pada {{ $destruction->destroyed_at->format('d/m/Y H:i') }}</em><br>
-            <span style="font-size: 10px;">{{ $destruction->destruction_notes }}</span>
-            @if($destruction->destruction_witnesses)
-            <br><strong>Saksi:</strong> {{ $destruction->destruction_witnesses }}
-            @endif
-        </div>
-        @endforeach
-    </div>
     @else
     <div class="text-center" style="padding: 50px; color: #666;">
         <h3>Tidak Ada Data</h3>

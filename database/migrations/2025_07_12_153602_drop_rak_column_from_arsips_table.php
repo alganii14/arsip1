@@ -6,17 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('arsips', function (Blueprint $table) {
-            $table->string('rak')->nullable()->after('keterangan');
+            if (Schema::hasColumn('arsips', 'rak')) {
+                $table->dropColumn('rak');
+            }
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('arsips', function (Blueprint $table) {
-            $table->dropColumn('rak');
+            $table->string('rak')->nullable()->after('keterangan');
         });
     }
 };

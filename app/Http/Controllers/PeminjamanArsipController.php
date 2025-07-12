@@ -37,7 +37,8 @@ class PeminjamanArsipController extends Controller
         // Get available archives for borrowing
         $availableArsipsQuery = Arsip::where('is_archived_to_jre', false)
             ->whereDoesntHave('peminjaman', function($query) {
-                $query->whereIn('status', ['dipinjam', 'terlambat']);
+                $query->whereIn('status', ['dipinjam', 'terlambat'])
+                      ->where('confirmation_status', 'approved');
             })
             ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
@@ -47,9 +48,14 @@ class PeminjamanArsipController extends Controller
             // For admin, show all available archives (they can view without borrowing)
             $availableArsips = $availableArsipsQuery->with('creator')->latest()->get();
         } else {
-            // For other roles, exclude their own archives
+            // For other roles, exclude their own archives and archives they already borrowed
             $availableArsips = $availableArsipsQuery
                 ->where('created_by', '!=', $user->id)
+                ->whereDoesntHave('peminjaman', function($query) use ($user) {
+                    $query->where('peminjam_user_id', $user->id)
+                          ->whereIn('status', ['pending', 'dipinjam', 'terlambat'])
+                          ->where('confirmation_status', '!=', 'rejected');
+                })
                 ->with('creator')
                 ->latest()
                 ->get();
@@ -65,7 +71,8 @@ class PeminjamanArsipController extends Controller
         // Get arsips that are not in JRE and not currently borrowed
         $arsipsQuery = Arsip::where('is_archived_to_jre', false)
             ->whereDoesntHave('peminjaman', function($query) {
-                $query->whereIn('status', ['dipinjam', 'terlambat']);
+                $query->whereIn('status', ['dipinjam', 'terlambat'])
+                      ->where('confirmation_status', 'approved');
             })
             ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
@@ -94,14 +101,13 @@ class PeminjamanArsipController extends Controller
     {
         $request->validate([
             'arsip_id' => 'required|exists:arsips,id',
+            'jenis_peminjaman' => 'nullable|in:fisik,digital,umum',
             'peminjam' => 'required|string|max:255',
-            'jabatan' => 'nullable|string|max:255',
             'departemen' => 'nullable|string|max:255',
             'kontak' => 'required|string|max:255',
             'tanggal_pinjam' => 'required|date',
             'batas_waktu' => 'required|date|after_or_equal:tanggal_pinjam',
             'tujuan_peminjaman' => 'nullable|string',
-            'catatan' => 'nullable|string',
         ]);
 
         // Check if arsip is already borrowed
@@ -115,14 +121,13 @@ class PeminjamanArsipController extends Controller
             'arsip_id' => $request->arsip_id,
             'peminjam_user_id' => Auth::id(),
             'peminjam' => $request->peminjam,
-            'jabatan' => $request->jabatan,
             'departemen' => Auth::user()->role === 'peminjam' ? Auth::user()->department : $request->departemen,
             'kontak' => $request->kontak,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'batas_waktu' => $request->batas_waktu,
             'tujuan_peminjaman' => $request->tujuan_peminjaman,
-            'catatan' => $request->catatan,
             'petugas_peminjaman' => Auth::user()->role === 'peminjam' ? 'Self-Service' : Auth::user()->name,
+            'jenis_peminjaman' => $request->jenis_peminjaman ?? 'fisik',
         ];
 
         // Jika user adalah peminjam, status pending menunggu konfirmasi admin
@@ -146,6 +151,82 @@ class PeminjamanArsipController extends Controller
         return redirect()->route('peminjaman.index')->with('success', $message);
     }
 
+    public function storeDigital(Request $request)
+    {
+        $request->validate([
+            'arsip_id' => 'required|exists:arsips,id',
+        ]);
+
+        $user = Auth::user();
+        $arsip = Arsip::findOrFail($request->arsip_id);
+
+        // Check if user can borrow this arsip
+        if ($user->role === 'peminjam' && $arsip->created_by === $user->id) {
+            return redirect()->route('peminjaman.index')->with('error', 'Anda tidak dapat meminjam arsip milik sendiri.');
+        }
+
+        // Check if arsip is already borrowed by anyone (including pending approved)
+        if ($arsip->isCurrentlyBorrowed()) {
+            return redirect()->back()->with('error', 'Arsip ini sedang dipinjam oleh orang lain.');
+        }
+
+        // Check if user already has an active borrowing for this arsip (more comprehensive check)
+        $existingBorrowing = PeminjamanArsip::where('arsip_id', $request->arsip_id)
+            ->where('peminjam_user_id', $user->id)
+            ->where(function($query) {
+                $query->whereIn('status', ['pending', 'dipinjam', 'terlambat'])
+                      ->orWhere(function($subQuery) {
+                          $subQuery->where('confirmation_status', 'approved')
+                                   ->where('status', '!=', 'dikembalikan');
+                      });
+            })
+            ->where('confirmation_status', '!=', 'rejected')
+            ->first();
+
+        if ($existingBorrowing) {
+            return redirect()->route('peminjaman.show', $existingBorrowing->id)
+                ->with('info', 'Anda sudah meminjam arsip ini. Berikut adalah detail peminjaman yang aktif.');
+        }
+
+        // Double check: ensure no duplicate digital borrowing exists
+        $duplicateDigitalBorrowing = PeminjamanArsip::where('arsip_id', $request->arsip_id)
+            ->where('peminjam_user_id', $user->id)
+            ->where('jenis_peminjaman', 'digital')
+            ->whereIn('status', ['pending', 'dipinjam', 'terlambat'])
+            ->where('confirmation_status', 'approved')
+            ->first();
+
+        if ($duplicateDigitalBorrowing) {
+            return redirect()->route('peminjaman.show', $duplicateDigitalBorrowing->id)
+                ->with('error', 'Anda sudah meminjam arsip ini secara digital. Tidak bisa meminjam ulang.');
+        }
+
+        // Create digital borrowing with minimal data - always approved
+        $peminjamanData = [
+            'arsip_id' => $request->arsip_id,
+            'peminjam_user_id' => $user->id,
+            'peminjam' => $user->name,
+            'jabatan' => $user->jabatan ?? '',
+            'departemen' => $user->department ?? '',
+            'kontak' => $user->email ?? $user->phone ?? '',
+            'tanggal_pinjam' => Carbon::now(),
+            'batas_waktu' => Carbon::now()->addDays(7), // Default 7 days for digital
+            'tujuan_peminjaman' => 'Peminjaman Digital',
+            'catatan' => 'Peminjaman digital - disetujui otomatis',
+            'petugas_peminjaman' => 'Sistem Digital',
+            'jenis_peminjaman' => 'digital',
+            'status' => 'dipinjam', // Langsung dipinjam tanpa pending
+            'confirmation_status' => 'approved', // Langsung approved
+            'approved_by' => $user->id,
+            'approved_at' => Carbon::now(),
+        ];
+
+        $peminjaman = PeminjamanArsip::create($peminjamanData);
+
+        return redirect()->route('peminjaman.show', $peminjaman->id)
+            ->with('success', 'Arsip berhasil dipinjam secara digital! Anda dapat langsung melihat dan mengunduh arsip.');
+    }
+
     public function show(PeminjamanArsip $peminjaman)
     {
         // Jika user adalah peminjam, cek apakah peminjaman ini miliknya
@@ -153,6 +234,14 @@ class PeminjamanArsipController extends Controller
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses ke data peminjaman ini.');
         }
 
+        // Cek jenis peminjaman - jika fisik, tidak bisa lihat arsip digital
+        if ($peminjaman->jenis_peminjaman === 'fisik') {
+            // Untuk peminjaman fisik, hanya tampilkan detail peminjaman tanpa akses ke file arsip
+            $peminjaman->load('arsip');
+            return view('peminjaman.show-fisik', compact('peminjaman'));
+        }
+
+        // Untuk peminjaman digital, bisa akses file arsip
         $peminjaman->load('arsip');
         return view('peminjaman.show', compact('peminjaman'));
     }
@@ -168,14 +257,12 @@ class PeminjamanArsipController extends Controller
         $request->validate([
             'arsip_id' => 'required|exists:arsips,id',
             'peminjam' => 'required|string|max:255',
-            'jabatan' => 'nullable|string|max:255',
             'departemen' => 'nullable|string|max:255',
             'kontak' => 'required|string|max:255',
             'tanggal_pinjam' => 'required|date',
             'batas_waktu' => 'required|date|after_or_equal:tanggal_pinjam',
             'status' => 'required|in:pending,dipinjam,dikembalikan,terlambat',
             'tujuan_peminjaman' => 'nullable|string',
-            'catatan' => 'nullable|string',
         ]);
 
         // If changing arsip_id, check if new arsip is available
@@ -199,13 +286,13 @@ class PeminjamanArsipController extends Controller
 
     public function returnForm(PeminjamanArsip $peminjaman)
     {
-        // Hanya peminjam yang bisa mengembalikan arsip mereka sendiri
-        if (Auth::user()->role !== 'peminjam') {
-            return redirect()->route('peminjaman.index')->with('error', 'Hanya peminjam yang dapat mengembalikan arsip mereka sendiri.');
+        // Untuk peminjaman fisik, hanya admin yang bisa melakukan pengembalian
+        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'admin') {
+            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh admin.');
         }
 
-        // Check if user has permission to return this loan
-        if ($peminjaman->peminjam_user_id != Auth::id()) {
+        // Untuk peminjaman digital, peminjam bisa mengembalikan sendiri
+        if ($peminjaman->jenis_peminjaman === 'digital' && $peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
         }
 
@@ -223,13 +310,13 @@ class PeminjamanArsipController extends Controller
 
     public function processReturn(Request $request, PeminjamanArsip $peminjaman)
     {
-        // Hanya peminjam yang bisa mengembalikan arsip mereka sendiri
-        if (Auth::user()->role !== 'peminjam') {
-            return redirect()->route('peminjaman.index')->with('error', 'Hanya peminjam yang dapat mengembalikan arsip mereka sendiri.');
+        // Untuk peminjaman fisik, hanya admin yang bisa melakukan pengembalian
+        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'admin') {
+            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh admin.');
         }
 
-        // Check if user has permission to return this loan
-        if ($peminjaman->peminjam_user_id != Auth::id()) {
+        // Untuk peminjaman digital, peminjam bisa mengembalikan sendiri
+        if ($peminjaman->jenis_peminjaman === 'digital' && $peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
         }
 

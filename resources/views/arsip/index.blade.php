@@ -96,7 +96,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
                                                 </svg>
                                             </span>
-                                            <input type="text" name="search" class="form-control border-start-0 border-end-0" placeholder="Cari berdasarkan kode, nama dokumen, kategori, atau rak..." value="{{ request('search') }}" style="box-shadow: none;">
+                                            <input type="text" name="search" class="form-control border-start-0 border-end-0" placeholder="Cari berdasarkan kode, nama dokumen, atau kategori..." value="{{ request('search') }}" style="box-shadow: none;">
                                             @if(request('search'))
                                                 <a href="{{ route('arsip.index') }}" class="input-group-text bg-white border-start-0 text-decoration-none" title="Hapus pencarian">
                                                     <i class="fas fa-times text-danger"></i>

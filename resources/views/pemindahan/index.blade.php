@@ -50,20 +50,14 @@
                                                     <i class="fas fa-file-pdf me-1"></i> PDF
                                                 </a>
                                             </div>
-                                            <form action="{{ route('pemindahan.index') }}" method="GET" class="d-flex flex-wrap">
-                                            <div class="d-flex me-2 mb-2 mb-sm-0">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                                    <input type="text" name="search" class="form-control" placeholder="Cari arsip..." value="{{ request('search') }}">
+                                            <div class="d-flex flex-wrap">
+                                                <div class="input-group input-group-sm input-group-dynamic w-auto me-2 mb-2 mb-sm-0">
+                                                    <span class="input-group-text text-body">
+                                                        <i class="fas fa-search"></i>
+                                                    </span>
+                                                    <input type="text" id="searchArsip" class="form-control form-control-sm ps-3" placeholder="Cari arsip...">
                                                 </div>
                                             </div>
-                                            <div class="d-flex">
-                                                <button type="submit" class="btn btn-info btn-sm mb-0 me-2">Cari</button>
-                                                @if(request('search'))
-                                                    <a href="{{ route('pemindahan.index') }}" class="btn btn-outline-secondary btn-sm mb-0">Reset</a>
-                                                @endif
-                                            </div>
-                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -73,19 +67,12 @@
                             <div class="p-3">
                                 <div class="row">
                                     <div class="col-12">
-                                        @if(request('search'))
-                                            <div class="alert alert-info alert-dismissible fade show mb-0 py-2" role="alert">
-                                                <span>
-                                                    <strong>Filter aktif:</strong>
-                                                    Menampilkan {{ $pemindahans->total() }} data
-                                                    {{ request('search') ? '(Pencarian: "'.request('search').'")' : '' }}
-                                                </span>
-                                            </div>
-                                        @else
-                                            <p class="text-sm text-muted mb-0">
-                                                Total {{ $pemindahans->total() }} data pemindahan
-                                            </p>
-                                        @endif
+                                        <p class="text-sm text-muted mb-0" id="searchInfo">
+                                            Total {{ $pemindahans->total() }} data pemindahan
+                                        </p>
+                                        <div class="alert alert-info alert-dismissible fade show mb-0 py-2 d-none" role="alert" id="searchInfoAlert">
+                                            <span id="searchInfoText"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -146,10 +133,7 @@
                                                         <i class="fas fa-truck-moving opacity-10"></i>
                                                     </div>
                                                     <h6 class="text-secondary font-weight-bold">Belum ada data pemindahan</h6>
-                                                    <p class="text-sm text-secondary mb-4">Klik tombol "Tambah Pemindahan" untuk membuat permintaan baru</p>
-                                                    <a href="{{ route('pemindahan.create') }}" class="btn btn-sm btn-warning">
-                                                        <i class="fas fa-plus me-2"></i>Tambah Pemindahan
-                                                    </a>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -178,8 +162,109 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
+            // Client-side search functionality
+            const searchInput = document.getElementById('searchArsip');
+            const tableBody = document.querySelector('tbody');
+            const tableRows = tableBody.querySelectorAll('tr:not([data-empty-row])');
+            const searchInfo = document.getElementById('searchInfo');
+            const searchInfoAlert = document.getElementById('searchInfoAlert');
+            const searchInfoText = document.getElementById('searchInfoText');
+            const totalRows = tableRows.length;
+
+            // Add clear button to search input
+            const wrapper = document.createElement('div');
+            wrapper.className = 'position-relative';
+            searchInput.parentNode.insertBefore(wrapper, searchInput);
+            wrapper.appendChild(searchInput);
+
+            const clearButton = document.createElement('button');
+            clearButton.className = 'btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted p-1';
+            clearButton.innerHTML = '<i class="fas fa-times"></i>';
+            clearButton.style.display = 'none';
+            wrapper.appendChild(clearButton);
+
+            searchInput.addEventListener('input', function() {
+                clearButton.style.display = this.value ? 'block' : 'none';
+            });
+
+            clearButton.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('keyup'));
+                this.style.display = 'none';
+                searchInput.focus();
+            });
+
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                // Remove any existing no results message
+                const existingEmptyRow = tableBody.querySelector('tr[data-empty-row]');
+                if (existingEmptyRow) {
+                    existingEmptyRow.remove();
+                }
+
+                tableRows.forEach(row => {
+                    const kodeArsip = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                    const namaArsip = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+                    const tahun = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+                    const jumlah = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
+                    const tingkatPerkembangan = row.querySelector('td:nth-child(6)')?.textContent.toLowerCase() || '';
+                    const keterangan = row.querySelector('td:nth-child(7)')?.textContent.toLowerCase() || '';
+
+                    if (searchTerm === '' ||
+                        kodeArsip.includes(searchTerm) ||
+                        namaArsip.includes(searchTerm) ||
+                        tahun.includes(searchTerm) ||
+                        jumlah.includes(searchTerm) ||
+                        tingkatPerkembangan.includes(searchTerm) ||
+                        keterangan.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Show search status
+                if (searchTerm !== '') {
+                    searchInfo.classList.add('d-none');
+                    searchInfoAlert.classList.remove('d-none');
+                    searchInfoText.innerHTML = `<strong>Filter aktif:</strong> Menampilkan ${visibleCount} dari ${totalRows} data (Pencarian: "${searchTerm}")`;
+                } else {
+                    searchInfo.classList.remove('d-none');
+                    searchInfoAlert.classList.add('d-none');
+                }
+
+                // Show no results message
+                if (visibleCount === 0 && searchTerm !== '') {
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.setAttribute('data-empty-row', 'true');
+                    emptyRow.innerHTML = `
+                        <td colspan="8" class="text-center py-5">
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="icon icon-shape icon-lg bg-gradient-info shadow text-center border-radius-lg mb-3">
+                                    <i class="fas fa-search opacity-10"></i>
+                                </div>
+                                <h6 class="text-secondary font-weight-bold">Tidak ditemukan hasil untuk pencarian "${searchTerm}"</h6>
+                                <p class="text-muted text-sm mb-0">Coba dengan kata kunci lain atau reset pencarian</p>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(emptyRow);
+                }
+            });
+
+            // Add keyboard shortcut for search focus (Ctrl+K or Cmd+K)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+            });
+
             // Make table rows clickable to view details
-            document.querySelectorAll('tbody tr').forEach(function(row) {
+            document.querySelectorAll('tbody tr:not([data-empty-row])').forEach(function(row) {
                 row.addEventListener('click', function(e) {
                     // Don't trigger when clicking on action buttons
                     if (!e.target.closest('button') && !e.target.closest('a') && !e.target.closest('form')) {
@@ -195,8 +280,8 @@
             });
 
             // Add stripe effect to table
-            const tableRows = document.querySelectorAll('tbody tr');
-            tableRows.forEach((row, index) => {
+            const allTableRows = document.querySelectorAll('tbody tr:not([data-empty-row])');
+            allTableRows.forEach((row, index) => {
                 if (index % 2 === 1) {
                     row.classList.add('bg-gray-50');
                 }

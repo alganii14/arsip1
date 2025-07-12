@@ -33,8 +33,7 @@ class ArsipController extends Controller
             $query->where(function($q) use ($searchTerm) {
                 $q->where('kode', 'LIKE', "%{$searchTerm}%")
                   ->orWhere('nama_dokumen', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('kategori', 'LIKE', "%{$searchTerm}%")
-                  ->orWhere('rak', 'LIKE', "%{$searchTerm}%");
+                  ->orWhere('kategori', 'LIKE', "%{$searchTerm}%");
             });
         }
 
@@ -63,7 +62,6 @@ class ArsipController extends Controller
         'nama_dokumen' => 'required',
         'kategori' => 'required',
         'tanggal_arsip' => 'required|date', // This allows any valid date
-        'rak' => 'nullable|string',
         'retention_type' => 'required|in:auto,manual',
         'retention_years' => 'required_if:retention_type,manual|integer|min:1|max:50',
         'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls,doc,docx|max:10240',
@@ -123,7 +121,6 @@ class ArsipController extends Controller
             'nama_dokumen' => 'required',
             'kategori' => 'required',
             'tanggal_arsip' => 'required|date',
-            'rak' => 'nullable|string',
             'retention_type' => 'required|in:auto,manual',
             'retention_years' => 'required_if:retention_type,manual|integer|min:1|max:50',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,xlsx,xls,doc,docx|max:10240',

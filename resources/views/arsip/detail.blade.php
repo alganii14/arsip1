@@ -105,10 +105,6 @@
                                                 <div class="col-7 text-sm">{{ $arsip->tanggal_arsip->format('d/m/Y') }}</div>
                                             </div>
                                             <div class="row mb-2">
-                                                <div class="col-5 text-sm font-weight-semibold">Rak Penyimpanan:</div>
-                                                <div class="col-7 text-sm">{{ $arsip->rak ?: 'Tidak ada informasi rak' }}</div>
-                                            </div>
-                                            <div class="row mb-2">
                                                 <div class="col-5 text-sm font-weight-semibold">Masa Retensi:</div>
                                                 <div class="col-7 text-sm">
                                                     {{ $arsip->retention_years ?? 5 }} tahun
@@ -147,7 +143,7 @@
                                                                 <i class="fas fa-eye me-1"></i> Lihat Arsip
                                                             </a>
                                                         @else
-                                                            {{-- Peminjam bisa lihat arsip milik sendiri atau yang sudah dipinjam --}}
+                                                            {{-- Peminjam bisa lihat arsip milik sendiri atau yang sudah dipinjam secara digital --}}
                                                             @if($arsip->created_by === Auth::id())
                                                                 {{-- Arsip milik sendiri --}}
                                                                 <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-xs btn-outline-primary">
@@ -155,20 +151,48 @@
                                                                 </a>
                                                                 <small class="d-block text-muted mt-1">Arsip milik Anda</small>
                                                             @else
-                                                                {{-- Arsip milik orang lain, harus meminjam dulu --}}
+                                                                {{-- Arsip milik orang lain, harus meminjam digital untuk akses file --}}
                                                                 @php
-                                                                    $approvedPeminjaman = $arsip->peminjaman()
+                                                                    $digitalPeminjaman = $arsip->peminjaman()
                                                                         ->where('peminjam_user_id', Auth::id())
                                                                         ->where('confirmation_status', 'approved')
+                                                                        ->where('jenis_peminjaman', 'digital')
+                                                                        ->whereIn('status', ['dipinjam', 'terlambat'])
+                                                                        ->first();
+
+                                                                    $fisikPeminjaman = $arsip->peminjaman()
+                                                                        ->where('peminjam_user_id', Auth::id())
+                                                                        ->where('confirmation_status', 'approved')
+                                                                        ->where('jenis_peminjaman', 'fisik')
                                                                         ->whereIn('status', ['dipinjam', 'terlambat'])
                                                                         ->first();
                                                                 @endphp
-                                                                @if($approvedPeminjaman)
-                                                                    <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-xs btn-outline-primary">
+
+                                                                @if($digitalPeminjaman)
+                                                                    {{-- Peminjaman digital - bisa akses file --}}
+                                                                    <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-xs btn-outline-success">
                                                                         <i class="fas fa-eye me-1"></i> Lihat Arsip
                                                                     </a>
+                                                                    <small class="d-block text-success mt-1">
+                                                                        <i class="fas fa-download me-1"></i>Peminjaman Digital
+                                                                    </small>
+                                                                @elseif($fisikPeminjaman)
+                                                                    {{-- Peminjaman fisik - tidak bisa akses file digital --}}
+                                                                    <span class="badge bg-warning">
+                                                                        <i class="fas fa-file-alt me-1"></i>Peminjaman Fisik
+                                                                    </span>
+                                                                    <small class="d-block text-muted mt-1">File digital tidak tersedia untuk peminjaman fisik</small>
                                                                 @else
-                                                                    <small class="text-muted">Ajukan peminjaman untuk melihat arsip</small>
+                                                                    {{-- Belum meminjam --}}
+                                                                    <div class="d-flex gap-1">
+                                                                        <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}&type=fisik" class="btn btn-xs btn-outline-primary">
+                                                                            <i class="fas fa-file-alt me-1"></i> Pinjam Fisik
+                                                                        </a>
+                                                                        <button type="button" class="btn btn-xs btn-outline-success" onclick="borrowDigital({{ $arsip->id }}, '{{ addslashes($arsip->nama_dokumen) }}')">
+                                                                            <i class="fas fa-download me-1"></i> Pinjam Digital
+                                                                        </button>
+                                                                    </div>
+                                                                    <small class="d-block text-muted mt-1">Pilih jenis peminjaman untuk mengakses arsip</small>
                                                                 @endif
                                                             @endif
                                                         @endif
@@ -283,9 +307,25 @@
 
                     {{-- Tombol Peminjaman --}}
                     @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed() && Auth::user()->role !== 'admin' && $arsip->created_by !== Auth::id())
-                    <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-primary">
-                        <i class="fas fa-download me-2"></i> Pinjam Arsip
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownPeminjaman" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-2"></i> Pinjam Arsip
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownPeminjaman">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}&type=fisik">
+                                    <i class="fas fa-file-alt me-2 text-primary"></i>
+                                    Pinjam Fisik (Isi Form)
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="borrowDigital({{ $arsip->id }}, '{{ addslashes($arsip->nama_dokumen) }}')">
+                                    <i class="fas fa-download me-2 text-success"></i>
+                                    Pinjam Digital (Langsung)
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -317,4 +357,19 @@
             <x-app.footer />
         </div>
     </main>
+
+    <!-- Form untuk submit peminjaman digital -->
+    <form id="digitalBorrowForm" action="{{ route('peminjaman.digital.store') }}" method="POST" style="display: none;">
+        @csrf
+        <input type="hidden" name="arsip_id" id="digitalArsipId">
+    </form>
+
+    <script>
+        function borrowDigital(arsipId, arsipName) {
+            if (confirm(`Apakah Anda yakin ingin meminjam arsip "${arsipName}" secara digital?\n\nDengan peminjaman digital, Anda akan langsung dapat melihat dan mengunduh arsip tanpa perlu mengisi form.`)) {
+                document.getElementById('digitalArsipId').value = arsipId;
+                document.getElementById('digitalBorrowForm').submit();
+            }
+        }
+    </script>
 </x-app-layout>

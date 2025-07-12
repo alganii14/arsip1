@@ -142,13 +142,11 @@
                                         </ul>
                                     </div>
 
-                                    <div class="input-group w-sm-25 ms-auto">
+                                    <div class="input-group input-group-sm input-group-dynamic w-auto">
                                         <span class="input-group-text text-body">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
-                                            </svg>
+                                            <i class="fas fa-search"></i>
                                         </span>
-                                        <input type="text" class="form-control" id="searchInput" placeholder="Cari arsip yang dimusnahkan...">
+                                        <input type="text" class="form-control form-control-sm ps-3" id="searchInput" placeholder="Cari arsip yang dimusnahkan...">
                                     </div>
                                 </div>
                             </div>
@@ -160,7 +158,6 @@
                                         <tr>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">Kode Arsip</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Nama Dokumen</th>
-                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Metode Pemusnahan</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Pemusnahan</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Petugas</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
@@ -175,11 +172,6 @@
                                             <td>
                                                 <p class="text-sm font-weight-semibold mb-0">{{ $destruction->arsip->nama_dokumen }}</p>
                                                 <p class="text-xs text-secondary mb-0">{{ $destruction->arsip->kategori }}</p>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-sm bg-danger text-white">
-                                                    {{ $destruction->destruction_method_text }}
-                                                </span>
                                             </td>
                                             <td>
                                                 <p class="text-sm font-weight-normal mb-0">{{ $destruction->destroyed_at->format('d/m/Y H:i') }} WIB</p>
@@ -197,7 +189,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="6" class="text-center py-4">
+                                            <td colspan="5" class="text-center py-4">
                                                 <div class="text-center">
                                                     <i class="fas fa-fire fa-3x text-muted mb-3"></i>
                                                     <p class="text-muted mb-0">Belum ada arsip yang dimusnahkan</p>
@@ -219,17 +211,50 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Search functionality
+            // Search functionality with enhanced features
             const searchInput = document.getElementById('searchInput');
             const tableBody = document.querySelector('table tbody');
             const tableRows = tableBody.querySelectorAll('tr');
 
+            // Add clear button to search input
+            const wrapper = document.createElement('div');
+            wrapper.className = 'position-relative';
+            searchInput.parentNode.insertBefore(wrapper, searchInput);
+            wrapper.appendChild(searchInput);
+
+            const clearButton = document.createElement('button');
+            clearButton.className = 'btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted p-1';
+            clearButton.innerHTML = '<i class="fas fa-times"></i>';
+            clearButton.style.display = 'none';
+            wrapper.appendChild(clearButton);
+
+            searchInput.addEventListener('input', function() {
+                clearButton.style.display = this.value ? 'block' : 'none';
+            });
+
+            clearButton.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('keyup'));
+                this.style.display = 'none';
+                searchInput.focus();
+            });
+
             searchInput.addEventListener('keyup', function() {
                 const searchTerm = this.value.toLowerCase();
 
+                // More specific search - check individual columns
                 tableRows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    if (text.includes(searchTerm)) {
+                    if (row.id === 'noResultsRow') return;
+
+                    const kodeArsip = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+                    const namaDokumen = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                    const tanggalPemusnahan = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+                    const petugas = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+
+                    if (kodeArsip.includes(searchTerm) ||
+                        namaDokumen.includes(searchTerm) ||
+                        tanggalPemusnahan.includes(searchTerm) ||
+                        petugas.includes(searchTerm)) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
@@ -237,7 +262,7 @@
                 });
 
                 // Show "no results" message if no rows are visible
-                const visibleRows = Array.from(tableRows).filter(row => row.style.display !== 'none');
+                const visibleRows = Array.from(tableRows).filter(row => row.style.display !== 'none' && row.id !== 'noResultsRow');
                 const noResultsRow = document.getElementById('noResultsRow');
 
                 if (visibleRows.length === 0 && searchTerm !== '') {
@@ -245,14 +270,21 @@
                         const newRow = document.createElement('tr');
                         newRow.id = 'noResultsRow';
                         newRow.innerHTML = `
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <div class="text-center">
                                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted mb-0">Tidak ditemukan arsip yang cocok dengan pencarian "${searchTerm}"</p>
+                                    <h6 class="text-muted mb-2">Tidak ditemukan arsip yang cocok dengan pencarian "${searchTerm}"</h6>
+                                    <p class="text-muted text-sm mb-0">Coba dengan kata kunci lain atau reset pencarian</p>
                                 </div>
                             </td>
                         `;
                         tableBody.appendChild(newRow);
+                    } else {
+                        // Update the search term in the message
+                        const messageElement = noResultsRow.querySelector('h6');
+                        if (messageElement) {
+                            messageElement.textContent = `Tidak ditemukan arsip yang cocok dengan pencarian "${searchTerm}"`;
+                        }
                     }
                 } else if (noResultsRow) {
                     noResultsRow.remove();
@@ -270,6 +302,14 @@
                         this.innerHTML = originalText;
                     }, 2000);
                 });
+            });
+
+            // Add keyboard shortcut for search focus (Ctrl+K or Cmd+K)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
             });
         });
     </script>

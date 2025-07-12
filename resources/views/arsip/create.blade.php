@@ -782,19 +782,6 @@
                                             @enderror
                                         </div>
                                     </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-4">
-                                            <label for="rak" class="form-control-label text-sm">Rak Penyimpanan</label>
-                                            <input type="text" class="form-control @error('rak') is-invalid @enderror" id="rak" name="rak" value="{{ old('rak') }}">
-                                            @error('rak')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <small class="form-text text-muted">
-                                                Informasi lokasi penyimpanan fisik arsip
-                                            </small>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end mt-4">
