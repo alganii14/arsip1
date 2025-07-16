@@ -1,7 +1,204 @@
 <x-app-layout>
-    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    <style>
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge.badge-sm {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+        }
+        .dropdown-toggle::after {
+            margin-left: 0.5rem;
+        }
+        .dropdown-item div {
+            flex: 1;
+        }
+        .dropdown-item .font-weight-semibold {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .modal-backdrop {
+            z-index: 1040;
+        }
+        .modal {
+            z-index: 1050;
+        }
+        
+        /* Fix sidebar overlap */
+        .main-content {
+            transition: margin-left 0.3s ease;
+            padding-right: 15px;
+        }
+        
+        @media (max-width: 1199px) {
+            .main-content {
+                margin-left: 0 !important;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .main-content {
+                margin-left: 250px;
+                padding-left: 15px;
+            }
+        }
+        
+        /* Ensure proper spacing */
+        .container-fluid {
+            max-width: 100%;
+            overflow-x: auto;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        
+        /* Table responsive improvements */
+        .table-responsive {
+            min-height: 300px;
+            margin-bottom: 0;
+        }
+        
+        .card {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Improve row spacing */
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        
+        .col-12, .col-xl-3, .col-sm-6 {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+        
+        /* Header card responsive */
+        .card-background {
+            margin-bottom: 2rem;
+        }
+        
+        /* Header button improvements */
+        .card-background .d-flex {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .card-background .btn {
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .card-background .d-flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .card-background .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .card-background .btn .btn-inner--text {
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* Dropdown menu improvements */
+        .dropdown-menu {
+            min-width: 320px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            transition: all 0.15s ease-in-out;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(2px);
+        }
+        
+        .dropdown-item div {
+            line-height: 1.3;
+        }
+        
+        .dropdown-item .font-weight-semibold {
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+        
+        .dropdown-item small {
+            color: #718096;
+        }
+        
+        /* Modal improvements */
+        .modal {
+            z-index: 1060;
+        }
+        
+        .modal-backdrop {
+            z-index: 1050;
+        }
+        
+        /* Button improvements */
+        .btn-blur {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        /* Action buttons spacing */
+        .d-flex .btn + .btn {
+            margin-left: 0.25rem;
+        }
+        
+        /* Ensure tables don't overflow */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Card improvements */
+        .card-header {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        /* Button group spacing */
+        .btn-group {
+            margin-right: 0.5rem;
+        }
+        
+        /* Search input improvements */
+        .input-group-dynamic {
+            min-width: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group-dynamic {
+                min-width: 150px;
+            }
+            
+            .btn-group {
+                margin-bottom: 0.5rem;
+            }
+            
+            .dropdown-menu {
+                min-width: 250px;
+            }
+        }
+    </style>
         <x-app.navbar />
-        <div class="container-fluid py-4 px-5">
+        <div class="main-content">
+            <div class="container-fluid px-3 py-4">
+           
+            
             <div class="row">
                 <div class="col-12">
                     <div class="card card-background card-background-after-none align-items-start mt-4 mb-5">
@@ -15,19 +212,26 @@
                                     Kelola peminjaman arsip dokumen
                                 @endif
                             </p>
-                            <div class="d-flex">
+                            <div class="d-flex flex-wrap gap-2">
                                 @if(Auth::user()->role !== 'admin')
-                                <a href="{{ route('peminjaman.create') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
+                                <!-- Button untuk peminjaman fisik -->
+                                <a href="{{ route('peminjaman.create') }}?type=fisik" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                     <span class="btn-inner--icon">
-                                        <svg width="14" height="14" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="d-block me-2">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7 0C3.13401 0 0 3.13401 0 7C0 10.866 3.13401 14 7 14C10.866 14 14 10.866 14 7C14 3.13401 10.866 0 7 0ZM7.5 3.5C7.5 3.22386 7.27614 3 7 3C6.72386 3 6.5 3.22386 6.5 3.5V6.5H3.5C3.22386 6.5 3 6.72386 3 7C3 7.27614 3.22386 7.5 3.5 7.5H6.5V10.5C6.5 10.7761 6.72386 11 7 11C7.27614 11 7.5 10.7761 7.5 10.5V7.5H10.5C10.7761 7.5 11 7.27614 11 7C11 6.72386 10.7761 6.5 10.5 6.5H7.5V3.5Z" />
-                                        </svg>
+                                        <i class="fas fa-file-alt me-2"></i>
                                     </span>
-                                    <span class="btn-inner--text">Tambah Peminjaman</span>
+                                    <span class="btn-inner--text">Pinjam Arsip Fisik</span>
                                 </a>
+                                
+                                <!-- Button untuk peminjaman digital -->
+                                <button type="button" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0" onclick="showDigitalBorrowModal()">
+                                    <span class="btn-inner--icon">
+                                        <i class="fas fa-download me-2"></i>
+                                    </span>
+                                    <span class="btn-inner--text">Pinjam Arsip Digital</span>
+                                </button>
                                 @endif
                                 @if(Auth::user()->isAdmin())
-                                    <a href="{{ route('peminjaman.pending') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0 me-2">
+                                    <a href="{{ route('peminjaman.pending') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                         <span class="btn-inner--icon">
                                             <i class="fas fa-hourglass-half me-2"></i>
                                         </span>
@@ -225,21 +429,15 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                @if(!Auth::user()->isPeminjam())
                                                 <div class="d-flex">
                                                     <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
                                                         <i class="fas fa-eye me-1"></i> Detail
                                                     </a>
-                                                    @if($arsip->file_path && Auth::user()->role === 'admin')
-                                                        <a href="{{ route('arsip.view', $arsip->id) }}" class="btn btn-sm btn-success me-2">
-                                                            <i class="fas fa-file me-1"></i> Lihat Arsip
-                                                        </a>
-                                                    @endif
-                                                    @if(Auth::user()->role !== 'admin')
-                                                        <a href="{{ route('peminjaman.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-sm btn-primary">
-                                                            <i class="fas fa-download me-1"></i> Pinjam
-                                                        </a>
-                                                    @endif
                                                 </div>
+                                                @else
+                                                <span class="text-muted text-sm">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                         @empty
@@ -320,6 +518,7 @@
                                         <tr>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7">Arsip</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Peminjam</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Jenis</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Pinjam</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Batas Waktu</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Kembali</th>
@@ -342,6 +541,26 @@
                                                     {{ $peminjaman->departemen ? $peminjaman->departemen : '' }}
                                                     {{ $peminjaman->jabatan ? '- ' . $peminjaman->jabatan : '' }}
                                                 </p>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $jenisClass = 'secondary';
+                                                    $jenisText = 'Umum';
+                                                    $jenisIcon = 'fas fa-file';
+
+                                                    if($peminjaman->jenis_peminjaman === 'digital') {
+                                                        $jenisClass = 'success';
+                                                        $jenisText = 'Digital';
+                                                        $jenisIcon = 'fas fa-download';
+                                                    } elseif($peminjaman->jenis_peminjaman === 'fisik') {
+                                                        $jenisClass = 'primary';
+                                                        $jenisText = 'Fisik';
+                                                        $jenisIcon = 'fas fa-file-alt';
+                                                    }
+                                                @endphp
+                                                <span class="badge badge-sm border border-{{ $jenisClass }} text-{{ $jenisClass }} bg-{{ $jenisClass }}">
+                                                    <i class="{{ $jenisIcon }} me-1"></i>{{ $jenisText }}
+                                                </span>
                                             </td>
                                             <td>
                                                 <p class="text-sm font-weight-normal mb-0">{{ $peminjaman->tanggal_pinjam->format('d/m/Y') }}</p>
@@ -409,8 +628,9 @@
                                                     </a>
 
                                                     @if(Auth::user()->role === 'peminjam')
-                                                        {{-- Peminjam hanya bisa mengembalikan arsip miliknya sendiri yang sudah disetujui --}}
-                                                        @if($peminjaman->peminjam_user_id == Auth::id() &&
+                                                        {{-- Hanya peminjaman digital yang bisa dikembalikan oleh peminjam sendiri --}}
+                                                        @if($peminjaman->jenis_peminjaman === 'digital' &&
+                                                            $peminjaman->peminjam_user_id == Auth::id() &&
                                                             $peminjaman->status !== 'dikembalikan' &&
                                                             $peminjaman->confirmation_status === 'approved')
                                                             <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success me-2">
@@ -418,7 +638,15 @@
                                                             </a>
                                                         @endif
                                                     @else
-                                                        {{-- Admin tidak bisa mengembalikan arsip, hanya edit dan hapus --}}
+                                                        {{-- Admin bisa mengembalikan arsip fisik yang sudah disetujui --}}
+                                                        @if($peminjaman->jenis_peminjaman === 'fisik' &&
+                                                            $peminjaman->status !== 'dikembalikan' &&
+                                                            $peminjaman->confirmation_status === 'approved')
+                                                            <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success me-2">
+                                                                <i class="fas fa-undo me-1"></i> Kembalikan
+                                                            </a>
+                                                        @endif
+
                                                         <a href="{{ route('peminjaman.edit', $peminjaman->id) }}" class="btn btn-sm btn-warning me-2">
                                                             <i class="fas fa-edit me-1"></i> Edit
                                                         </a>
@@ -447,11 +675,38 @@
                 </div>
             </div>
             <x-app.footer />
+            </div>
         </div>
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Debug: Check if modal exists
+            const modalElement = document.getElementById('digitalBorrowModal');
+            console.log('Digital Borrow Modal exists:', !!modalElement);
+            console.log('Bootstrap available:', typeof bootstrap !== 'undefined');
+            console.log('jQuery available:', typeof $ !== 'undefined');
+            
+            // Responsive sidebar adjustment
+            function adjustMainContent() {
+                const mainContent = document.querySelector('.main-content');
+                const sidebar = document.querySelector('.sidenav');
+                
+                if (window.innerWidth >= 1200) {
+                    if (sidebar && !sidebar.classList.contains('bg-white')) {
+                        mainContent.style.marginLeft = '250px';
+                    }
+                } else {
+                    mainContent.style.marginLeft = '0';
+                }
+            }
+            
+            // Initial adjustment
+            adjustMainContent();
+            
+            // Adjust on window resize
+            window.addEventListener('resize', adjustMainContent);
+            
             // Search functionality for available archives
             const searchAvailableInput = document.getElementById('searchAvailableArsip');
             const availableTableRows = document.querySelectorAll('#availableArsipTable tbody tr');
@@ -609,13 +864,15 @@
                 rows.forEach(function(row) {
                     const arsip = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
                     const peminjam = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
-                    const tglPinjam = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
-                    const batasWaktu = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
-                    const tglKembali = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
-                    const status = row.querySelector('td:nth-child(6)')?.textContent.toLowerCase() || '';
+                    const jenis = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+                    const tglPinjam = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+                    const batasWaktu = row.querySelector('td:nth-child(5)')?.textContent.toLowerCase() || '';
+                    const tglKembali = row.querySelector('td:nth-child(6)')?.textContent.toLowerCase() || '';
+                    const status = row.querySelector('td:nth-child(7)')?.textContent.toLowerCase() || '';
 
                     if (arsip.includes(searchValue) ||
                         peminjam.includes(searchValue) ||
+                        jenis.includes(searchValue) ||
                         tglPinjam.includes(searchValue) ||
                         batasWaktu.includes(searchValue) ||
                         tglKembali.includes(searchValue) ||
@@ -634,8 +891,7 @@
                     // Create and insert empty message if not exists
                     const emptyRow = document.createElement('tr');
                     emptyRow.setAttribute('data-empty-message', 'true');
-                    emptyRow.innerHTML = `
-                        <td colspan="9" class="text-center p-4">
+                    emptyRow.innerHTML = `                                        <td colspan="10" class="text-center p-4">
                             <div class="mb-3">
                                 <i class="fas fa-search text-muted" style="font-size: 2rem;"></i>
                             </div>
@@ -675,5 +931,214 @@
                 });
             });
         });
+
+        // Function untuk menampilkan modal peminjaman digital
+        function showDigitalBorrowModal() {
+            console.log('showDigitalBorrowModal called'); // Debug log
+            
+            // Try Bootstrap 5 method first
+            if (typeof bootstrap !== 'undefined') {
+                const modalElement = document.getElementById('digitalBorrowModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    console.error('Modal element not found');
+                }
+            } 
+            // Fallback to jQuery if available
+            else if (typeof $ !== 'undefined') {
+                $('#digitalBorrowModal').modal('show');
+            }
+            // Manual fallback
+            else {
+                const modal = document.getElementById('digitalBorrowModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    document.body.classList.add('modal-open');
+                    
+                    // Add backdrop
+                    const backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    document.body.appendChild(backdrop);
+                    
+                    // Close modal when clicking backdrop
+                    backdrop.addEventListener('click', function() {
+                        modal.style.display = 'none';
+                        modal.classList.remove('show');
+                        document.body.classList.remove('modal-open');
+                        backdrop.remove();
+                    });
+                } else {
+                    alert('Modal tidak dapat ditampilkan. Silakan refresh halaman.');
+                }
+            }
+        }
+
+        // Function untuk menutup modal peminjaman digital
+        function closeDigitalBorrowModal() {
+            const modal = document.getElementById('digitalBorrowModal');
+            const backdrop = document.querySelector('.modal-backdrop');
+            
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+                
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            }
+        }
+
+        // Function untuk meminjam arsip digital
+        function borrowDigital(arsipId) {
+            console.log('borrowDigital called with arsipId:', arsipId); // Debug log
+            if (confirm('Apakah Anda yakin ingin meminjam arsip ini secara digital?')) {
+                // Show loading
+                const button = document.querySelector(`[data-arsip-id="${arsipId}"]`);
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Memproses...';
+                button.disabled = true;
+                
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("peminjaman.digital.store") }}';
+
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+
+                // Add arsip_id
+                const arsipIdInput = document.createElement('input');
+                arsipIdInput.type = 'hidden';
+                arsipIdInput.name = 'arsip_id';
+                arsipIdInput.value = arsipId;
+                form.appendChild(arsipIdInput);
+
+                // Add to body and submit
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Search functionality for digital arsip modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchDigitalInput = document.getElementById('searchDigitalArsip');
+            if (searchDigitalInput) {
+                searchDigitalInput.addEventListener('keyup', function() {
+                    const searchValue = this.value.toLowerCase();
+                    const digitalTable = document.getElementById('digitalArsipTable');
+                    const rows = digitalTable.querySelectorAll('tbody tr');
+
+                    rows.forEach(function(row) {
+                        const kode = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+                        const nama = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                        const kategori = row.querySelector('td:nth-child(3)')?.textContent.toLowerCase() || '';
+
+                        if (kode.includes(searchValue) || nama.includes(searchValue) || kategori.includes(searchValue)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        });
     </script>
+
+    <!-- Modal Peminjaman Digital -->
+    <div class="modal fade" id="digitalBorrowModal" tabindex="-1" aria-labelledby="digitalBorrowModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="digitalBorrowModalLabel">
+                        <i class="fas fa-download me-2"></i>
+                        Peminjaman Digital (E-Arsip)
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeDigitalBorrowModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Peminjaman Digital:</strong> Anda dapat langsung mengakses file arsip tanpa mengisi form. Peminjaman akan otomatis disetujui dengan batas waktu 7 hari.
+                    </div>
+
+                    <div class="alert alert-success mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <div>
+                                <strong>Keunggulan Peminjaman Digital:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>Akses instan tanpa persetujuan admin</li>
+                                    <li>Dapat mengunduh file arsip langsung</li>
+                                    <li>Pengembalian otomatis atau manual</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="searchDigitalArsip" placeholder="Cari arsip untuk dipinjam secara digital...">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-sm" id="digitalArsipTable">
+                            <thead class="thead-light sticky-top">
+                                <tr>
+                                    <th>Kode Arsip</th>
+                                    <th>Nama Dokumen</th>
+                                    <th>Kategori</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($availableArsips as $arsip)
+                                <tr>
+                                    <td>
+                                        <small class="font-weight-semibold">{{ $arsip->kode }}</small>
+                                    </td>
+                                    <td>
+                                        <small class="font-weight-semibold">{{ $arsip->nama_dokumen }}</small>
+                                        <br>
+                                        <small class="text-muted">{{ strlen($arsip->keterangan) > 30 ? substr($arsip->keterangan, 0, 30) . '...' : $arsip->keterangan }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ $arsip->kategori }}</small>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-success btn-sm" data-arsip-id="{{ $arsip->id }}" onclick="borrowDigital(this.dataset.arsipId)">
+                                            <i class="fas fa-download me-1"></i> Pinjam Digital
+                                        </button>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">
+                                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                                        <br>
+                                        Tidak ada arsip yang tersedia untuk dipinjam
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeDigitalBorrowModal()">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-app-layout>

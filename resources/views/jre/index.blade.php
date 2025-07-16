@@ -187,12 +187,7 @@
                                                     <a href="{{ route('jre.edit', $jre->id) }}" class="btn btn-sm btn-warning me-2">
                                                         <i class="fas fa-edit me-1"></i> Edit
                                                     </a>
-                                                    <form action="{{ route('jre.destroy', $jre->id) }}" method="POST" style="display:inline;">
-                                                        @csrf @method('DELETE')
-                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus? Ini akan mengembalikan arsip ke status normal.')">
-                                                            <i class="fas fa-trash me-1"></i> Hapus
-                                                        </button>
-                                                    </form>
+                                                    
                                                 </div>
                                             </td>
                                         </tr>

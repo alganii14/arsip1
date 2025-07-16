@@ -51,7 +51,7 @@
             </h6>
         </nav>
         <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
-            <ul class="navbar-nav justify-content-end">
+            <ul class="navbar-nav justify-content-center w-100">
                 <li class="nav-item d-flex align-items-center">
                     <a href="{{ route('profile') }}" class="nav-link text-body font-weight-bold px-0">
                         <i class="fa fa-user me-sm-1"></i>

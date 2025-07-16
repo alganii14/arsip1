@@ -298,12 +298,6 @@
                 </a>
 
                 <div class="d-flex gap-2">
-                    {{-- Tombol Pemindahan - Hanya untuk admin dan petugas --}}
-                    @if(Auth::user()->role !== 'peminjam' && !$arsip->is_archived_to_jre)
-                    <a href="{{ route('pemindahan.create') }}?arsip_id={{ $arsip->id }}" class="btn btn-warning">
-                        <i class="fas fa-truck-moving me-2"></i> Ajukan Pemindahan
-                    </a>
-                    @endif
 
                     {{-- Tombol Peminjaman --}}
                     @if(!$arsip->is_archived_to_jre && !$arsip->isCurrentlyBorrowed() && Auth::user()->role !== 'admin' && $arsip->created_by !== Auth::id())

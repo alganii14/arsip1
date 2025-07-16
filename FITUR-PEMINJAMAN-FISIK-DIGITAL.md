@@ -30,7 +30,7 @@ Fitur ini memungkinkan pengguna untuk memilih jenis peminjaman arsip:
 - Modal akan muncul dengan daftar arsip
 - Gunakan fitur search untuk mencari arsip
 - Klik "Pinjam Digital" pada arsip yang diinginkan
-- File akan otomatis diunduh
+- Peminjaman langsung diproses dan disetujui otomatis
 
 ## Fitur Tambahan
 
