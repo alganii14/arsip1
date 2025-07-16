@@ -54,7 +54,14 @@
                                     <span class="text-secondary">Email:</span> &nbsp; {{ $user->email }}
                                 </li>
                                 <li class="list-group-item border-0 ps-0 text-dark font-weight-semibold pb-1 text-sm">
-                                    <span class="text-secondary">Role:</span> &nbsp; {{ ucfirst($user->role) }}
+                                    <span class="text-secondary">Role:</span> &nbsp; 
+                                    @if($user->role === 'unit_kerja')
+                                        Unit Kerja (Admin - Full Access)
+                                    @elseif($user->role === 'unit_pengelola')
+                                        Unit Pengelola (Peminjam)
+                                    @else
+                                        {{ ucfirst($user->role) }}
+                                    @endif
                                 </li>
                                 <li class="list-group-item border-0 ps-0 text-dark font-weight-semibold pb-1 text-sm">
                                     <span class="text-secondary">Bergabung:</span> &nbsp; {{ $user->created_at->format('d M Y') }}

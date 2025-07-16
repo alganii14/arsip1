@@ -10,7 +10,9 @@ class ArchiveDestruction extends Model
         'arsip_id',
         'jre_id',
         'user_id',
+        'destroyed_by',
         'destruction_notes',
+        'notes',
         'destroyed_at'
     ];
 

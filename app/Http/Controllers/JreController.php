@@ -84,8 +84,10 @@ class JreController extends Controller
         ArchiveDestruction::create([
             'jre_id' => $jre->id,
             'arsip_id' => $jre->arsip_id,
+            'user_id' => Auth::id(),
             'destroyed_by' => Auth::id(),
             'destroyed_at' => Carbon::now(),
+            'destruction_notes' => 'Arsip dimusnahkan dari JRE',
             'notes' => 'Arsip dimusnahkan dari JRE'
         ]);
 
@@ -146,9 +148,15 @@ class JreController extends Controller
             'catatan_admin' => 'Pemindahan langsung dari JRE'
         ]);
 
-        // NOTE: Jangan ubah is_archived_to_jre karena arsip yang dipindahkan
-        // tidak seharusnya kembali ke daftar arsip aktif
-        // Scope active() sudah diupdate untuk mengecualikan arsip yang dipindahkan
+        // Update arsip status - arsip yang dipindahkan tidak lagi di JRE
+        $arsip = $jre->arsip;
+        $arsip->update([
+            'is_archived_to_jre' => false,
+            'archived_to_jre_at' => null
+        ]);
+
+        // NOTE: Arsip yang dipindahkan akan tidak muncul di daftar arsip aktif
+        // karena scope active() mengecualikan arsip yang dipindahkan
 
         return redirect()->route('jre.index')->with('success', 'Arsip berhasil dipindahkan ke lokasi: ' . $request->transfer_location);
     }
@@ -169,8 +177,10 @@ class JreController extends Controller
                 ArchiveDestruction::create([
                     'jre_id' => $jre->id,
                     'arsip_id' => $jre->arsip_id,
+                    'user_id' => Auth::id(),
                     'destroyed_by' => Auth::id(),
                     'destroyed_at' => Carbon::now(),
+                    'destruction_notes' => 'Arsip dimusnahkan dari JRE (bulk action)',
                     'notes' => 'Arsip dimusnahkan dari JRE (bulk action)'
                 ]);
 
@@ -258,6 +268,13 @@ class JreController extends Controller
             $jre->update([
                 'status' => 'destroyed',
                 'notes' => $jre->notes . "\n\n[DIMUSNAHKAN] " . $request->destruction_notes
+            ]);
+
+            // Update arsip status - arsip yang dimusnahkan tidak lagi di JRE
+            $arsip = $jre->arsip;
+            $arsip->update([
+                'is_archived_to_jre' => false,
+                'archived_to_jre_at' => null
             ]);
 
             return redirect()->route('jre.index')

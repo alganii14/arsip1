@@ -87,7 +87,7 @@
                                             <th class="text-center text-secondary text-xs font-weight-semibold opacity-7">Jumlah</th>
                                             <th class="text-center text-secondary text-xs font-weight-semibold opacity-7">Tingkat Perkembangan</th>
                                             <th class="text-center text-secondary text-xs font-weight-semibold opacity-7">Keterangan</th>
-
+                                            <th class="text-center text-secondary text-xs font-weight-semibold opacity-7">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -121,7 +121,24 @@
                                             <td class="align-middle text-center">
                                                 <span class="text-secondary text-sm font-weight-normal">{{ Str::limit($pemindahan->keterangan, 20) }}</span>
                                             </td>
-
+                                            <td class="align-middle text-center">
+                                                <div class="d-flex justify-content-center align-items-center">
+                                                    @if($pemindahan->status === 'completed')
+                                                        <a href="{{ route('pemindahan.download-surat', $pemindahan) }}" 
+                                                           class="btn btn-sm btn-outline-primary me-1" 
+                                                           title="Download Surat Pemindahan"
+                                                           data-bs-toggle="tooltip">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                    @endif
+                                                    <a href="{{ route('pemindahan.show', $pemindahan) }}" 
+                                                       class="btn btn-sm btn-outline-info" 
+                                                       title="Lihat Detail"
+                                                       data-bs-toggle="tooltip">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </tr>
 
 

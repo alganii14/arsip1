@@ -3,6 +3,22 @@
         <tr>
             <th colspan="8" style="text-align: center; font-size: 16px; font-weight: bold;">LAPORAN PEMINDAHAN ARSIP</th>
         </tr>
+        @if($pemindahans->count() > 0)
+            @php
+                $unitKerjaList = $pemindahans->map(function($p) {
+                    return $p->user->department ?? $p->user->name ?? 'N/A';
+                })->unique()->filter(function($value) {
+                    return $value !== 'N/A';
+                })->values();
+            @endphp
+            @if($unitKerjaList->count() > 0)
+                <tr>
+                    <th colspan="8" style="text-align: center; font-size: 12px; font-style: italic;">
+                        Dipindahkan oleh: {{ $unitKerjaList->implode(', ') }}
+                    </th>
+                </tr>
+            @endif
+        @endif
         <tr>
             <th colspan="8" style="text-align: center; font-size: 12px;">
                 Tanggal Export: {{ now()->format('d-m-Y H:i:s') }}

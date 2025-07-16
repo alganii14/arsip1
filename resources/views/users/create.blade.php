@@ -58,9 +58,8 @@
                                             <label for="role" class="form-control-label">Role</label>
                                             <select class="form-control" name="role" id="role" required onchange="toggleDepartment()">
                                                 <option value="">Pilih Role</option>
-                                                <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                                <option value="petugas" {{ old('role') == 'petugas' ? 'selected' : '' }}>Petugas</option>
-                                                <option value="peminjam" {{ old('role') == 'peminjam' ? 'selected' : '' }}>Peminjam</option>
+                                                <option value="unit_kerja" {{ old('role') == 'unit_kerja' ? 'selected' : '' }}>Unit Kerja (Admin - Full Access)</option>
+                                                <option value="unit_pengelola" {{ old('role') == 'unit_pengelola' ? 'selected' : '' }}>Unit Pengelola (Peminjam)</option>
                                             </select>
                                             @error('role')
                                                 <div class="text-danger text-sm">{{ $message }}</div>
@@ -142,7 +141,7 @@ function toggleDepartment() {
     const departmentGroup = document.getElementById('department-group');
     const departmentSelect = document.getElementById('department');
 
-    if (role === 'peminjam') {
+    if (role === 'unit_pengelola') {
         departmentGroup.style.display = 'block';
         departmentSelect.required = true;
     } else {

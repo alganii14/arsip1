@@ -73,7 +73,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'department' => $request->department,
-            'role' => 'peminjam', // Set role sebagai peminjam secara default
+            'role' => 'unit_pengelola', // Set role sebagai unit pengelola secara default
             'password' => Hash::make($request->password),
         ]);
 

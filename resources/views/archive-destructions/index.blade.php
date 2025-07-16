@@ -160,6 +160,7 @@
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Nama Dokumen</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Tanggal Pemusnahan</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Petugas</th>
+                                            <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Catatan</th>
                                             <th class="text-secondary text-xs font-weight-semibold opacity-7 ps-2">Aksi</th>
                                         </tr>
                                     </thead>
@@ -180,6 +181,11 @@
                                                 <p class="text-sm font-weight-normal mb-0">{{ $destruction->user->name }}</p>
                                             </td>
                                             <td>
+                                                <p class="text-sm font-weight-normal mb-0">
+                                                    {{ Str::limit($destruction->destruction_notes, 50) }}
+                                                </p>
+                                            </td>
+                                            <td>
                                                 <div class="d-flex">
                                                     <a href="{{ route('archive-destructions.show', $destruction->id) }}" class="btn btn-sm btn-info me-2">
                                                         <i class="fas fa-eye me-1"></i> Detail
@@ -189,7 +195,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-4">
+                                            <td colspan="6" class="text-center py-4">
                                                 <div class="text-center">
                                                     <i class="fas fa-fire fa-3x text-muted mb-3"></i>
                                                     <p class="text-muted mb-0">Belum ada arsip yang dimusnahkan</p>

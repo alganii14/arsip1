@@ -7,6 +7,7 @@ use App\Models\Arsip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PemindahanExport;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -81,7 +82,7 @@ class PemindahanController extends Controller
 
         try {
             // Begin database transaction
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             // Langsung buat pemindahan dengan status completed
             $pemindahan = Pemindahan::create([
@@ -150,7 +151,7 @@ class PemindahanController extends Controller
             }
 
             // Commit transaction
-            \DB::commit();
+            DB::commit();
 
             // Determine success message based on whether arsip was in JRE
             $wasInJre = $arsip->getOriginal('is_archived_to_jre'); // Get original value before update
@@ -194,7 +195,7 @@ class PemindahanController extends Controller
                 ->with('success', $successMessage);
         } catch (\Exception $e) {
             // Rollback transaction on error
-            \DB::rollBack();
+            DB::rollBack();
 
             Log::error('Error creating pemindahan record', [
                 'error' => $e->getMessage(),
@@ -446,5 +447,49 @@ class PemindahanController extends Controller
         $fileName = 'laporan_pemindahan_arsip_' . now()->format('YmdHis') . '.pdf';
 
         return $pdf->download($fileName);
+    }
+
+    /**
+     * Download surat pemindahan arsip
+     */
+    public function downloadSurat(Pemindahan $pemindahan)
+    {
+        // Pastikan arsip sudah dipindahkan (status completed)
+        if ($pemindahan->status !== 'completed') {
+            return redirect()->back()->with('error', 'Surat hanya dapat diunduh untuk pemindahan yang sudah selesai.');
+        }
+
+        $pemindahan->load(['arsip', 'user', 'completer']);
+
+        // Data untuk surat
+        $data = [
+            'pemindahan' => $pemindahan,
+            'tanggal_surat' => now(),
+            'nomor_surat' => $this->generateNomorSurat($pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen),
+        ];
+
+        $pdf = PDF::loadView('surat.pemindahan-arsip', $data);
+        $pdf->setPaper('A4', 'portrait');
+
+        // Clean filename dari karakter yang tidak valid
+        $kodeArsip = $pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen ?? 'ARSIP';
+        $cleanKode = preg_replace('/[\/\\\\:*?"<>|]/', '_', $kodeArsip);
+        
+        $fileName = 'Surat_Pemindahan_' . $cleanKode . '_' . now()->format('YmdHis') . '.pdf';
+
+        return $pdf->download($fileName);
+    }
+
+    /**
+     * Generate nomor surat berdasarkan kode arsip
+     */
+    private function generateNomorSurat($kodeArsip)
+    {
+        $tanggal = now();
+        $bulan = str_pad($tanggal->month, 2, '0', STR_PAD_LEFT);
+        $tahun = $tanggal->year;
+        
+        // Format: 001/KODE-ARSIP/KECAMATAN/MM/YYYY
+        return sprintf('001/%s/KECAMATAN/%s/%s', $kodeArsip, $bulan, $tahun);
     }
 }

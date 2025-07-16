@@ -64,11 +64,19 @@
                                         <td class="align-middle bg-transparent border-bottom text-left">{{ $user->email }}</td>
                                         <td class="text-center align-middle bg-transparent border-bottom">
                                             <span class="badge badge-sm
-                                                @if($user->role == 'admin') bg-gradient-success
+                                                @if($user->role == 'unit_kerja') bg-gradient-success
+                                                @elseif($user->role == 'unit_pengelola') bg-gradient-info
+                                                @elseif($user->role == 'admin') bg-gradient-success
                                                 @elseif($user->role == 'petugas') bg-gradient-info
                                                 @else bg-gradient-warning
                                                 @endif">
-                                                {{ ucfirst($user->role) }}
+                                                @if($user->role === 'unit_kerja')
+                                                    Unit Kerja
+                                                @elseif($user->role === 'unit_pengelola')
+                                                    Unit Pengelola
+                                                @else
+                                                    {{ ucfirst($user->role) }}
+                                                @endif
                                             </span>
                                         </td>
                                         <td class="align-middle bg-transparent border-bottom text-left">

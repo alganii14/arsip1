@@ -40,27 +40,43 @@ class User extends Authenticatable
     ];
 
     /**
-     * Check if user is admin
+     * Check if user is unit kerja (has full access like admin)
+     */
+    public function isUnitKerja(): bool
+    {
+        return $this->role === 'unit_kerja';
+    }
+
+    /**
+     * Check if user is unit pengelola (peminjam)
+     */
+    public function isUnitPengelola(): bool
+    {
+        return $this->role === 'unit_pengelola';
+    }
+
+    /**
+     * Check if user is admin (backward compatibility)
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'unit_kerja';
     }
 
     /**
-     * Check if user is petugas
+     * Check if user is petugas (backward compatibility)  
      */
     public function isPetugas(): bool
     {
-        return $this->role === 'petugas';
+        return $this->role === 'unit_kerja';
     }
 
     /**
-     * Check if user is peminjam
+     * Check if user is peminjam (backward compatibility)
      */
     public function isPeminjam(): bool
     {
-        return $this->role === 'peminjam';
+        return $this->role === 'unit_pengelola';
     }
 
     /**

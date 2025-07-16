@@ -19,32 +19,42 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         try {
-            if ($user->role === 'peminjam') {
-                // Dashboard untuk Peminjam
+            if ($user->role === 'unit_pengelola') {
+                // Dashboard untuk Unit Pengelola (Peminjam)
 
-                // Total Arsip Aktif - arsip yang dimasukkan oleh seksi tersebut yang belum masuk JRE
-                $totalArsip = Arsip::where('created_by', $user->id)
-                    ->where('is_archived_to_jre', false)
+                // Total Arsip Seksi - arsip aktif yang dimasukkan oleh seksi tersebut
+                $totalArsip = Arsip::active()
+                    ->where('created_by', $user->id)
                     ->count();
 
                 // Total Pinjaman Seksi - peminjaman yang dilakukan oleh user ini
                 $totalPeminjam = PeminjamanArsip::where('peminjam_user_id', $user->id)->count();
 
-                // Untuk peminjam, tidak ada data JRE dan arsip dimusnahkan
+                // Total Arsip Menunggu Persetujuan - arsip yang dibuat user tapi belum disetujui
+                $totalPending = Arsip::where('created_by', $user->id)
+                    ->where('status', 'pending')
+                    ->count();
+
+                // Total Arsip Tersedia untuk Dipinjam dari seksi lain (hanya arsip aktif)
+                $totalArsipTersedia = Arsip::active()
+                    ->where('created_by', '!=', $user->id)
+                    ->count();
+
+                // Untuk unit pengelola, tidak ada data untuk pengguna total, JRE dan arsip dimusnahkan
                 $totalPengguna = 0;
                 $totalArsipJre = 0;
                 $totalArsipMusnahkan = 0;
 
-                // Data untuk grafik peminjam (hanya menampilkan arsip dan peminjaman)
+                // Data untuk grafik unit pengelola (arsip sendiri dan peminjaman)
                 $statsDaily = $this->getDailyStatsPeminjam($user->id);
                 $statsMonthly = $this->getMonthlyStatsPeminjam($user->id);
                 $statsYearly = $this->getYearlyStatsPeminjam($user->id);
 
             } else {
-                // Dashboard untuk Admin/Petugas (dashboard asli)
+                // Dashboard untuk Unit Kerja (Admin/Petugas)
 
-                // Total Arsip Aktif - arsip yang belum masuk JRE dan tersedia untuk dipinjam
-                $totalArsip = Arsip::where('is_archived_to_jre', false)->count();
+                // Total Arsip Aktif - menggunakan scope active yang sama dengan daftar arsip
+                $totalArsip = Arsip::active()->count();
 
                 // Total Pengguna (semua user)
                 $totalPengguna = User::count();
@@ -52,11 +62,15 @@ class DashboardController extends Controller
                 // Total Peminjam (user yang pernah meminjam)
                 $totalPeminjam = PeminjamanArsip::distinct('peminjam_user_id')->count('peminjam_user_id');
 
-                // Total Arsip di JRE (arsip yang sudah masuk masa retensi)
-                $totalArsipJre = Arsip::where('is_archived_to_jre', true)->count();
+                // Total Arsip di JRE (arsip yang sudah masuk masa retensi, belum dimusnahkan)
+                $totalArsipJre = Jre::active()->count();
 
                 // Total Arsip yang Dimusnahkan
                 $totalArsipMusnahkan = ArchiveDestruction::count();
+
+                // Untuk unit kerja, set default values untuk variabel unit pengelola
+                $totalPending = 0;
+                $totalArsipTersedia = 0;
 
                 // Data untuk grafik admin/petugas
                 $statsDaily = $this->getDailyStats();
@@ -71,6 +85,8 @@ class DashboardController extends Controller
             $totalPeminjam = 0;
             $totalArsipJre = 0;
             $totalArsipMusnahkan = 0;
+            $totalPending = 0;
+            $totalArsipTersedia = 0;
             $statsDaily = [
                 'labels' => [], 
                 'arsip' => [], 
@@ -89,6 +105,8 @@ class DashboardController extends Controller
             'totalPeminjam',
             'totalArsipJre',
             'totalArsipMusnahkan',
+            'totalPending',
+            'totalArsipTersedia',
             'statsDaily',
             'statsMonthly',
             'statsYearly'
@@ -102,9 +120,21 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->subDays(13)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
         
-        // Data arsip aktif per hari (belum masuk JRE)
-        $arsipStats = Arsip::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
+        // Data arsip aktif per hari (menggunakan scope active)
+        $arsipStats = DB::table('arsips')
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('date')
@@ -170,13 +200,25 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->subMonths(11)->startOfMonth();
         $endDate = Carbon::now()->endOfMonth();
         
-        // Data arsip aktif per bulan (belum masuk JRE)
-        $arsipStats = Arsip::select(
+        // Data arsip aktif per bulan (menggunakan scope active)
+        $arsipStats = DB::table('arsips')
+            ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('count(*) as total')
             )
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('YEAR(created_at)'), DB::raw('MONTH(created_at)'))
             ->orderBy('year')
@@ -263,12 +305,24 @@ class DashboardController extends Controller
         $startYear = Carbon::now()->subYears(4)->year;
         $endYear = Carbon::now()->year;
         
-        // Data arsip aktif per tahun (belum masuk JRE)
-        $arsipStats = Arsip::select(
+        // Data arsip aktif per tahun (menggunakan scope active)
+        $arsipStats = DB::table('arsips')
+            ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('count(*) as total')
             )
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereYear('created_at', '>=', $startYear)
             ->whereYear('created_at', '<=', $endYear)
             ->groupBy(DB::raw('YEAR(created_at)'))
@@ -350,10 +404,22 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->subDays(13)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
         
-        // Data arsip aktif per hari (belum masuk JRE)
-        $arsipStats = Arsip::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
+        // Data arsip aktif per hari (menggunakan scope active untuk user ini)
+        $arsipStats = DB::table('arsips')
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as total'))
             ->where('created_by', $userId)
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('DATE(created_at)'))
             ->orderBy('date')
@@ -391,14 +457,26 @@ class DashboardController extends Controller
         $startDate = Carbon::now()->subMonths(11)->startOfMonth();
         $endDate = Carbon::now()->endOfMonth();
         
-        // Data arsip aktif per bulan (belum masuk JRE)
-        $arsipStats = Arsip::select(
+        // Data arsip aktif per bulan (menggunakan scope active untuk user ini)
+        $arsipStats = DB::table('arsips')
+            ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('count(*) as total')
             )
             ->where('created_by', $userId)
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy(DB::raw('YEAR(created_at)'), DB::raw('MONTH(created_at)'))
             ->orderBy('year')
@@ -442,13 +520,25 @@ class DashboardController extends Controller
         $startYear = Carbon::now()->subYears(4)->year;
         $endYear = Carbon::now()->year;
         
-        // Data arsip aktif per tahun (belum masuk JRE)
-        $arsipStats = Arsip::select(
+        // Data arsip aktif per tahun (menggunakan scope active untuk user ini)
+        $arsipStats = DB::table('arsips')
+            ->select(
                 DB::raw('YEAR(created_at) as year'),
                 DB::raw('count(*) as total')
             )
             ->where('created_by', $userId)
             ->where('is_archived_to_jre', false)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('pemindahans')
+                      ->whereRaw('pemindahans.arsip_id = arsips.id')
+                      ->whereIn('status', ['approved', 'completed']);
+            })
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('archive_destructions')
+                      ->whereRaw('archive_destructions.arsip_id = arsips.id');
+            })
             ->whereYear('created_at', '>=', $startYear)
             ->whereYear('created_at', '<=', $endYear)
             ->groupBy(DB::raw('YEAR(created_at)'))

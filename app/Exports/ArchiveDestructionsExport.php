@@ -2,17 +2,18 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithStyles, WithTitle, WithMapping, ShouldAutoSize
+class ArchiveDestructionsExport implements FromView, WithStyles, WithTitle, ShouldAutoSize, WithEvents
 {
     protected $destructions;
 
@@ -21,42 +22,11 @@ class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithSty
         $this->destructions = $destructions;
     }
 
-    public function collection()
+    public function view(): View
     {
-        return $this->destructions;
-    }
-
-    public function headings(): array
-    {
-        return [
-            'No',
-            'Kode Arsip',
-            'Nama Dokumen',
-            'Kategori',
-            'Tanggal Arsip',
-            'Dibuat oleh',
-            'Tanggal Pemusnahan',
-            'Petugas',
-            'Catatan Pemusnahan'
-        ];
-    }
-
-    public function map($destruction): array
-    {
-        static $counter = 0;
-        $counter++;
-
-        return [
-            $counter,
-            $destruction->arsip->kode,
-            $destruction->arsip->nama_dokumen,
-            $destruction->arsip->kategori,
-            $destruction->arsip->tanggal_arsip ? $destruction->arsip->tanggal_arsip->format('d/m/Y') : '-',
-            $destruction->arsip->creator->name ?? '-',
-            $destruction->destroyed_at->format('d/m/Y H:i'),
-            $destruction->user->name,
-            $destruction->destruction_notes
-        ];
+        return view('exports.archive-destructions-excel', [
+            'destructions' => $this->destructions
+        ]);
     }
 
     public function styles(Worksheet $sheet)
@@ -72,16 +42,38 @@ class ArchiveDestructionsExport implements FromCollection, WithHeadings, WithSty
                     'fillType' => Fill::FILL_SOLID,
                     'startColor' => ['rgb' => '4F46E5']
                 ]
-            ],
-            // Add borders to all cells
-            'A1:I' . ($this->destructions->count() + 1) => [
-                'borders' => [
-                    'allBorders' => [
-                        'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['rgb' => '000000']
-                    ]
-                ]
             ]
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function(AfterSheet $event) {
+                // Set border for the header and data
+                $lastRow = $event->sheet->getHighestRow();
+                $lastColumn = $event->sheet->getHighestColumn();
+                
+                $event->sheet->getStyle('A1:' . $lastColumn . $lastRow)->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => Border::BORDER_THIN,
+                            'color' => ['argb' => '000000'],
+                        ],
+                    ],
+                ]);
+                
+                // Set column widths
+                $event->sheet->getColumnDimension('A')->setWidth(5);  // No
+                $event->sheet->getColumnDimension('B')->setWidth(15); // Kode Arsip
+                $event->sheet->getColumnDimension('C')->setWidth(30); // Nama Dokumen
+                $event->sheet->getColumnDimension('D')->setWidth(15); // Kategori
+                $event->sheet->getColumnDimension('E')->setWidth(12); // Tanggal Arsip
+                $event->sheet->getColumnDimension('F')->setWidth(18); // Tanggal Pemusnahan
+                $event->sheet->getColumnDimension('G')->setWidth(15); // Petugas
+                $event->sheet->getColumnDimension('H')->setWidth(25); // Catatan Pemusnahan
+                $event->sheet->getColumnDimension('I')->setWidth(50); // Catatan Lengkap
+            },
         ];
     }
 

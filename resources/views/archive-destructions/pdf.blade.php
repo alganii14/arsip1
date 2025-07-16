@@ -85,6 +85,20 @@
     <div class="header">
         <h1>LAPORAN RIWAYAT PEMUSNAHAN ARSIP</h1>
         <h2>Sistem Manajemen Arsip Elektronik</h2>
+        @if($destructions->count() > 0)
+            @php
+                $unitKerjaList = $destructions->map(function($d) {
+                    return $d->user->department ?? $d->user->name ?? 'N/A';
+                })->unique()->filter(function($value) {
+                    return $value !== 'N/A';
+                })->values();
+            @endphp
+            @if($unitKerjaList->count() > 0)
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #333; font-style: italic;">
+                    Dimusnahkan oleh: {{ $unitKerjaList->implode(', ') }}
+                </p>
+            @endif
+        @endif
     </div>
 
     <div class="meta-info">
@@ -104,11 +118,11 @@
             <tr>
                 <th style="width: 6%">No</th>
                 <th style="width: 15%">Kode Arsip</th>
-                <th style="width: 30%">Nama Dokumen</th>
+                <th style="width: 25%">Nama Dokumen</th>
                 <th style="width: 12%">Kategori</th>
                 <th style="width: 12%">Tgl Arsip</th>
-                <th style="width: 15%">Dibuat oleh</th>
                 <th style="width: 15%">Tgl Pemusnahan</th>
+                <th style="width: 15%">Catatan</th>
             </tr>
         </thead>
         <tbody>
@@ -119,8 +133,8 @@
                 <td>{{ $destruction->arsip->nama_dokumen }}</td>
                 <td>{{ $destruction->arsip->kategori }}</td>
                 <td class="text-center">{{ $destruction->arsip->tanggal_arsip ? $destruction->arsip->tanggal_arsip->format('d/m/Y') : '-' }}</td>
-                <td class="text-center">{{ $destruction->arsip->creator->name ?? '-' }}</td>
                 <td class="text-center">{{ $destruction->destroyed_at->format('d/m/Y H:i') }}</td>
+                <td>{{ Str::limit($destruction->destruction_notes, 80) }}</td>
             </tr>
             @endforeach
         </tbody>

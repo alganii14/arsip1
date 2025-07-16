@@ -15,8 +15,8 @@ let statsData = {
 };
 
 // Persiapkan dataset sesuai dengan role pengguna
-@if(auth()->user()->role === 'peminjam')
-    // Dataset untuk peminjam (hanya arsip dan peminjaman)
+@if(auth()->user()->role === 'unit_pengelola')
+    // Dataset untuk unit pengelola (hanya arsip dan peminjaman)
     statsData.daily.datasets = [
         {
             label: 'Arsip',

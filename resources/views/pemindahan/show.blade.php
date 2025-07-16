@@ -219,6 +219,25 @@
                     </div>
                     @endif
 
+                    @if($pemindahan->status === 'completed')
+                    <div class="card border shadow-xs mb-4">
+                        <div class="card-header border-bottom pb-0">
+                            <h6 class="font-weight-semibold text-lg mb-0">Dokumen</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ route('pemindahan.download-surat', $pemindahan) }}" class="btn btn-primary">
+                                    <i class="fas fa-download me-2"></i>Download Surat Pemindahan
+                                </a>
+                            </div>
+                            <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span class="text-sm">Surat pemindahan arsip dapat diunduh sebagai dokumen resmi pemindahan.</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Info Pemohon -->
                     <div class="card border shadow-xs mb-4">
                         <div class="card-header border-bottom pb-0">

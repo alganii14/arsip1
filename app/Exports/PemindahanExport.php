@@ -44,7 +44,7 @@ class PemindahanExport implements FromView, ShouldAutoSize, WithStyles, WithEven
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getStyle('A1:H3')->applyFromArray([
+                $event->sheet->getStyle('A1:I3')->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ],

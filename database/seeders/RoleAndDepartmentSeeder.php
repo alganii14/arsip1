@@ -14,31 +14,31 @@ class RoleAndDepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
+        // Create unit kerja user (admin)
         User::create([
-            'name' => 'Admin',
+            'name' => 'Unit Kerja Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
-            'role' => 'admin',
+            'role' => 'unit_kerja',
         ]);
 
-        // Create petugas user
+        // Create another unit kerja user (petugas)
         User::create([
-            'name' => 'Petugas Arsip',
+            'name' => 'Unit Kerja Petugas',
             'email' => 'petugas@example.com',
             'password' => Hash::make('password'),
-            'role' => 'petugas',
+            'role' => 'unit_kerja',
         ]);
 
-        // Create peminjam users for each department
+        // Create unit pengelola users for each department
         $departments = User::getAvailableDepartments();
         
         foreach ($departments as $index => $department) {
             User::create([
-                'name' => 'Peminjam ' . $department,
+                'name' => 'Unit Pengelola ' . $department,
                 'email' => 'peminjam' . ($index + 1) . '@example.com',
                 'password' => Hash::make('password'),
-                'role' => 'peminjam',
+                'role' => 'unit_pengelola',
                 'department' => $department,
                 'phone' => '08123456789' . $index,
             ]);

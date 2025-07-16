@@ -102,8 +102,8 @@ Route::middleware('auth')->group(function () {
     // Arsip - Extract document data (accessible by all authenticated users)
     Route::post('arsip/extract-number', [ArsipController::class, 'extractDocumentNumber'])->name('arsip.extract-number');
 
-    // Routes accessible only by petugas and admin
-    Route::middleware('role:petugas,admin')->group(function () {
+    // Routes accessible only by unit kerja (equivalent to admin/petugas)
+    Route::middleware('role:unit_kerja,admin,petugas')->group(function () {
         // Tables
         Route::get('/tables', function () {
             return view('tables');
@@ -146,6 +146,7 @@ Route::middleware('auth')->group(function () {
         Route::post('pemindahan/{pemindahan}/reject', [PemindahanController::class, 'reject'])->name('pemindahan.reject');
         Route::post('pemindahan/{pemindahan}/complete', [PemindahanController::class, 'complete'])->name('pemindahan.complete');
         Route::get('pemindahan-get-arsip-data', [PemindahanController::class, 'getArsipData'])->name('pemindahan.get-arsip-data');
+        Route::get('pemindahan/{pemindahan}/download-surat', [PemindahanController::class, 'downloadSurat'])->name('pemindahan.download-surat');
 
         // Peminjaman - Additional functionality
         Route::get('peminjaman/{peminjaman}/edit', [PeminjamanArsipController::class, 'edit'])->name('peminjaman.edit');
@@ -159,8 +160,8 @@ Route::middleware('auth')->group(function () {
         Route::post('peminjaman/{peminjaman}/reject', [PeminjamanArsipController::class, 'reject'])->name('peminjaman.reject');
     });
 
-    // Routes accessible only by admin
-    Route::middleware('role:admin')->group(function () {
+    // Routes accessible only by unit kerja (admin access)
+    Route::middleware('role:unit_kerja,admin')->group(function () {
         // User Management
         Route::get('/laravel-examples/users-management', [UserController::class, 'index'])->name('users-management');
         Route::resource('users', UserController::class);

@@ -25,7 +25,7 @@ class PeminjamanArsipController extends Controller
         $user = Auth::user();
 
         // Get borrowing records
-        if ($user->role === 'peminjam') {
+        if ($user->role === 'unit_pengelola') {
             $peminjamans = PeminjamanArsip::with('arsip')
                 ->where('peminjam_user_id', $user->id)
                 ->latest()
@@ -43,9 +43,9 @@ class PeminjamanArsipController extends Controller
             ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
         // Exclude user's own archives for all users
-        // Admin can view all archives directly without borrowing
-        if ($user->role === 'admin') {
-            // For admin, show all available archives (they can view without borrowing)
+        // Unit kerja can view all archives directly without borrowing
+        if ($user->role === 'unit_kerja') {
+            // For unit kerja, show all available archives (they can view without borrowing)
             $availableArsips = $availableArsipsQuery->with('creator')->latest()->get();
         } else {
             // For other roles, exclude their own archives and archives they already borrowed
@@ -76,8 +76,8 @@ class PeminjamanArsipController extends Controller
             })
             ->whereDoesntHave('pemindahan'); // Exclude archives that have been transferred
 
-        // Untuk peminjam, hanya tampilkan arsip dari seksi lain (bukan milik sendiri)
-        if ($user->role === 'peminjam') {
+        // Untuk unit pengelola, hanya tampilkan arsip dari seksi lain (bukan milik sendiri)
+        if ($user->role === 'unit_pengelola') {
             $arsipsQuery->where('created_by', '!=', $user->id);
         }
 
@@ -88,8 +88,8 @@ class PeminjamanArsipController extends Controller
         if (request()->has('arsip_id')) {
             $selectedArsip = Arsip::find(request('arsip_id'));
 
-            // Check if peminjam can borrow this arsip
-            if ($user->role === 'peminjam' && $selectedArsip && $selectedArsip->created_by === $user->id) {
+            // Check if unit pengelola can borrow this arsip
+            if ($user->role === 'unit_pengelola' && $selectedArsip && $selectedArsip->created_by === $user->id) {
                 return redirect()->route('peminjaman.create')->with('error', 'Anda tidak dapat meminjam arsip milik sendiri.');
             }
         }
@@ -394,9 +394,11 @@ class PeminjamanArsipController extends Controller
 
     public function reject(Request $request, PeminjamanArsip $peminjaman)
     {
-        // Hanya admin yang bisa reject
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menolak peminjaman.');
+        $user = Auth::user();
+        
+        // Hanya unit kerja yang bisa reject
+        if ($user->role !== 'unit_kerja') {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya unit kerja yang dapat menolak peminjaman.');
         }
 
         $request->validate([
@@ -413,7 +415,7 @@ class PeminjamanArsipController extends Controller
         $user = Auth::user();
 
         // Get borrowing records based on user role
-        if ($user->role === 'peminjam') {
+        if ($user->role === 'unit_pengelola') {
             $peminjamans = PeminjamanArsip::with(['arsip', 'user'])
                 ->where('peminjam_user_id', $user->id)
                 ->latest()

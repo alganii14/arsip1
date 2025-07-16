@@ -27,8 +27,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,petugas,peminjam',
-            'department' => 'required_if:role,peminjam|nullable|string',
+            'role' => 'required|in:unit_kerja,unit_pengelola',
+            'department' => 'required_if:role,unit_pengelola|nullable|string',
             'phone' => 'nullable|string|max:20',
         ]);
 
@@ -66,8 +66,8 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'role' => 'required|in:admin,petugas,peminjam',
-            'department' => 'required_if:role,peminjam|nullable|string',
+            'role' => 'required|in:unit_kerja,unit_pengelola',
+            'department' => 'required_if:role,unit_pengelola|nullable|string',
             'phone' => 'nullable|string|max:20',
         ]);
 

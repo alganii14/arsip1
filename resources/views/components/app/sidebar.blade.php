@@ -30,8 +30,8 @@
                 </a>
             </li>
 
-            {{-- JRE menu - Only visible to admin and petugas --}}
-            @if(Auth::user()->role !== 'peminjam')
+            {{-- JRE menu - Only visible to unit kerja (admin/petugas) --}}
+            @if(Auth::user()->role === 'unit_kerja')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('jre.*') ? 'active' : '' }}" href="{{ route('jre.index') }}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -41,7 +41,7 @@
                 </a>
             </li>
 
-            {{-- Riwayat Pemusnahan menu - Only visible to admin and petugas --}}
+            {{-- Riwayat Pemusnahan menu - Only visible to unit kerja (admin/petugas) --}}
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('archive-destructions.*') ? 'active' : '' }}" href="{{ route('archive-destructions.index') }}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -51,7 +51,7 @@
                 </a>
             </li>
 
-            {{-- Pemindahan menu - Only visible to admin and petugas --}}
+            {{-- Pemindahan menu - Only visible to unit kerja (admin/petugas) --}}
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('pemindahan.*') ? 'active' : '' }}" href="{{ route('pemindahan.index') }}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -74,8 +74,8 @@
 
             {{-- Tables menu - Only visible to admin and petugas --}}
 
-            {{-- User Management - Only visible to admin --}}
-            @if(Auth::user()->role === 'admin')
+            {{-- User Management - Only visible to unit kerja (admin) --}}
+            @if(Auth::user()->role === 'unit_kerja')
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">

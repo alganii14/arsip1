@@ -78,6 +78,20 @@
     <div class="header">
         <h1>LAPORAN PEMINDAHAN ARSIP</h1>
         <h2>Sistem Manajemen Arsip Elektronik</h2>
+        @if($pemindahans->count() > 0)
+            @php
+                $unitKerjaList = $pemindahans->map(function($p) {
+                    return $p->user->department ?? $p->user->name ?? 'N/A';
+                })->unique()->filter(function($value) {
+                    return $value !== 'N/A';
+                })->values();
+            @endphp
+            @if($unitKerjaList->count() > 0)
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #333; font-style: italic;">
+                    Dipindahkan oleh: {{ $unitKerjaList->implode(', ') }}
+                </p>
+            @endif
+        @endif
     </div>
 
     <div class="meta-info">
@@ -92,20 +106,21 @@
         <h3 style="margin-top: 0;">Ringkasan Laporan</h3>
         <p>Laporan ini berisi daftar lengkap arsip yang telah dipindahkan dalam sistem manajemen arsip.
         Setiap pemindahan arsip telah melalui proses sesuai dengan ketentuan dan prosedur yang berlaku.</p>
+        <p><strong>Catatan:</strong> Setiap pemindahan mencantumkan unit kerja yang bertanggung jawab melakukan pemindahan.</p>
     </div>
 
     @if($pemindahans->count() > 0)
     <table>
         <thead>
             <tr>
-                <th style="width: 6%">No</th>
-                <th style="width: 12%">Kode Arsip</th>
+                <th style="width: 7%">No</th>
+                <th style="width: 14%">Kode Arsip</th>
                 <th style="width: 25%">Nama Arsip</th>
-                <th style="width: 8%">Tahun</th>
+                <th style="width: 10%">Tahun</th>
                 <th style="width: 10%">Jumlah</th>
-                <th style="width: 15%">Tingkat Perkembangan</th>
+                <th style="width: 16%">Tingkat Perkembangan</th>
                 <th style="width: 14%">Tanggal</th>
-                <th style="width: 10%">Keterangan</th>
+                <th style="width: 14%">Keterangan</th>
             </tr>
         </thead>
         <tbody>

@@ -16,11 +16,26 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!$request->user()) {
-            return redirect()->route('login');
+            return redirect()->route('sign-in');
         }
 
+        $userRole = $request->user()->role;
+        
+        // Map old roles to new roles for backward compatibility
+        $roleMappings = [
+            'admin' => 'unit_kerja',
+            'petugas' => 'unit_kerja', 
+            'peminjam' => 'unit_pengelola'
+        ];
+
         foreach ($roles as $role) {
-            if ($request->user()->role === $role) {
+            // Check if the role matches directly
+            if ($userRole === $role) {
+                return $next($request);
+            }
+            
+            // Check if the role matches through mapping
+            if (isset($roleMappings[$role]) && $userRole === $roleMappings[$role]) {
                 return $next($request);
             }
         }

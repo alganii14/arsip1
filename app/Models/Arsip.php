@@ -38,7 +38,8 @@ class Arsip extends Model
         return $query->where('is_archived_to_jre', false)
                     ->whereDoesntHave('pemindahan', function($q) {
                         $q->whereIn('status', ['approved', 'completed']);
-                    });
+                    })
+                    ->whereDoesntHave('archiveDestruction'); // Filter out destroyed archives
     }
 
     public function scopeArchivedToJre($query)
@@ -83,6 +84,12 @@ class Arsip extends Model
     public function pemindahan()
     {
         return $this->hasMany(Pemindahan::class);
+    }
+
+    // Relasi untuk pemusnahan arsip
+    public function archiveDestruction()
+    {
+        return $this->hasOne(ArchiveDestruction::class, 'arsip_id');
     }
 
     public function isAlreadyMoved()
