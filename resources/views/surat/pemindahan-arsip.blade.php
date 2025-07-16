@@ -214,41 +214,41 @@
             <tr>
                 <td style="width: 15%; vertical-align: top;">Nama</td>
                 <td style="width: 5%; vertical-align: top;">:</td>
-                <td style="width: 80%; border-bottom: 1px dotted #000; min-height: 20px;">&nbsp;</td>
+                <td style="width: 80%; min-height: 20px; padding-bottom: 2px;">{{ $pihak_pertama['nama'] }}</td>
             </tr>
             <tr>
                 <td style="vertical-align: top;">NIP</td>
                 <td style="vertical-align: top;">:</td>
-                <td style="border-bottom: 1px dotted #000; min-height: 20px;">&nbsp;</td>
+                <td style="min-height: 20px; padding-bottom: 2px;">{{ $pihak_pertama['nip'] }}</td>
             </tr>
             <tr>
                 <td style="vertical-align: top;">Jabatan</td>
                 <td style="vertical-align: top;">:</td>
-                <td style="border-bottom: 1px dotted #000; min-height: 20px;">&nbsp;</td>
+                <td style="min-height: 20px; padding-bottom: 2px;">{{ $pihak_pertama['jabatan'] }}</td>
             </tr>
         </table>
 
-        <p style="margin-top: 15px;">Dalam hal ini bertindak untuk dan atas nama ............ yang selanjutnya disebut <strong>Pihak Pertama</strong>.</p>
+        <p style="margin-top: 15px;">Dalam hal ini bertindak untuk dan atas nama {{ $pihak_pertama['nama'] }} yang selanjutnya disebut <strong>Pihak Pertama</strong>.</p>
 
         <table style="margin: 15px 0; width: 100%;">
             <tr>
                 <td style="width: 15%; vertical-align: top;">Nama</td>
                 <td style="width: 5%; vertical-align: top;">:</td>
-                <td style="width: 80%; border-bottom: 1px dotted #000; min-height: 12px;">&nbsp;</td>
+                <td style="width: 80%; min-height: 12px; padding-bottom: 2px;">{{ $pihak_kedua['nama'] }}</td>
             </tr>
             <tr>
                 <td style="vertical-align: top;">NIP</td>
                 <td style="vertical-align: top;">:</td>
-                <td style="border-bottom: 1px dotted #000; min-height: 12px;">&nbsp;</td>
+                <td style="min-height: 12px; padding-bottom: 2px;">{{ $pihak_kedua['nip'] }}</td>
             </tr>
             <tr>
                 <td style="vertical-align: top;">Jabatan</td>
                 <td style="vertical-align: top;">:</td>
-                <td style="border-bottom: 1px dotted #000; min-height: 12px;">&nbsp;</td>
+                <td style="min-height: 12px; padding-bottom: 2px;">{{ $pihak_kedua['jabatan'] }}</td>
             </tr>
         </table>
 
-        <p style="margin-top: 15px;">Dalam hal ini bertindak untuk dan atas nama ............ yang selanjutnya disebut <strong>Pihak Kedua</strong>.</p>
+        <p style="margin-top: 15px;">Dalam hal ini bertindak untuk dan atas nama {{ $pihak_kedua['nama'] }} yang selanjutnya disebut <strong>Pihak Kedua</strong>.</p>
 
         <p style="margin-top: 40px; text-align: justify;">Telah melaksanakan penilaian arsip berdasarkan Jadwal Retensi Arsip dan /atau berdasarkan Nilai guna, dan akan melaksanakan pemindahan arsip dari Unit Pengolah ke Unit Kearsipan sebanyak sebagaimana Daftar Arsip terlampir.</p>
 
@@ -265,20 +265,24 @@
         <div class="signature-left">
             <div class="signature-box">
                 <p style="text-align: center;"><strong>PIHAK YANG MENERIMA</strong></p>
-                <br><br><br><br><br><br>
+                <p style="text-align: center;">Pimpinan Unit Kearsipan</p>
+                <br><br><br><br><br>
                 <div style="text-align: center;">
-                    <div style="border-bottom: 1px solid #000; width: 160px; margin: 0 auto;"></div>
-                    <p style="margin-top: 6px;">Pimpinan Unit Kearsipan</p>
+                    <div style="border-bottom: 1px solid #000; width: 180px; margin: 0 auto;"></div>
+                    <p style="margin-top: 6px; font-weight: bold;">{{ $pihak_kedua['nama'] }}</p>
+                    <p style="margin-top: 2px;">NIP. {{ $pihak_kedua['nip'] }}</p>
                 </div>
             </div>
         </div>
         <div class="signature-right">
             <div class="signature-box">
                 <p style="text-align: center;"><strong>PIHAK YANG MEMINDAHKAN</strong></p>
-                <br><br><br><br><br><br>
+                <p style="text-align: center;">Pimpinan Unit Pengolah</p>
+                <br><br><br><br><br>
                 <div style="text-align: center;">
-                    <div style="border-bottom: 1px solid #000; width: 160px; margin: 0 auto;"></div>
-                    <p style="margin-top: 6px;">Pimpinan Unit Pengolah</p>
+                    <div style="border-bottom: 1px solid #000; width: 180px; margin: 0 auto;"></div>
+                    <p style="margin-top: 6px; font-weight: bold;">{{ $pihak_pertama['nama'] }}</p>
+                    <p style="margin-top: 2px;">NIP. {{ $pihak_pertama['nip'] }}</p>
                 </div>
             </div>
         </div>

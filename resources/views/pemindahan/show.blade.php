@@ -222,17 +222,54 @@
                     @if($pemindahan->status === 'completed')
                     <div class="card border shadow-xs mb-4">
                         <div class="card-header border-bottom pb-0">
-                            <h6 class="font-weight-semibold text-lg mb-0">Dokumen</h6>
+                            <h6 class="font-weight-semibold text-lg mb-0">Download Surat</h6>
                         </div>
                         <div class="card-body">
-                            <div class="d-grid gap-2">
-                                <a href="{{ route('pemindahan.download-surat', $pemindahan) }}" class="btn btn-primary">
-                                    <i class="fas fa-download me-2"></i>Download Surat Pemindahan
-                                </a>
-                            </div>
+                            <form action="{{ route('pemindahan.download-surat', $pemindahan) }}" method="POST">
+                                @csrf
+                                
+                                <h6 class="font-weight-semibold mb-3">Pihak Pertama</h6>
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-2">
+                                        <label class="form-control-label text-sm">Nama</label>
+                                        <input type="text" class="form-control form-control-sm" name="nama_pihak_pertama" placeholder="Nama Pihak Pertama" required>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <label class="form-control-label text-sm">NIP</label>
+                                        <input type="text" class="form-control form-control-sm" name="nip_pihak_pertama" placeholder="NIP" required>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <label class="form-control-label text-sm">Jabatan</label>
+                                        <input type="text" class="form-control form-control-sm" name="jabatan_pihak_pertama" placeholder="Jabatan" required>
+                                    </div>
+                                </div>
+
+                                <h6 class="font-weight-semibold mb-3">Pihak Kedua</h6>
+                                <div class="row mb-3">
+                                    <div class="col-12 mb-2">
+                                        <label class="form-control-label text-sm">Nama</label>
+                                        <input type="text" class="form-control form-control-sm" name="nama_pihak_kedua" placeholder="Nama Pihak Kedua" required>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <label class="form-control-label text-sm">NIP</label>
+                                        <input type="text" class="form-control form-control-sm" name="nip_pihak_kedua" placeholder="NIP" required>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <label class="form-control-label text-sm">Jabatan</label>
+                                        <input type="text" class="form-control form-control-sm" name="jabatan_pihak_kedua" placeholder="Jabatan" required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-download me-2"></i>Download Surat Pemindahan
+                                    </button>
+                                </div>
+                            </form>
+                            
                             <div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
                                 <i class="fas fa-info-circle me-2"></i>
-                                <span class="text-sm">Surat pemindahan arsip dapat diunduh sebagai dokumen resmi pemindahan.</span>
+                                <span class="text-sm">Isi form di atas sebelum mengunduh surat. Data yang diisi akan otomatis muncul di surat.</span>
                             </div>
                         </div>
                     </div>
@@ -345,4 +382,27 @@
             <x-app.footer />
         </div>
     </main>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle form download surat
+        const downloadForm = document.querySelector('form[action*="download-surat"]');
+        if (downloadForm) {
+            downloadForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Membuat Surat...';
+                
+                // Re-enable button after 3 seconds (assuming download will complete)
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }, 3000);
+            });
+        }
+    });
+    </script>
 </x-app-layout>

@@ -123,14 +123,6 @@
                                             </td>
                                             <td class="align-middle text-center">
                                                 <div class="d-flex justify-content-center align-items-center">
-                                                    @if($pemindahan->status === 'completed')
-                                                        <a href="{{ route('pemindahan.download-surat', $pemindahan) }}" 
-                                                           class="btn btn-sm btn-outline-primary me-1" 
-                                                           title="Download Surat Pemindahan"
-                                                           data-bs-toggle="tooltip">
-                                                            <i class="fas fa-download"></i>
-                                                        </a>
-                                                    @endif
                                                     <a href="{{ route('pemindahan.show', $pemindahan) }}" 
                                                        class="btn btn-sm btn-outline-info" 
                                                        title="Lihat Detail"

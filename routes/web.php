@@ -146,7 +146,7 @@ Route::middleware('auth')->group(function () {
         Route::post('pemindahan/{pemindahan}/reject', [PemindahanController::class, 'reject'])->name('pemindahan.reject');
         Route::post('pemindahan/{pemindahan}/complete', [PemindahanController::class, 'complete'])->name('pemindahan.complete');
         Route::get('pemindahan-get-arsip-data', [PemindahanController::class, 'getArsipData'])->name('pemindahan.get-arsip-data');
-        Route::get('pemindahan/{pemindahan}/download-surat', [PemindahanController::class, 'downloadSurat'])->name('pemindahan.download-surat');
+        Route::post('pemindahan/{pemindahan}/download-surat', [PemindahanController::class, 'downloadSurat'])->name('pemindahan.download-surat');
 
         // Peminjaman - Additional functionality
         Route::get('peminjaman/{peminjaman}/edit', [PeminjamanArsipController::class, 'edit'])->name('peminjaman.edit');

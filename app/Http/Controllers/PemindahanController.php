@@ -452,32 +452,63 @@ class PemindahanController extends Controller
     /**
      * Download surat pemindahan arsip
      */
-    public function downloadSurat(Pemindahan $pemindahan)
+    public function downloadSurat(Request $request, Pemindahan $pemindahan)
     {
         // Pastikan arsip sudah dipindahkan (status completed)
         if ($pemindahan->status !== 'completed') {
             return redirect()->back()->with('error', 'Surat hanya dapat diunduh untuk pemindahan yang sudah selesai.');
         }
 
-        $pemindahan->load(['arsip', 'user', 'completer']);
+        // Validasi data form
+        $validated = $request->validate([
+            'nama_pihak_pertama' => 'required|string|max:255',
+            'nip_pihak_pertama' => 'required|string|max:255',
+            'jabatan_pihak_pertama' => 'required|string|max:255',
+            'nama_pihak_kedua' => 'required|string|max:255',
+            'nip_pihak_kedua' => 'required|string|max:255',
+            'jabatan_pihak_kedua' => 'required|string|max:255',
+        ]);
 
-        // Data untuk surat
-        $data = [
-            'pemindahan' => $pemindahan,
-            'tanggal_surat' => now(),
-            'nomor_surat' => $this->generateNomorSurat($pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen),
-        ];
+        try {
+            $pemindahan->load(['arsip', 'user', 'completer']);
 
-        $pdf = PDF::loadView('surat.pemindahan-arsip', $data);
-        $pdf->setPaper('A4', 'portrait');
+            // Data untuk surat
+            $data = [
+                'pemindahan' => $pemindahan,
+                'tanggal_surat' => now(),
+                'nomor_surat' => $this->generateNomorSurat($pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen),
+                'pihak_pertama' => [
+                    'nama' => $validated['nama_pihak_pertama'],
+                    'nip' => $validated['nip_pihak_pertama'],
+                    'jabatan' => $validated['jabatan_pihak_pertama'],
+                ],
+                'pihak_kedua' => [
+                    'nama' => $validated['nama_pihak_kedua'],
+                    'nip' => $validated['nip_pihak_kedua'],
+                    'jabatan' => $validated['jabatan_pihak_kedua'],
+                ],
+            ];
 
-        // Clean filename dari karakter yang tidak valid
-        $kodeArsip = $pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen ?? 'ARSIP';
-        $cleanKode = preg_replace('/[\/\\\\:*?"<>|]/', '_', $kodeArsip);
-        
-        $fileName = 'Surat_Pemindahan_' . $cleanKode . '_' . now()->format('YmdHis') . '.pdf';
+            $pdf = PDF::loadView('surat.pemindahan-arsip', $data);
+            $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download($fileName);
+            // Clean filename dari karakter yang tidak valid
+            $kodeArsip = $pemindahan->arsip->kode ?? $pemindahan->arsip->nomor_dokumen ?? 'ARSIP';
+            $cleanKode = preg_replace('/[\/\\\\:*?"<>|]/', '_', $kodeArsip);
+            
+            $fileName = 'Surat_Pemindahan_' . $cleanKode . '_' . now()->format('YmdHis') . '.pdf';
+
+            // Set headers untuk memaksa download
+            return response($pdf->output(), 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
+                ->header('Cache-Control', 'private, max-age=0, must-revalidate')
+                ->header('Pragma', 'public');
+                
+        } catch (\Exception $e) {
+            \Log::error('Error generating PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuat surat. Silakan coba lagi.');
+        }
     }
 
     /**
