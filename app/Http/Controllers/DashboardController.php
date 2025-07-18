@@ -30,14 +30,18 @@ class DashboardController extends Controller
                 // Total Pinjaman Seksi - peminjaman yang dilakukan oleh user ini
                 $totalPeminjam = PeminjamanArsip::where('peminjam_user_id', $user->id)->count();
 
-                // Total Arsip Menunggu Persetujuan - arsip yang dibuat user tapi belum disetujui
-                $totalPending = Arsip::where('created_by', $user->id)
-                    ->where('status', 'pending')
+                // Total Peminjaman Menunggu Persetujuan - peminjaman yang dibuat user tapi belum disetujui
+                $totalPending = PeminjamanArsip::where('peminjam_user_id', $user->id)
+                    ->where('confirmation_status', 'pending')
                     ->count();
 
-                // Total Arsip Tersedia untuk Dipinjam dari seksi lain (hanya arsip aktif)
+                // Total Arsip Tersedia untuk Dipinjam dari seksi lain (hanya arsip aktif dan tidak sedang dipinjam)
                 $totalArsipTersedia = Arsip::active()
                     ->where('created_by', '!=', $user->id)
+                    ->whereDoesntHave('peminjaman', function($query) {
+                        $query->whereIn('status', ['dipinjam', 'terlambat'])
+                              ->where('confirmation_status', 'approved');
+                    })
                     ->count();
 
                 // Untuk unit pengelola, tidak ada data untuk pengguna total, JRE dan arsip dimusnahkan

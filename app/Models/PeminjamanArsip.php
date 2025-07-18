@@ -26,6 +26,7 @@ class PeminjamanArsip extends Model
         'approved_by',
         'approved_at',
         'tujuan_peminjaman',
+        'catatan',
         'petugas_peminjaman',
         'petugas_pengembalian',
     ];

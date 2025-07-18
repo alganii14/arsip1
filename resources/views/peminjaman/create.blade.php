@@ -25,7 +25,12 @@
                             @if(request('type') === 'fisik')
                                 <div class="alert alert-info mb-3" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white;">
                                     <i class="fas fa-info-circle me-2"></i>
-                                    <strong>Peminjaman Fisik:</strong> Arsip fisik akan diserahkan kepada peminjam setelah formulir disetujui.
+                                    <strong>Peminjaman Fisik:</strong> 
+                                    @if(Auth::user()->role === 'unit_pengelola')
+                                        Permintaan peminjaman arsip fisik memerlukan persetujuan unit kerja terlebih dahulu. Arsip fisik akan diserahkan setelah disetujui.
+                                    @else
+                                        Arsip fisik akan diserahkan kepada peminjam setelah formulir disetujui.
+                                    @endif
                                 </div>
                             @endif
                             <a href="{{ route('peminjaman.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
@@ -143,8 +148,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
-                                            <label for="tanggal_pinjam" class="form-control-label text-sm">Tanggal Pinjam <span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control @error('tanggal_pinjam') is-invalid @enderror" id="tanggal_pinjam" name="tanggal_pinjam" value="{{ old('tanggal_pinjam') ?? date('Y-m-d') }}" required>
+                                            <label for="tanggal_pinjam" class="form-control-label text-sm">Tanggal & Waktu Pinjam <span class="text-danger">*</span></label>
+                                            <input type="datetime-local" class="form-control @error('tanggal_pinjam') is-invalid @enderror" id="tanggal_pinjam" name="tanggal_pinjam" value="{{ old('tanggal_pinjam') ?? date('Y-m-d\TH:i') }}" required>
                                             @error('tanggal_pinjam')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -154,7 +159,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
                                             <label for="batas_waktu" class="form-control-label text-sm">Batas Waktu Pengembalian <span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control @error('batas_waktu') is-invalid @enderror" id="batas_waktu" name="batas_waktu" value="{{ old('batas_waktu') ?? date('Y-m-d', strtotime('+7 days')) }}" required>
+                                            <input type="datetime-local" class="form-control @error('batas_waktu') is-invalid @enderror" id="batas_waktu" name="batas_waktu" value="{{ old('batas_waktu') ?? date('Y-m-d\TH:i', strtotime('+7 days')) }}" required>
                                             @error('batas_waktu')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror

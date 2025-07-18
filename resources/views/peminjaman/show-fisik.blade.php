@@ -60,6 +60,49 @@
                 </div>
             </div>
             @endif
+            
+            @if($peminjaman->confirmation_status === 'pending')
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <span class="alert-icon"><i class="fas fa-clock"></i></span>
+                        <span class="alert-text">
+                            <strong>Menunggu Persetujuan Unit Kerja:</strong> 
+                            Permintaan peminjaman arsip fisik sedang menunggu persetujuan dari unit kerja. 
+                            Arsip akan tersedia setelah disetujui.
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            @elseif($peminjaman->confirmation_status === 'approved')
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <span class="alert-icon"><i class="fas fa-check-circle"></i></span>
+                        <span class="alert-text">
+                            <strong>Peminjaman Disetujui:</strong> 
+                            Permintaan peminjaman arsip fisik telah disetujui oleh unit kerja. 
+                            Silakan hubungi petugas untuk pengambilan arsip.
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            @elseif($peminjaman->confirmation_status === 'rejected')
+            <div class="row">
+                <div class="col-12">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span class="alert-icon"><i class="fas fa-times-circle"></i></span>
+                        <span class="alert-text">
+                            <strong>Peminjaman Ditolak:</strong> 
+                            Permintaan peminjaman arsip fisik telah ditolak oleh unit kerja.
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <div class="row">
                 <div class="col-12">
@@ -94,8 +137,8 @@
                                         </span>
                                     @endif
 
-                                    {{-- Hanya admin yang bisa mengembalikan arsip fisik yang sudah disetujui --}}
-                                    @if(Auth::user()->role === 'admin' &&
+                                    {{-- Hanya unit kerja yang bisa mengembalikan arsip fisik yang sudah disetujui --}}
+                                    @if(Auth::user()->role === 'unit_kerja' &&
                                         $peminjaman->status !== 'dikembalikan' &&
                                         $peminjaman->confirmation_status === 'approved')
                                         <a href="{{ route('peminjaman.return-form', $peminjaman->id) }}" class="btn btn-sm btn-success ms-2">
@@ -153,7 +196,7 @@
                                                     {{ $peminjaman->tanggal_pinjam ? $peminjaman->tanggal_pinjam->format('d/m/Y') : '-' }}
                                                 </p>
                                                 <small class="text-muted">
-                                                    {{ $peminjaman->tanggal_pinjam ? $peminjaman->tanggal_pinjam->format('H:i') : '' }}
+                                                    {{ $peminjaman->tanggal_pinjam ? $peminjaman->tanggal_pinjam->format('H:i') . ' WIB' : '' }}
                                                 </small>
                                             </div>
                                         </div>
@@ -167,7 +210,7 @@
                                                     @endif
                                                 </p>
                                                 <small class="text-muted">
-                                                    {{ $peminjaman->batas_waktu ? $peminjaman->batas_waktu->format('H:i') : '' }}
+                                                    {{ $peminjaman->batas_waktu ? $peminjaman->batas_waktu->format('H:i') . ' WIB' : '' }}
                                                 </small>
                                             </div>
                                         </div>
@@ -179,7 +222,7 @@
                                                     {{ $peminjaman->tanggal_kembali->format('d/m/Y') }}
                                                 </p>
                                                 <small class="text-muted">
-                                                    {{ $peminjaman->tanggal_kembali->format('H:i') }}
+                                                    {{ $peminjaman->tanggal_kembali->format('H:i') . ' WIB' }}
                                                 </small>
                                             </div>
                                         </div>
@@ -357,7 +400,7 @@
                                             <div class="border-start border-purple border-3 ps-3 mb-3">
                                                 <label class="text-xs text-muted mb-1">Tanggal Persetujuan</label>
                                                 <p class="font-weight-semibold mb-0">{{ $peminjaman->approved_at->format('d/m/Y') }}</p>
-                                                <small class="text-muted">{{ $peminjaman->approved_at->format('H:i') }}</small>
+                                                <small class="text-muted">{{ $peminjaman->approved_at->format('H:i') . ' WIB' }}</small>
                                             </div>
                                         </div>
                                         @endif

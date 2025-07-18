@@ -206,14 +206,14 @@
                         <div class="card-body text-start p-4 w-100">
                             <h3 class="text-white mb-2">Peminjaman Arsip</h3>
                             <p class="mb-4 font-weight-semibold text-white">
-                                @if(Auth::user()->isPeminjam())
+                                @if(Auth::user()->role === 'unit_pengelola')
                                     Kelola peminjaman arsip Anda dari departemen {{ Auth::user()->department }}
                                 @else
-                                    Kelola peminjaman arsip dokumen
+                                    Kelola peminjaman arsip dokumen dan persetujuan permintaan
                                 @endif
                             </p>
                             <div class="d-flex flex-wrap gap-2">
-                                @if(Auth::user()->role !== 'admin')
+                                @if(Auth::user()->role === 'unit_pengelola')
                                 <!-- Button untuk peminjaman fisik -->
                                 <a href="{{ route('peminjaman.create') }}?type=fisik" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                     <span class="btn-inner--icon">
@@ -230,7 +230,7 @@
                                     <span class="btn-inner--text">Pinjam Arsip Digital</span>
                                 </button>
                                 @endif
-                                @if(Auth::user()->isAdmin())
+                                @if(Auth::user()->role === 'unit_kerja')
                                     <a href="{{ route('peminjaman.pending') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">
                                         <span class="btn-inner--icon">
                                             <i class="fas fa-hourglass-half me-2"></i>
@@ -365,14 +365,14 @@
                             <div class="d-sm-flex align-items-center">
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">
-                                        @if(Auth::user()->role === 'admin')
+                                        @if(Auth::user()->role === 'unit_kerja')
                                             Semua Arsip Tersedia
                                         @else
                                             Arsip Tersedia untuk Dipinjam
                                         @endif
                                     </h6>
                                     <p class="text-sm">
-                                        @if(Auth::user()->role === 'admin')
+                                        @if(Auth::user()->role === 'unit_kerja')
                                             Daftar semua arsip yang dapat Anda akses langsung
                                         @else
                                             Daftar arsip yang dapat Anda pinjam (kecuali milik sendiri)
@@ -429,7 +429,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                @if(!Auth::user()->isPeminjam())
+                                                @if(Auth::user()->role === 'unit_kerja')
                                                 <div class="d-flex">
                                                     <a href="{{ route('arsip.detail', $arsip->id) }}" class="btn btn-sm btn-info me-2">
                                                         <i class="fas fa-eye me-1"></i> Detail
@@ -467,7 +467,7 @@
                                 <div>
                                     <h6 class="font-weight-semibold text-lg mb-0">Riwayat Peminjaman Arsip</h6>
                                     <p class="text-sm">
-                                        @if(Auth::user()->isPeminjam())
+                                        @if(Auth::user()->role === 'unit_pengelola')
                                             Informasi tentang peminjaman arsip Anda
                                         @else
                                             Informasi tentang semua peminjaman arsip
@@ -494,7 +494,7 @@
                                         </ul>
                                     </div>
 
-                                    @if(!Auth::user()->isPeminjam())
+                                    @if(Auth::user()->role === 'unit_kerja')
                                     <form action="{{ route('peminjaman.check-overdue') }}" method="POST" class="me-3">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-dark">
@@ -627,8 +627,8 @@
                                                         <i class="fas fa-eye me-1"></i> Detail
                                                     </a>
 
-                                                    @if(Auth::user()->role === 'peminjam')
-                                                        {{-- Hanya peminjaman digital yang bisa dikembalikan oleh peminjam sendiri --}}
+                                                    @if(Auth::user()->role === 'unit_pengelola')
+                                                        {{-- Hanya peminjaman digital yang bisa dikembalikan oleh unit pengelola sendiri --}}
                                                         @if($peminjaman->jenis_peminjaman === 'digital' &&
                                                             $peminjaman->peminjam_user_id == Auth::id() &&
                                                             $peminjaman->status !== 'dikembalikan' &&
@@ -638,7 +638,7 @@
                                                             </a>
                                                         @endif
                                                     @else
-                                                        {{-- Admin bisa mengembalikan arsip fisik yang sudah disetujui --}}
+                                                        {{-- Unit kerja bisa mengembalikan arsip fisik yang sudah disetujui --}}
                                                         @if($peminjaman->jenis_peminjaman === 'fisik' &&
                                                             $peminjaman->status !== 'dikembalikan' &&
                                                             $peminjaman->confirmation_status === 'approved')

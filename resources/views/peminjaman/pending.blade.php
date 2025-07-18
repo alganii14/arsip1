@@ -9,7 +9,7 @@
                         <div class="card-body text-start p-4 w-100">
                             <h3 class="text-white mb-2">Persetujuan Peminjaman Arsip</h3>
                             <p class="mb-4 font-weight-semibold text-white">
-                                Kelola permintaan peminjaman yang menunggu persetujuan admin
+                                Kelola permintaan peminjaman yang menunggu persetujuan unit kerja
                             </p>
                             <div class="d-flex">
                                 <a href="{{ route('peminjaman.index') }}" class="btn btn-outline-white btn-blur btn-icon d-flex align-items-center mb-0">

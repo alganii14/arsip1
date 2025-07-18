@@ -131,7 +131,7 @@
                         $cards = [
                             ['title' => 'Arsip Seksi Anda', 'icon' => 'folder-open', 'value' => $totalArsip, 'bg' => 'gradient-primary', 'note' => 'arsip seksi yang aktif'],
                             ['title' => 'Pinjaman Anda', 'icon' => 'hand-holding-heart', 'value' => $totalPeminjam, 'bg' => 'gradient-warning', 'note' => 'arsip yang Anda pinjam'],
-                            ['title' => 'Menunggu Persetujuan', 'icon' => 'hourglass-half', 'value' => $totalPending, 'bg' => 'gradient-info', 'note' => 'arsip belum disetujui'],
+                            ['title' => 'Menunggu Persetujuan', 'icon' => 'hourglass-half', 'value' => $totalPending, 'bg' => 'gradient-info', 'note' => 'peminjaman belum disetujui'],
                             ['title' => 'Arsip Tersedia', 'icon' => 'search-plus', 'value' => $totalArsipTersedia, 'bg' => 'gradient-success', 'note' => 'dari seksi lain']
                         ];
                     } else {

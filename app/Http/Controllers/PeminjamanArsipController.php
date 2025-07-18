@@ -130,12 +130,16 @@ class PeminjamanArsipController extends Controller
             'jenis_peminjaman' => $request->jenis_peminjaman ?? 'fisik',
         ];
 
-        // Jika user adalah peminjam, status pending menunggu konfirmasi admin
-        if (Auth::user()->role === 'peminjam') {
+        // Untuk peminjaman fisik oleh unit pengelola, memerlukan persetujuan unit kerja
+        if (Auth::user()->role === 'unit_pengelola' && ($request->jenis_peminjaman === 'fisik' || !$request->jenis_peminjaman)) {
+            $peminjamanData['status'] = 'pending';
+            $peminjamanData['confirmation_status'] = 'pending';
+        } else if (Auth::user()->role === 'peminjam') {
+            // Backward compatibility untuk role peminjam
             $peminjamanData['status'] = 'pending';
             $peminjamanData['confirmation_status'] = 'pending';
         } else {
-            // Jika admin/petugas langsung approve
+            // Jika unit kerja/admin/petugas langsung approve
             $peminjamanData['status'] = 'dipinjam';
             $peminjamanData['confirmation_status'] = 'approved';
             $peminjamanData['approved_by'] = Auth::id();
@@ -144,8 +148,8 @@ class PeminjamanArsipController extends Controller
 
         PeminjamanArsip::create($peminjamanData);
 
-        $message = Auth::user()->role === 'peminjam'
-            ? 'Permintaan peminjaman berhasil diajukan. Menunggu persetujuan admin.'
+        $message = (Auth::user()->role === 'peminjam' || (Auth::user()->role === 'unit_pengelola' && ($request->jenis_peminjaman === 'fisik' || !$request->jenis_peminjaman)))
+            ? 'Permintaan peminjaman berhasil diajukan. Menunggu persetujuan unit kerja.'
             : 'Peminjaman arsip berhasil dicatat';
 
         return redirect()->route('peminjaman.index')->with('success', $message);
@@ -286,12 +290,12 @@ class PeminjamanArsipController extends Controller
 
     public function returnForm(PeminjamanArsip $peminjaman)
     {
-        // Untuk peminjaman fisik, hanya admin yang bisa melakukan pengembalian
-        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'admin') {
-            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh admin.');
+        // Untuk peminjaman fisik, hanya unit kerja yang bisa melakukan pengembalian
+        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'unit_kerja') {
+            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh unit kerja.');
         }
 
-        // Untuk peminjaman digital, peminjam bisa mengembalikan sendiri
+        // Untuk peminjaman digital, unit pengelola bisa mengembalikan sendiri
         if ($peminjaman->jenis_peminjaman === 'digital' && $peminjaman->peminjam_user_id != Auth::id()) {
             return redirect()->route('peminjaman.index')->with('error', 'Anda tidak memiliki akses untuk mengembalikan peminjaman ini.');
         }
@@ -310,9 +314,9 @@ class PeminjamanArsipController extends Controller
 
     public function processReturn(Request $request, PeminjamanArsip $peminjaman)
     {
-        // Untuk peminjaman fisik, hanya admin yang bisa melakukan pengembalian
-        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'admin') {
-            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh admin.');
+        // Untuk peminjaman fisik, hanya unit kerja yang bisa melakukan pengembalian
+        if ($peminjaman->jenis_peminjaman === 'fisik' && Auth::user()->role !== 'unit_kerja') {
+            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian arsip fisik hanya dapat dilakukan oleh unit kerja.');
         }
 
         // Untuk peminjaman digital, peminjam bisa mengembalikan sendiri
@@ -336,7 +340,15 @@ class PeminjamanArsipController extends Controller
 
         $peminjaman->tanggal_kembali = $request->tanggal_kembali;
         $peminjaman->status = 'dikembalikan';
-        $peminjaman->catatan = $peminjaman->catatan . "\n\nCatatan Pengembalian: " . $request->catatan;
+        
+        // Handle catatan pengembalian
+        $catatanPengembalian = $request->catatan ? "Catatan Pengembalian: " . $request->catatan : '';
+        if ($peminjaman->catatan) {
+            $peminjaman->catatan = $peminjaman->catatan . "\n\n" . $catatanPengembalian;
+        } else {
+            $peminjaman->catatan = $catatanPengembalian;
+        }
+        
         $peminjaman->petugas_pengembalian = Auth::user()->name;
         $peminjaman->save();
 
@@ -361,9 +373,9 @@ class PeminjamanArsipController extends Controller
 
     public function pending()
     {
-        // Hanya admin yang bisa melihat pending confirmations
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat melihat permintaan pending.');
+        // Hanya unit kerja yang bisa melihat pending confirmations
+        if (Auth::user()->role !== 'unit_kerja') {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya unit kerja yang dapat melihat permintaan pending.');
         }
 
         $peminjamans = PeminjamanArsip::with(['arsip', 'user'])
@@ -376,9 +388,9 @@ class PeminjamanArsipController extends Controller
 
     public function approve(PeminjamanArsip $peminjaman)
     {
-        // Hanya admin yang bisa approve
-        if (Auth::user()->role !== 'admin') {
-            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya admin yang dapat menyetujui peminjaman.');
+        // Hanya unit kerja yang bisa approve
+        if (Auth::user()->role !== 'unit_kerja') {
+            return redirect()->route('peminjaman.index')->with('error', 'Akses ditolak. Hanya unit kerja yang dapat menyetujui peminjaman.');
         }
 
         // Cek apakah arsip masih tersedia

@@ -111,8 +111,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-4">
-                                            <label for="tanggal_kembali" class="form-control-label text-sm">Tanggal Pengembalian <span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control @error('tanggal_kembali') is-invalid @enderror" id="tanggal_kembali" name="tanggal_kembali" value="{{ old('tanggal_kembali') ?? date('Y-m-d') }}" required>
+                                            <label for="tanggal_kembali" class="form-control-label text-sm">Tanggal & Waktu Pengembalian <span class="text-danger">*</span></label>
+                                            <input type="datetime-local" class="form-control @error('tanggal_kembali') is-invalid @enderror" id="tanggal_kembali" name="tanggal_kembali" value="{{ old('tanggal_kembali') ?? date('Y-m-d\TH:i') }}" required>
                                             @error('tanggal_kembali')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -147,7 +147,7 @@
                                         <strong>Informasi!</strong>
                                         @if($peminjaman->jenis_peminjaman === 'fisik')
                                             Setelah dikembalikan, status peminjaman fisik akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
-                                            <br><strong>Catatan:</strong> Pengembalian arsip fisik hanya dapat dilakukan oleh admin.
+                                            <br><strong>Catatan:</strong> Pengembalian arsip fisik hanya dapat dilakukan oleh unit kerja.
                                         @else
                                             Setelah dikembalikan, status peminjaman digital akan berubah menjadi "Dikembalikan" dan arsip akan tersedia untuk dipinjam kembali.
                                         @endif
